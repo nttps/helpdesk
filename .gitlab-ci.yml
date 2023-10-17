@@ -1,0 +1,37 @@
+variables:
+  DOCKER_REGISTRY:
+  AWS_DEFAULT_REGION: ap-southeast-1
+  APP_NAME: helpdesk-frontend
+  #APP_VERSION: 1.0.1
+  DOCKER_HOST: 
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_DRIVER: 
+  AWS_ACCESS_KEY_ID: 
+  AWS_SECRET_ACCESS_KEY: 
+
+build:
+  image: 
+    name: amazon/aws-cli
+    entrypoint: [""]
+  services:
+    - docker:dind
+  before_script:
+    - amazon-linux-extras install docker
+    - aws --version
+    - cat /etc/os-release  
+    - docker --version
+  script:
+   # - docker build -t $DOCKER_REGISTRY/$APP_NAME:$CI_PIPELINE_IID . 
+    - docker build -t $DOCKER_REGISTRY/$APP_NAME:version . 
+    - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $DOCKER_REGISTRY
+   # - docker push $DOCKER_REGISTRY/$APP_NAME:$CI_PIPELINE_IID
+    - docker push $DOCKER_REGISTRY/$APP_NAME:version
+  only:
+    - tags
+    
+deploy:
+  only:
+    - tags
+  stage: deploy
+  script:
+    - echo "Deploy steps go here..."
