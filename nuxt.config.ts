@@ -1,7 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     devtools: { enabled: true },
-    modules: ["@nuxtjs/google-fonts", "@nuxt/ui"],
+    ssr: false,
+    modules: ["@nuxtjs/google-fonts", "@nuxt/ui", "nuxt-icon"],
     googleFonts: {
         display: "swap",
         prefetch: true,

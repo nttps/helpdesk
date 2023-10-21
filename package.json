@@ -15,6 +15,9 @@
   },
   "dependencies": {
     "@nuxt/ui": "^2.9.0",
-    "@nuxtjs/google-fonts": "^3.0.2"
+    "@nuxtjs/google-fonts": "^3.0.2",
+    "@popperjs/core": "^2.11.8",
+    "nuxt-icon": "^0.5.0",
+    "v-calendar": "^3.1.2"
   }
 }
