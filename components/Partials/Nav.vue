@@ -7,33 +7,33 @@
             <nav class="nav-top">
                 <ul>
                     <li>
-                        <NuxtLink to="/">
-                            <Icon name="i-ri-ticket-fill" size="40"/>
-                            <div>ยืม-คืนพัสดุ</div>
+                        <NuxtLink to="/" v-slot="{ isActive }">
+                            <Icon name="i-ri-ticket-fill" size="40" :class="isActive ? 'text-black' : ''" />
+                            <div :class="isActive ? 'text-black' : ''">ยืม-คืนพัสดุ</div>
                         </NuxtLink>
                     </li>
                     <li>
-                        <NuxtLink to="/cctv">
-                            <Icon name="icon-park-solid:surveillance-cameras-two" size="40"/>
-                            <div>คำขอ CCTV</div>
+                        <NuxtLink to="/cctv" v-slot="{ isActive }">
+                            <Icon name="icon-park-solid:surveillance-cameras-two" size="40" :class="isActive ? 'text-black' : ''"/>
+                            <div :class="isActive ? 'text-black' : ''">คำขอ CCTV</div>
                         </NuxtLink>
                     </li>
                     <li>
-                        <NuxtLink to="/report-repair">
-                            <Icon name="ic:baseline-handyman" size="40"/>
-                            <div>แจ้งซ่อม</div>
+                        <NuxtLink to="/report-repair" v-slot="{ isActive }">
+                            <Icon name="ic:baseline-handyman" size="40" :class="isActive ? 'text-black' : ''"/>
+                            <div :class="isActive ? 'text-black' : ''">แจ้งซ่อม</div>
                         </NuxtLink>
                     </li>
                     <li>
-                        <NuxtLink to="/inventory">
-                            <Icon name="bi:box-seam-fill" size="40"/>
-                            <div>คลังอุปกรณ์</div>
+                        <NuxtLink to="/inventory" v-slot="{ isActive }">
+                            <Icon name="bi:box-seam-fill" size="40" :class="isActive ? 'text-black' : ''"/>
+                            <div :class="isActive ? 'text-black' : ''">คลังอุปกรณ์</div>
                         </NuxtLink>
                     </li>
                     <li>
-                        <NuxtLink to="/dashboard">
-                            <Icon name="mdi:monitor-dashboard" size="40"/>
-                            <div>แดชบอร์ด</div>
+                        <NuxtLink to="/dashboard" v-slot="{ isActive }">
+                            <Icon name="mdi:monitor-dashboard" size="40" :class="isActive ? 'text-black' : ''"/>
+                            <div :class="isActive ? 'text-black' : ''">แดชบอร์ด</div>
                         </NuxtLink>
                     </li>
                 </ul>
@@ -43,15 +43,15 @@
         <nav class="nav-bottom">
             <ul>
                 <li>
-                    <NuxtLink>
-                        <Icon name="material-symbols:help" size="40"/>
-                        <div>ช่วยเหลือ</div>
+                    <NuxtLink to="/help" v-slot="{ isActive }">
+                        <Icon name="material-symbols:help" size="40" :class="isActive ? 'text-black' : ''"/>
+                        <div :class="isActive ? 'text-black' : ''">ช่วยเหลือ</div>
                     </NuxtLink>
                 </li>
                 <li>
-                    <NuxtLink>
-                        <Icon name="material-symbols:settings" size="40"/>
-                        <div>ตั้งค่า</div>
+                    <NuxtLink to="/settings" v-slot="{ isActive }">
+                        <Icon name="material-symbols:settings" size="40" :class="isActive ? 'text-black' : ''"/>
+                        <div :class="isActive ? 'text-black' : ''">ตั้งค่า</div>
                     </NuxtLink>
                 </li>
                 <li>

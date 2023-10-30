@@ -1,7 +1,7 @@
 <template>
     <div class="flex justify-between">
         <h2 class="text-xl font-bold">{{ props.title }}</h2>
-        <div>
+        <div v-if="props.noAdd === undefined">
             <UButton
                 icon="i-heroicons-pencil-square"
                 size="sm"
@@ -25,7 +25,7 @@
 </template>
 
 <script setup>
-    const props = defineProps(['title'])
+    const props = defineProps(['title', 'noAdd'])
     const emit = defineEmits(['add'])
 </script>
 

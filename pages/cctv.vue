@@ -1,8 +1,6 @@
 <template>
     <div>
         <PartialsTitle title="คำขอ CCTV" @add="add" />
-
-
         <div>
             <div class="search-bar flex justify-between my-4">
                 <div>
@@ -17,17 +15,40 @@
 
                 </div>
             </div>
-            <UTable v-model="selected" :columns="columns" :rows="rows"> 
+            <UTable 
+                v-model="selected" 
+                :columns="columns" 
+                :rows="rows" 
+                :loading="pending" 
+                :loading-state="{ label: 'กำลังโหลด ...' }" 
+                :empty-state="{ label: 'ไม่พบรายการ' }"> 
                 <template #actions-data="{ row }">
                     <UDropdown :items="items(row)" :popper="{ placement: 'bottom-start' }">
                         <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
                     </UDropdown>
                 </template>
             </UTable>
-            <div class="flex justify-between items-center mt-4">
-                <div class="text-sm">{{ page }} - {{ pageCount }} จากทั้งหมด {{ people.length }} รายการ</div>
-                <UPagination v-model="page" :page-count="pageCount" :total="people.length" />
+            <div class="flex flex-wrap justify-between items-center px-3 pt-3.5">
+                <div>
+                  <span class="text-sm leading-5">
+                    กำลังแสดง
+                    <span class="font-medium">{{ pageFrom }}</span>
+                    ถึง
+                    <span class="font-medium">{{ pageTo }}</span>
+                    จาก
+                    <span class="font-medium">{{ pageTotal }}</span>
+                    รายการ
+                  </span>
+                </div>
+
+
+                <UPagination 
+                  v-model="page" 
+                  :page-count="pageCount" 
+                  :total="people.length" 
+                />
             </div>
+           
         </div>
 
     </div>
@@ -176,18 +197,25 @@
 
     const columns = [{
         key: 'id',
-        label: 'ID'
+        label: 'ลำดับที่'
     }, {
         key: 'name',
-        label: 'User name'
+        label: 'ว/ด/ป'
     }, {
         key: 'title',
-        label: 'Job position'
+        label: 'รายการคำขอ'
     }, {
         key: 'email',
-        label: 'Email'
+        label: 'ผู้ส่งคำขอ'
     }, {
-        key: 'role'
+        key: 'role',
+        label: 'หน่วยงาน'
+    }, {
+        key: 'priority',
+        label: 'ความสำคัญ'
+    }, {
+        key: 'status',
+        label: 'สถานะ'
     }, {
         key: 'actions'
     }]
@@ -205,10 +233,14 @@
             icon: 'i-heroicons-trash-20-solid'
         }]
         ]
+
     const page = ref(1)
-    const pageCount = 10
+    const pageCount = ref(20)
+    const pageTotal = computed(() => people.length)
+    const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
+    const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
     const rows = computed(() => {
-        return people.slice((page.value - 1) * pageCount, (page.value) * pageCount)
+        return people.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
     })
 
     const selected = ref([])
