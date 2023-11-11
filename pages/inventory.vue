@@ -1,10 +1,10 @@
 <template>
     <div>
         <PartialsTitle title="คลังอุปกรณ์" no-add />
-        <div>
-            <div class="search-bar flex justify-between my-4">
-                <div>
-
+        <div class="mt-8">
+            <div class="search-bar flex justify-between mb-2">
+                <div class="w-96">
+                    <UInput placeholder="ค้นหา" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
                 </div>
                 <div>
                     <UButton
@@ -16,6 +16,9 @@
                         @click="add"
                     />
                 </div>
+            </div>
+            <div class="text-right">
+                <UButton class="ml-auto" icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray"/>
             </div>
             <UTable 
                 v-model="selected" 
@@ -55,7 +58,7 @@
 
     </div>
 
-    <UModal v-model="modalAdd">
+    <UModal v-model="modalAdd" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
         <UForm :state="{}">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
@@ -67,9 +70,39 @@
                     </div>
                 </template>
 
+                <div class="grid grid-cols-5 gap-8 mb-4">
+                    <UFormGroup label="ชื่อ" name="type" size="xl">
+                        <UInput placeholder="" />
+                    </UFormGroup>
+                    <UFormGroup label="อุปกรณ์" name="department" size="xl">
+                        <UInput placeholder="" />
+                    </UFormGroup>
+                    <UFormGroup label="ยีห้อ" name="dCenter" size="xl">
+                       <UInput placeholder="" />
+                    </UFormGroup>
+                    <UFormGroup label="รุ่น" name="telephone" size="xl">
+                       <UInput placeholder="" />
+                    </UFormGroup>
+                    <UFormGroup label="จำนวน" name="dCenter" size="xl">
+                       <UInput placeholder="" />
+                    </UFormGroup>
+                  
+                </div>
+                <div class="grid grid-cols-3 gap-8 mb-4">
+                    <UFormGroup label="Serial Number" name="dCenter" size="xl">
+                        <UInput placeholder="" />
+                    </UFormGroup>
+                    <UFormGroup label="หมายเหตุ" name="dCenter" size="xl">
+                        <UInput placeholder="" />
+                    </UFormGroup>
+                </div>
+
+                <URadioGroup legend="ยังอยู่ในช่วงรับประกัน" :options="['ใช่', 'ไม่']" />
+
                 <template #footer>
                     <div class="flex items-center justify-end">
-                        <UButton color="amber" label="บันทึก" type="submit" size="xl" :ui="{ rounded: 'rounded-xl' }"/>
+                        <UButton color="amber" label="บันทึก" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                        <UButton color="gray" @click="modalAdd = false" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
             </UCard>

@@ -1,19 +1,22 @@
 <template>
     <div>
         <PartialsTitle title="คำขอ CCTV" @add="add" />
-        <div>
-            <div class="search-bar flex justify-between my-4">
+        <div class="mt-8">
+            <div class="search-bar flex justify-between mb-2">
                 <div>
-                <UButtonGroup size="lg" orientation="horizontal">
-                    <UButton label="รายการคำขอ" color="white" />
-                    <UButton label="อนุมัติ" color="white" />
-                    <UButton label="ไม่อนุมัติ" color="white" />
+                    <UButtonGroup size="lg" orientation="horizontal">
+                        <UButton label="รายการคำขอ" color="white" />
+                        <UButton label="อนุมัติ" color="white" />
+                        <UButton label="ไม่อนุมัติ" color="white" />
 
-                </UButtonGroup>
+                    </UButtonGroup>
                 </div>
-                <div>
-
+                <div class="min-w-3xl">
+                    <UInput placeholder="ค้นหา" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
                 </div>
+            </div>
+            <div class="text-right">
+                <UButton class="ml-auto" icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray"/>
             </div>
             <UTable 
                 v-model="selected" 
@@ -53,7 +56,7 @@
 
     </div>
 
-    <UModal v-model="modalAdd" fullscreen prevent-close>
+    <UModal v-model="modalAdd"  :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
         <UForm :state="{}">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
@@ -69,16 +72,16 @@
                 <h3 class="font-bold leading-6 text-xl mb-4">รายละเอียดผู้ยื่นนคำร้อง</h3>
                 <div class="grid grid-cols-2 gap-8 bg-zinc-300/80 p-8 rounded-xl mb-4">
                     <UFormGroup label="ชื่อ-นามสกุล" name="type" size="xl">
-                        <UInput placeholder="you@example.com" />
+                        <UInput placeholder="" />
                     </UFormGroup>
                     <UFormGroup label="ตำแหน่ง" name="type" size="xl">
-                       <UInput placeholder="you@example.com" />
+                       <UInput placeholder="" />
                     </UFormGroup>
                     <UFormGroup label="หน่วยงาน" name="type" size="xl">
-                       <UInput placeholder="you@example.com" />
+                       <UInput placeholder="" />
                     </UFormGroup>
                     <UFormGroup label="เบอร์โทร" name="type" size="xl">
-                       <UInput placeholder="you@example.com" />
+                       <UInput placeholder="" />
                     </UFormGroup>
                 </div>
                 <div class="flex">
@@ -124,13 +127,13 @@
                     </div>
                     <div>
                          <UFormGroup label="วัตถุประสงค์" class="mb-4" name="type" size="xl">
-                            <UInput placeholder="you@example.com" />
+                            <UInput placeholder="" />
                         </UFormGroup>
                         <UFormGroup label="อาคาร" class="mb-4" name="type" size="xl">
-                            <UInput placeholder="you@example.com" />
+                            <UInput placeholder="" />
                         </UFormGroup>
                         <UFormGroup label="ชั้น" class="mb-4" name="type" size="xl">
-                            <UInput placeholder="you@example.com" />
+                            <UInput placeholder="" />
                         </UFormGroup>
                         <div class="grid grid-cols-2 gap-4 items-center mb-4">
                             <UFormGroup label="กรณี" name="type" size="xl">
@@ -143,7 +146,8 @@
                 </div>
                 <template #footer>
                     <div class="flex items-center justify-end">
-                        <UButton color="amber" label="บันทึก" type="submit" size="xl" :ui="{ rounded: 'rounded-xl' }"/>
+                        <UButton color="amber" label="บันทึก" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                        <UButton color="gray" @click="modalAdd = false" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
             </UCard>

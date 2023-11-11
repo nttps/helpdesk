@@ -1,19 +1,22 @@
 <template>
     <div>
         <PartialsTitle title="ยืม - คืน" @add="add" />
-        <div>
-            <div class="search-bar flex justify-between my-4">
+        <div class="mt-8">
+            <div class="search-bar flex justify-between items-center mb-2">
                 <div>
-                <UButtonGroup size="lg" orientation="horizontal">
-                    <UButton label="รายการคำขอ" color="white" />
-                    <UButton label="รายการที่ยืม" color="white" />
-                    <UButton label="รายการที่คืน" color="white" />
-                    <UButton label="รายการที่ค้าง" color="white" />
-                </UButtonGroup>
+                    <UButtonGroup size="lg" orientation="horizontal">
+                        <UButton label="รายการคำขอ" color="white" />
+                        <UButton label="รายการที่ยืม" color="white" />
+                        <UButton label="รายการที่คืน" color="white" />
+                        <UButton label="รายการที่ค้าง" color="white" />
+                    </UButtonGroup>
                 </div>
-                <div>
-
+                <div class="min-w-3xl">
+                    <UInput placeholder="ค้นหา" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
                 </div>
+            </div>
+            <div class="text-right">
+                <UButton class="ml-auto" icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray"/>
             </div>
             <UTable 
                 v-model="selected" 
@@ -53,7 +56,7 @@
 
     </div>
 
-    <UModal v-model="modalAdd">
+    <UModal v-model="modalAdd" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
         <UForm :state="{}">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
@@ -65,9 +68,62 @@
                     </div>
                 </template>
 
+                <div class="flex mb-4">
+                    <UFormGroup label="วันที่ยืม" name="start_date" size="xl" class="w-1/3">
+                        <UPopover :popper="{ placement: 'bottom-start' }">
+                            <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelStartDate" />
+                            <template #panel="{ close }">
+                                <FormDatePicker v-model="startDate" @close="close" />
+                            </template>
+                        </UPopover>
+                    </UFormGroup>
+                    <UFormGroup label="วันที่คืน" name="end_date" size="xl" class="w-1/3">
+                        <UPopover :popper="{ placement: 'bottom-start' }">
+                            <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelEndDate" />
+                            <template #panel="{ close }">
+                                <FormDatePicker v-model="endDate" @close="close" />
+                            </template>
+                        </UPopover>
+                    </UFormGroup>
+                </div>
+
+                <div class="grid grid-cols-5 gap-8 mb-4">
+                    <UFormGroup label="ผู้ยืม" name="type" size="xl">
+                        <UInput placeholder="" />
+                    </UFormGroup>
+                    <UFormGroup label="หน่วยงาน" name="department" size="xl">
+                        <USelectMenu 
+                            :options="departments" 
+                            searchable
+                            searchable-placeholder="ค้นหาหน่วยงาน"
+                            placeholder="เลือกหน่วยงาน"
+                        />
+                    </UFormGroup>
+                    <UFormGroup label="ศูนย์เขต" name="dCenter" size="xl">
+                       <USelectMenu :options="dCenter" placeholder="เลือกศูนย์เขต"/>
+                    </UFormGroup>
+                    <UFormGroup label="เบอร์โทรศัพท์" name="telephone" size="xl">
+                       <UInput placeholder="" />
+                    </UFormGroup>
+                    <UFormGroup label="สถานะ" name="dCenter" size="xl">
+                       <USelectMenu :options="status" />
+                    </UFormGroup>
+                </div>
+
+                <div class="p-8 border rounded-lg" v-for="item in form.items">
+                    <USelectMenu 
+                        :options="products" 
+                        placeholder="อุปกรณ์" 
+                        size="xl"
+                        searchable
+                        searchable-placeholder="ค้นหาอุปกรณ์"
+                    />
+                </div>
+
                 <template #footer>
-                    <div class="flex items-center justify-end">
-                        <UButton color="amber" label="บันทึก" type="submit" size="xl" :ui="{ rounded: 'rounded-xl' }"/>
+                    <div class="flex items-center justify-end space-x-4">
+                        <UButton color="amber" label="บันทึก" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                        <UButton color="gray" @click="modalAdd = false" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
             </UCard>
@@ -182,8 +238,34 @@
     const labelDateTime = computed(() => dateTime.value.toLocaleDateString('th', { year: 'numeric', month: 'long', day: 'numeric' }) + ' เวลา ' + date.value.toLocaleTimeString('th', { hour: "2-digit", minute: "2-digit" }))
 
 
-    const date = ref(new Date())
-    const labelDate = computed(() => date.value.toLocaleDateString('th', { year: 'numeric', month: 'long', day: 'numeric' }))
+    const startDate = ref(new Date())
+    const labelStartDate = computed(() => startDate.value.toLocaleDateString('th', { year: 'numeric', month: 'long', day: 'numeric' }))
+
+    const endDate = ref(new Date())
+    const labelEndDate = computed(() => endDate.value.toLocaleDateString('th', { year: 'numeric', month: 'long', day: 'numeric' }))
+
+    const departments = ['Wade Cooper', 'Arlene Mccoy', 'Devon Webb', 'Tom Cook', 'Tanya Fox', 'Hellen Schmidt', 'Caroline Schultz', 'Mason Heaney', 'Claudie Smitham', 'Emil Schaefer']
+
+    const dCenter = ['ศูนย์เขต 1', 'ศูนย์เขต 2']
+
+    const status = ['ไม่อนุมัติ', 'อนุมัติ']
+
+    const products = ['อุปกรณ์ 1', 'อุปกรณ์ 2']
+
+    const form = ref({
+        fullName: '',
+        department: '',
+        dCenter: '',
+        telephone:'',
+        status: '',
+        forUse: '',
+        place:'',
+        items: [{
+            productId: '',
+            type: '',
+
+        }]
+    })
 </script>
 
 <style lang="scss" scoped>

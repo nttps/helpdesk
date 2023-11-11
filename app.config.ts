@@ -1,5 +1,8 @@
 export default defineAppConfig({
     ui: {
-        primary: 'amber'
-    }
+        primary: "amber",
+        card: {
+            base: "overflow-initial",
+        },
+    },
 });

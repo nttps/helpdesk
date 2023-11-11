@@ -1,6 +1,24 @@
 <template>
-    <div>
+    <div class="h-full ">
+        <PartialsTitle title="การตั้งค่า" noAdd/>
 
+        <div class="flex flex-col h-full items-center justify-center"> 
+            <div class="flex w-full justify-center space-x-10">
+                <NuxtLink to="/settings/borrow" class="p-6 text-center border rounded-xl w-1/6">
+                    <Icon name="i-ri-ticket-fill" size="80" color="gray" />
+                    <div class="mt-2">ยืม-คืนพัสดุ</div>
+                </NuxtLink>
+                <NuxtLink to="/settings/cctv" class="p-6 text-center border rounded-xl w-1/6">
+                    <Icon name="icon-park-solid:surveillance-cameras-two" size="80" color="gray" />
+                    <div class="mt-2">คำขอ CCTV</div>
+                </NuxtLink>
+                <NuxtLink to="/settings/report-repair" class="p-6 text-center border rounded-xl w-1/6">
+                    <Icon name="ic:baseline-handyman" size="80" color="gray" />
+                    <div class="mt-2">แจ้งซ่อม</div>
+                </NuxtLink>
+            </div>
+        </div>
+       
     </div>
 </template>
 
