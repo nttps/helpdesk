@@ -13,8 +13,8 @@
 <script setup>
   const route = useRoute()
   useHead({
-    title: `DDPM E-Learning - ${route.meta.title}`,
-    meta: [{ property: 'og:title', content: `DDPM E-Learning - ${route.meta.title}` }],
+    title: `E-Helpdesk - ${route.meta.title}`,
+    meta: [{ property: 'og:title', content: `E-Helpdesk - ${route.meta.title}` }],
     htmlAttrs: {
       lang: 'en'
     },

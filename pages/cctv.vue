@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PartialsTitle title="คำขอ CCTV" @add="add" />
+        <PartialsTitle title="คำขอ CCTV" @add="modalAdd = true" />
         <div class="mt-8">
             <div class="search-bar flex justify-between mb-2">
                 <div>
@@ -11,8 +11,8 @@
 
                     </UButtonGroup>
                 </div>
-                <div class="min-w-3xl">
-                    <UInput placeholder="ค้นหา" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
+                <div class="w-96">
+                    <UInput placeholder="ค้นหา" v-model="textSearch" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
                 </div>
             </div>
             <div class="text-right">
@@ -21,7 +21,7 @@
             <UTable 
                 v-model="selected" 
                 :columns="columns" 
-                :rows="rows" 
+                :rows="lists.data" 
                 :loading="pending" 
                 :loading-state="{ label: 'กำลังโหลด ...' }" 
                 :empty-state="{ label: 'ไม่พบรายการ' }"> 
@@ -48,7 +48,7 @@
                 <UPagination 
                   v-model="page" 
                   :page-count="pageCount" 
-                  :total="people.length" 
+                  :total="lists.total" 
                 />
             </div>
            
@@ -56,8 +56,8 @@
 
     </div>
 
-    <UModal v-model="modalAdd"  :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
-        <UForm :state="{}">
+    <UModal v-model="modalAdd"  :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}" @close="closeModal">
+        <UForm :state="form" @submit="submit">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
                     <div class="flex items-center justify-between">
@@ -70,55 +70,65 @@
 
             
                 <h3 class="font-bold leading-6 text-xl mb-4">รายละเอียดผู้ยื่นนคำร้อง</h3>
-                <div class="grid grid-cols-2 gap-8 bg-zinc-300/80 p-8 rounded-xl mb-4">
+                <div class="grid grid-cols-2 gap-8 bg-zinc-300/80 p-8 rounded-xl mb-4 relative">
                     <UFormGroup label="ชื่อ-นามสกุล" name="type" size="xl">
-                        <UInput placeholder="" />
+                        <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" @input="searchUserId" />
+
+                        <div class="bg-white divide-y-2 rounded absolute z-10" v-if="users.length">
+
+                            <div v-for="user in users" class="cursor-pointer hover:bg-slate-300 p-2 " @click="selectUserName(user)">{{ user.fullName }} - {{ user.username }}</div>
+                        </div>
                     </UFormGroup>
-                    <UFormGroup label="ตำแหน่ง" name="type" size="xl">
-                       <UInput placeholder="" />
-                    </UFormGroup>
-                    <UFormGroup label="หน่วยงาน" name="type" size="xl">
-                       <UInput placeholder="" />
-                    </UFormGroup>
-                    <UFormGroup label="เบอร์โทร" name="type" size="xl">
-                       <UInput placeholder="" />
+                    <UFormGroup label="เบอร์โทรศัพท์" name="phone_req" size="xl">
+                       <UInput v-model="form.phone_req" placeholder="" />
                     </UFormGroup>
                 </div>
-                <div class="flex">
-                    <h3 class="font-bold leading-6 text-xl mb-4">รายละเอียดคำร้อง</h3>
+                <div class="flex items-center space-x-2  mb-4">
+                    <h3 class="font-bold leading-6 text-xl">รายละเอียดคำร้อง</h3>
+
+                    <div class="flex items-center space-x-4">
+                        <label>
+                            <input type="radio" name="walkin" v-model="form.howto_inform" value="walkin" class="mr-1"> 
+                            Walkin
+                        </label>
+                        <label>
+                            <input type="radio" name="walkin" v-model="form.howto_inform" value="email" class="mr-1"> Email
+                        </label>
+                        <UInput v-model="form.emal_req" placeholder="" v-if="form.howto_inform === 'email'" :disabled="form.howto_inform !== 'email'" />
+                    </div>
                 </div>
                 <div class="grid grid-cols-2 gap-8 bg-zinc-300/80 p-8 rounded-xl">
                     <div>
                         <div class="grid grid-cols-2 mb-4">
                             <UFormGroup label="วันที่ยื่นคำร้อง" name="type" size="xl">
                                 <UPopover :popper="{ placement: 'bottom-start' }">
-                                    <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDate" />
+                                    <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDateRequest" />
                                     <template #panel="{ close }">
-                                        <FormDatePicker v-model="date" @close="close" />
+                                        <FormDatePicker v-model="form.req_date" @close="close" />
                                     </template>
                                 </UPopover>
                             </UFormGroup>
                             <UFormGroup label="ความสำคัญ" name="type" size="xl">
-                                
+                                <USelect v-model="form.urgent_level" :options="['ด่วนมาก' , 'ด่วน' , 'ปานกลาง' , 'ไม่ด่วน']" required />
                             </UFormGroup>
                         </div>
                         <UFormGroup label="สถานที่" class="mb-4" name="type" size="xl">
-                            <UTextarea :rows="4" name="input" placeholder="กรอกรายละเอียดสถานที่ ..." />
+                            <UTextarea v-model="form.location" :rows="4" name="input" placeholder="กรอกรายละเอียดสถานที่ ..." />
                         </UFormGroup>
                         <div class="grid grid-cols-2 mb-4">
                             <UFormGroup label="ตั้งแต่วันที่" class="mb-4" name="type" size="xl">
                                 <UPopover :popper="{ placement: 'bottom-start' }">
-                                    <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDateTime" />
+                                    <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDateTimeBegin" />
                                     <template #panel="{ close }">
-                                        <FormDatePicker v-model="dateTime" :date-time="true" @close="close" />
+                                        <FormDatePicker v-model="form.date_begin" :date-time="true" @close="close" />
                                     </template>
                                 </UPopover>
                             </UFormGroup>
                             <UFormGroup label="ถึงวันที่" name="type" size="xl">
                                 <UPopover :popper="{ placement: 'bottom-start' }">
-                                    <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDateTime" />
+                                    <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDateTimeEnd" />
                                     <template #panel="{ close }">
-                                        <FormDatePicker v-model="dateTime" :date-time="true" @close="close" />
+                                        <FormDatePicker v-model="form.date_end" :date-time="true" @close="close" />
                                     </template>
                                 </UPopover>
                             </UFormGroup>
@@ -127,95 +137,77 @@
                     </div>
                     <div>
                          <UFormGroup label="วัตถุประสงค์" class="mb-4" name="type" size="xl">
-                            <UInput placeholder="" />
+                            <UInput v-model="form.purpose_desc" placeholder="" required />
                         </UFormGroup>
                         <UFormGroup label="อาคาร" class="mb-4" name="type" size="xl">
-                            <UInput placeholder="" />
+                            <UInput v-model="form.building_id" placeholder="" />
                         </UFormGroup>
                         <UFormGroup label="ชั้น" class="mb-4" name="type" size="xl">
-                            <UInput placeholder="" />
+                            <UInput v-model="form.floor" placeholder="" />
                         </UFormGroup>
-                        <div class="grid grid-cols-2 gap-4 items-center mb-4">
-                            <UFormGroup label="กรณี" name="type" size="xl">
-                                <UInput placeholder="กรณีอื่น ๆ" />
-                                
-                            </UFormGroup>
-                            <UInput placeholder="กรณีอื่น ๆ" size="xl" />
-                        </div>
+                        <UFormGroup label="กรณี" name="type" size="xl">
+                            <USelectMenu :options="caseSelect" searchable searchable-placeholder="ค้นหากรณี" value-attribute="valueTXT" option-attribute="valueTXT" v-model="form.case_type" @update:model-value="updateCase" required/>
+                        </UFormGroup>
+                           
+                        <UFormGroup label="กรณีอื่น ๆ" name="type" size="xl" v-if="form.case_type === 'กรณีอื่น ๆ'">
+                            <UInput v-model="form.case_desc" placeholder="กรอกกรณี" size="xl" required/>
+                        </UFormGroup>
                     </div>
                 </div>
                 <template #footer>
                     <div class="flex items-center justify-end">
                         <UButton color="amber" label="บันทึก" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
-                        <UButton color="gray" @click="modalAdd = false" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                        <UButton color="gray" @click="modalAdd = false;form = templateEmpty" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
             </UCard>
         </UForm>
     </UModal>
+
+    <UModal v-model="modelDeleteConfirm">
+        <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+          <template #header>
+              <div class="text-center">แจ้งเตือนการยืนยัน</div>
+          </template>
+
+          <div class="font-bold text-xl text-center">คุณต้องการยืนยันที่จะลบข้อมูลนี้ใช่หรือไม่</div>
+
+          <template #footer>
+              <div class="flex justify-between">
+                  <button type="button" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white" @click="deleteItem">ยืนยัน</button>
+                  <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modelDeleteConfirm = false">ยกเลิก</button>
+              </div>
+          </template>
+        </UCard>
+    </UModal>
 </template>
 
 <script setup>
     const modalAdd = ref(false)
-    const add = () => {
-        modalAdd.value = true
-    }
+    const modelDeleteConfirm = ref(false)
+    const itemDelete = ref()
 
-    const people = [{
-        id: 1,
-        name: 'Lindsay Walton',
-        title: 'Front-end Developer',
-        email: 'lindsay.walton@example.com',
-        role: 'Member'
-    }, {
-        id: 2,
-        name: 'Courtney Henry',
-        title: 'Designer',
-        email: 'courtney.henry@example.com',
-        role: 'Admin'
-    }, {
-        id: 3,
-        name: 'Tom Cook',
-        title: 'Director of Product',
-        email: 'tom.cook@example.com',
-        role: 'Member'
-    }, {
-        id: 4,
-        name: 'Whitney Francis',
-        title: 'Copywriter',
-        email: 'whitney.francis@example.com',
-        role: 'Admin'
-    }, {
-        id: 5,
-        name: 'Leonard Krasner',
-        title: 'Senior Designer',
-        email: 'leonard.krasner@example.com',
-        role: 'Owner'
-    }, {
-        id: 6,
-        name: 'Floyd Miles',
-        title: 'Principal Designer',
-        email: 'floyd.miles@example.com',
-        role: 'Member'
-    }]
+    const textSearch = ref('')
+    const caseSelect = ref([])
+    const users = ref([])
 
     const columns = [{
         key: 'id',
         label: 'ลำดับที่'
     }, {
-        key: 'name',
+        key: 'req_date',
         label: 'ว/ด/ป'
     }, {
         key: 'title',
         label: 'รายการคำขอ'
     }, {
-        key: 'email',
+        key: 'req_by_fullname',
         label: 'ผู้ส่งคำขอ'
     }, {
-        key: 'role',
+        key: 'department_id',
         label: 'หน่วยงาน'
     }, {
-        key: 'priority',
+        key: 'urgent_level',
         label: 'ความสำคัญ'
     }, {
         key: 'status',
@@ -228,33 +220,153 @@
         [{
             label: 'รายละเอียดคำขอ',
             icon: 'i-heroicons-pencil-square-20-solid',
-            click: () => console.log('Edit', row.id)
+            click: () => fetchEditData(row.req_id)
         }, {
             label: 'อนุมัติ',
             icon: 'i-heroicons-archive-box-20-solid'
         },{
             label: 'ลบ',
-            icon: 'i-heroicons-trash-20-solid'
+            icon: 'i-heroicons-trash-20-solid',
+            click: () => {
+                modelDeleteConfirm.value = true; 
+                itemDelete.value = row.req_id;
+            }
         }]
-        ]
+    ]
 
     const page = ref(1)
     const pageCount = ref(20)
-    const pageTotal = computed(() => people.length)
+    const pageTotal = computed(() => lists.value.length)
     const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
     const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
-    const rows = computed(() => {
-        return people.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
-    })
 
     const selected = ref([])
 
-    const dateTime = ref(new Date())
-    const labelDateTime = computed(() => dateTime.value.toLocaleDateString('th', { year: 'numeric', month: 'long', day: 'numeric' }) + ' เวลา ' + date.value.toLocaleTimeString('th', { hour: "2-digit", minute: "2-digit" }))
+    const dateTimeBegin = ref(new Date())
+    const labelDateTimeBegin = computed(() => dateTimeBegin.value.toLocaleDateString('th', { year: 'numeric', month: 'long', day: 'numeric' }) + ' เวลา ' + dateTimeBegin.value.toLocaleTimeString('th', { hour: "2-digit", minute: "2-digit" }))
 
 
-    const date = ref(new Date())
-    const labelDate = computed(() => date.value.toLocaleDateString('th', { year: 'numeric', month: 'long', day: 'numeric' }))
+    const dateTimeEnd = ref(new Date())
+    const labelDateTimeEnd = computed(() => dateTimeEnd.value.toLocaleDateString('th', { year: 'numeric', month: 'long', day: 'numeric' }) + ' เวลา ' + dateTimeEnd.value.toLocaleTimeString('th', { hour: "2-digit", minute: "2-digit" }))
+
+
+    const dateRequest = ref(new Date())
+    const labelDateRequest = computed(() => dateRequest.value.toLocaleDateString('th', { year: 'numeric', month: 'long', day: 'numeric' }))
+
+    const { data: lists, pending, refresh } = await useAsyncData(
+        'lists',
+        async () => {
+            const data = await postApi('/api/hd/request/ListCCTV', {
+                "SearchText": textSearch.value,//ค้นหาใน department_desc ,description,phone_req,purpose_desc,item_id,item_name,req_by_fullname ,ค่าว่างค้นหาทั้งหมด  
+                "DateBegin": null,//วันที่แจ้งซ่อมเริ่ม
+                "DateEnd": null,//ถึงวันที่ซ่อม
+                "Status":""//รอตรวจสอบ(ทส.),รออนุมัติ(ทส.) 
+            })
+
+            return {
+                total: data.length,
+                data: data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
+            }
+        }, {
+            watch: [page, pageCount, textSearch]
+        }
+    )
+
+    onMounted(() => {
+        fetchCaseCCTV()
+    })
+    const fetchCaseCCTV = async () => {
+        const data = await getMasterType(`HD_CCTV_CASE`, '')
+
+        caseSelect.value = data
+
+        caseSelect.value.push({
+            valueTXT: 'กรณีอื่น ๆ'
+        })
+
+    }
+
+    const templateEmpty = {
+        req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
+        req_date: dateRequest.value,//วันที่ขอ
+        req_by_fullname:"",
+        req_by_user_id:"",//ผู้ขอ Current username
+        phone_req:"",//เบอร์โทรผู้ขอ
+        emal_req:"",//อีเมลผู้ขอ
+        howto_inform:"walkin",//วิธีการแจ้ง มี 2 ค่า (walkin , email)
+        date_begin: dateTimeBegin.value,//วันที่เวลาที่ต้องดู (เริ่มต้น)
+        date_end: dateTimeEnd.value,// ถึงวันที่ 
+        urgent_level:"",//ระดับความสำคัญ (ด่วนมาก , ด่วน , ปานกลาง , ไม่ด่วน )
+        purpose_id:"",//รหัสวัตถุประสงค์
+        purpose_desc:"",//คำบรรยายวัตถุประสงค์
+        case_type: "",
+        case_desc:"",//ใช้ในกรณี
+        location:"",//สถานที่ใช้งาน 
+        building_id:"",//รหัสตึก
+        floor:"",//ชั้นที่
+        description:"",//รายละเอียด  
+        created_by:"tammon.y", //ผู้ทำรายการ
+        modified_by:""//ผู้แก้ไขรายการ
+    }
+    const form = ref(templateEmpty)
+
+
+    const fetchEditData = async (id) => {
+        modalAdd.value = true; 
+
+
+        const data = await getApi(`/api/hd/request/GetDocSet?req_id=${id}`)
+        form.value = data.requestHead
+    }
+    
+    const closeModal = () => {
+        form.value = templateEmpty
+    }
+
+    const updateCase = (value) => {
+        if(value !== 'กรณีอื่น ๆ') {
+            form.value.case_desc = value
+        }else {
+            form.value.case_desc = ''
+        }
+       
+
+    }
+    const selectUserName = (user) => {
+        form.value.req_by_user_id = user.username
+        form.value.req_by_fullname = user.fullName
+
+        users.value = []
+    }
+
+    const searchUserId = async (event) => {
+
+        if(event.target.value.length < 5) return
+        const data = await searchUserApi(event.target.value)
+
+        users.value = data
+
+    }
+    const submit = async () => {
+        const res = await postApi('/api/hd/request/SaveCCTV', {
+            RequestHead: form.value
+        })
+
+        if(res.outputAction.result === 'ok') {
+            refresh()
+        }
+
+        modalAdd.value = false
+    }
+
+    const deleteItem = async () => {
+        const res = await deleteRequestApi(itemDelete.value)
+
+        modelDeleteConfirm.value = false
+
+        refresh()
+    }
+
 </script>
 
 <style lang="scss" scoped>

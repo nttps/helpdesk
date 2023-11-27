@@ -13,7 +13,7 @@
                         variant="solid"
                         label="อุปกรณ์"
                         :trailing="false"
-                        @click="add"
+                        @click="modalAdd = true"
                     />
                 </div>
             </div>
@@ -23,14 +23,25 @@
             <UTable 
                 v-model="selected" 
                 :columns="columns" 
-                :rows="rows" 
+                :rows="lists.data" 
                 :loading="pending" 
                 :loading-state="{ label: 'กำลังโหลด ...' }" 
-                :empty-state="{ label: 'ไม่พบรายการ' }"> 
+                :empty-state="{ label: 'ไม่พบรายการ' }"
+            > 
+                <template #is_in_warranty-data="{ row }">
+                    <div class="text-center">
+                        <UBadge size="xs" :label="row.is_in_warranty ? 'อยู่ในประกัน' : 'ไม่อยู่ในประกัน'" :color="row.is_in_warranty ? 'emerald' : 'red'" variant="subtle" />
+                    </div>
+                </template>
+                <template #status-data="{ row }">
+                    <div class="text-center">{{ row.status }}</div>
+                </template>
+                <template #id-data="{ row, index }">
+                    <div class="text-center">{{  index + 1 }}</div>
+                </template>
                 <template #actions-data="{ row }">
-                    <UDropdown :items="items(row)" :popper="{ placement: 'bottom-start' }">
-                        <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
-                    </UDropdown>
+                    <UButton color="amber" variant="ghost" icon="i-heroicons-pencil-solid" @click="modalAdd = true; form = row"/>
+                    <UButton color="red" variant="ghost" icon="i-heroicons-trash-20-solid" @click="modelDeleteConfirm = true; itemDelete = row.item_id" />
                 </template>
             </UTable>
             <div class="flex flex-wrap justify-between items-center px-3 pt-3.5">
@@ -50,7 +61,7 @@
                 <UPagination 
                   v-model="page" 
                   :page-count="pageCount" 
-                  :total="people.length" 
+                  :total="lists.total" 
                 />
             </div>
            
@@ -59,7 +70,7 @@
     </div>
 
     <UModal v-model="modalAdd" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
-        <UForm :state="{}">
+        <UForm :state="form" @submit="submit">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
                     <div class="flex items-center justify-between">
@@ -71,34 +82,46 @@
                 </template>
 
                 <div class="grid grid-cols-5 gap-8 mb-4">
-                    <UFormGroup label="ชื่อ" name="type" size="xl">
-                        <UInput placeholder="" />
+                    <UFormGroup label="ชื่อ" name="item_name" size="xl">
+                        <UInput v-model="form.item_name" placeholder="" required />
                     </UFormGroup>
-                    <UFormGroup label="อุปกรณ์" name="department" size="xl">
-                        <UInput placeholder="" />
+                    <UFormGroup label="ประเภทอุปกรณ์" name="item_type" size="xl" >
+                        <UInput v-model="form.item_type" placeholder="" required />
                     </UFormGroup>
-                    <UFormGroup label="ยีห้อ" name="dCenter" size="xl">
-                       <UInput placeholder="" />
+                    <UFormGroup label="ยีห้อ" name="brand" size="xl">
+                       <UInput v-model="form.brand" placeholder="" />
                     </UFormGroup>
-                    <UFormGroup label="รุ่น" name="telephone" size="xl">
-                       <UInput placeholder="" />
+                    <UFormGroup label="รุ่น" name="model" size="xl">
+                       <UInput v-model="form.model" placeholder="" />
                     </UFormGroup>
                     <UFormGroup label="จำนวน" name="dCenter" size="xl">
-                       <UInput placeholder="" />
+                       <UInput v-model="form.model" placeholder="" required />
                     </UFormGroup>
                   
                 </div>
-                <div class="grid grid-cols-3 gap-8 mb-4">
-                    <UFormGroup label="Serial Number" name="dCenter" size="xl">
-                        <UInput placeholder="" />
+                <div class="grid grid-cols-3 gap-x-8 gap-y-4 mb-4 items-center">
+                    <UFormGroup label="Serial Number" name="serial_number" size="xl">
+                        <UInput v-model="form.serial_number" placeholder="" />
                     </UFormGroup>
-                    <UFormGroup label="หมายเหตุ" name="dCenter" size="xl">
-                        <UInput placeholder="" />
+                     <UFormGroup label="เลขที่สัญญา" name="contract" size="xl">
+                        <UInput v-model="form.contract" placeholder="" />
+                    </UFormGroup>
+
+                    <UFormGroup label="ยังอยู่ในช่วงรับประกัน" name="is_in_warranty" class="flex space-x-4 items-center" size="xl">
+                        <UToggle color="primary" v-model="form.is_in_warranty" />
+                    </UFormGroup>
+                    <UFormGroup label="หมายเหตุ" name="remark" size="xl">
+                        <UInput v-model="form.remark" placeholder="" />
                     </UFormGroup>
                 </div>
 
-                <URadioGroup legend="ยังอยู่ในช่วงรับประกัน" :options="['ใช่', 'ไม่']" />
+                <div>   
+                    <UFormGroup label="ผลการตรวจสอบอุปกรณ์" name="is_active" class="flex space-x-4 items-center" size="xl">
+                        <UToggle color="primary" v-model="form.is_active" />
+                    </UFormGroup>
+                </div>
 
+               
                 <template #footer>
                     <div class="flex items-center justify-end">
                         <UButton color="amber" label="บันทึก" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
@@ -108,114 +131,143 @@
             </UCard>
         </UForm>
     </UModal>
+
+    <UModal v-model="modelDeleteConfirm">
+        <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+          <template #header>
+              <div class="text-center">แจ้งเตือนการยืนยัน</div>
+          </template>
+
+          <div class="font-bold text-xl text-center">คุณต้องการยืนยันที่จะลบข้อมูลนี้ใช่หรือไม่</div>
+
+          <template #footer>
+              <div class="flex justify-between">
+                  <button type="button" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white" @click="deleteItem">ยืนยัน</button>
+                  <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modelDeleteConfirm = false">ยกเลิก</button>
+              </div>
+          </template>
+        </UCard>
+    </UModal>
 </template>
 
 <script setup>
     const modalAdd = ref(false)
-    const add = () => {
-        modalAdd.value = true
-    }
 
-    const people = [{
-        id: 1,
-        name: 'Lindsay Walton',
-        title: 'Front-end Developer',
-        email: 'lindsay.walton@example.com',
-        role: 'Member'
-    }, {
-        id: 2,
-        name: 'Courtney Henry',
-        title: 'Designer',
-        email: 'courtney.henry@example.com',
-        role: 'Admin'
-    }, {
-        id: 3,
-        name: 'Tom Cook',
-        title: 'Director of Product',
-        email: 'tom.cook@example.com',
-        role: 'Member'
-    }, {
-        id: 4,
-        name: 'Whitney Francis',
-        title: 'Copywriter',
-        email: 'whitney.francis@example.com',
-        role: 'Admin'
-    }, {
-        id: 5,
-        name: 'Leonard Krasner',
-        title: 'Senior Designer',
-        email: 'leonard.krasner@example.com',
-        role: 'Owner'
-    }, {
-        id: 6,
-        name: 'Floyd Miles',
-        title: 'Principal Designer',
-        email: 'floyd.miles@example.com',
-        role: 'Member'
-    }]
+    const modelDeleteConfirm = ref(false)
+   
 
     const columns = [{
         key: 'id',
-        label: 'ลำดับที่'
+        label: 'ลำดับที่',
+        class: 'text-center'
     }, {
-        key: 'title',
+        key: 'item_name',
         label: 'อุปกรณ์'
     }, {
-        key: 'email',
+        key: 'item_type',
         label: 'ประเภท'
     }, {
-        key: 'role',
+        key: 'brand',
         label: 'ยีห้อ'
     }, {
-        key: 'priority',
+        key: 'model',
         label: 'รุ่น'
     }, {
-        key: 'serial',
+        key: 'serial_number',
         label: 'Serial Number'
     }, {
-        key: 'status',
+        key: 'contract',
         label: 'เลขสัญญา'
     }, {
-        key: 'status',
-        label: 'การรับประกัน'
+        key: 'is_in_warranty',
+        label: 'การรับประกัน',
+        class: 'text-center'
     }, {
         key: 'status',
-        label: 'สถานะ'
+        label: 'สถานะ',
+        class: 'text-center'
     }, {
         key: 'actions'
     }]
 
-    const items = (row) => [
-        [{
-            label: 'รายละเอียดคำขอ',
-            icon: 'i-heroicons-pencil-square-20-solid',
-            click: () => console.log('Edit', row.id)
-        }, {
-            label: 'อนุมัติ',
-            icon: 'i-heroicons-archive-box-20-solid'
-        },{
-            label: 'ลบ',
-            icon: 'i-heroicons-trash-20-solid'
-        }]
-        ]
-
     const page = ref(1)
     const pageCount = ref(20)
-    const pageTotal = computed(() => people.length)
+    const pageTotal = computed(() => lists.total)
     const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
     const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
-    const rows = computed(() => {
-        return people.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
+    const selected = ref([])
+    const search = ref('')
+
+    const itemsType = ref()
+
+
+    onMounted(() => {
+        getItemType()
     })
 
-    const selected = ref([])
+    const getItemType = async () => {
+        const res = await getMasterType('HD_ITEMTYPE', '', '')
 
-    const dateTime = ref(new Date())
-    const labelDateTime = computed(() => dateTime.value.toLocaleDateString('th', { year: 'numeric', month: 'long', day: 'numeric' }) + ' เวลา ' + date.value.toLocaleTimeString('th', { hour: "2-digit", minute: "2-digit" }))
+        itemsType.value = res
+    }
+
+    const { data: lists, pending, refresh } = await useAsyncData(
+        'lists',
+        async () => {
+            const data = await getListItems(search.value, '')
+
+            return {
+                total: data.length,
+                data: data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
+            }
+        }, {
+            watch: [page, search, pageCount]
+        }
+    )
+
+    const form = ref({
+        item_id:"",//กรณีเพิ่มใหม่ให้ปล่อยว่างถ้า แก้ไขให้ใส่ค่าพัสดุที่ต้องการ update
+        item_ref:"",//รหัสอ้างอิง ใช้แทนรหัสพัสดุ
+        item_name:"",//ชื่อพัสดุ
+        item_type:"",// ประเภท ส่งค่าจาก dropdown  ที่มากจาก masterTypeID =HD_ITEMTYPE
+        brand:"",//ยี่ห้อพัสดุ
+        model:"",//รุ่น
+        serial_number:"",
+        is_in_warranty: true,
+        warranty_expiration_date: null,
+        remark:"",  
+        contact:"",//เบอร์ติดต่อ
+        contract:"",//เลขที่สัญญา 
+        created_by:"tammon.y",//current user login 
+        modified_by:"",//current user login กรณีที่ต้องการแก้ไข
+        is_active: true
+    })
+
+    const submit = async () => {
+        const res = await postApi('/api/hd/Items/Save', form.value)
+
+        if(res.outputAction.result === 'ok') {
+            refresh()
+        }
+
+        modalAdd.value = false
+    }
 
 
-    const date = ref(new Date())
-    const labelDate = computed(() => date.value.toLocaleDateString('th', { year: 'numeric', month: 'long', day: 'numeric' }))
+    const itemDelete = ref()
+
+
+    const deleteItem = async () => {
+        const res = await deleteApi('/api/hd/Items/DeleteDoc', {
+            ItemID: itemDelete.value,//รหัสสินค้า
+            DeletedBy:"tammon.y"//current user login
+        })
+
+        modelDeleteConfirm.value = false
+
+        refresh()
+    }
+
 </script>
 
 <style lang="scss" scoped>

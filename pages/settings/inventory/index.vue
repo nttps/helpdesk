@@ -1,0 +1,23 @@
+<template>
+    <div class="h-full ">
+        <PartialsTitle title="อุปกรณ์" title-breadcrum="การตั้งค่า" url-back="/settings" noAdd/>
+
+        <div class="flex flex-col h-full items-center justify-center"> 
+            <div class="flex w-full justify-center space-x-10">
+                <NuxtLink to="/settings/inventory/type" class="p-6 text-center border rounded-xl w-1/6">
+                    <Icon name="i-ri-ticket-fill" size="80" color="gray" />
+                    <div class="mt-2">ประเภทอุปกรณ์</div>
+                </NuxtLink>
+            </div>
+        </div>
+       
+    </div>
+</template>
+
+<script setup>
+
+</script>
+
+<style lang="scss" scoped>
+
+</style>
