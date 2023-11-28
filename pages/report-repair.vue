@@ -28,7 +28,7 @@
 
                 
                 <template #req_date-data="{ row }">
-                    <div>{{ moment(row.req_date).format('DD-MM-YYYY') }}</div>
+                    <div>{{ moment(row.req_date).format('DD/MM/YYYY') }}</div>
                 </template>
 
                 <template #actions-data="{ row }">

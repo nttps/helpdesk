@@ -28,7 +28,7 @@
             > 
 
                 <template #req_date-data="{ row }">
-                    <div>{{ moment(row.req_date).format('DD-MM-YYYY') }}</div>
+                    <div>{{ moment(row.req_date).format('DD/MM/YYYY') }}</div>
                 </template>
                 <template #actions-data="{ row }">
                     <UDropdown :items="items(row)" :popper="{ placement: 'bottom-start' }">
@@ -188,6 +188,9 @@
 </template>
 
 <script setup>
+    import moment from 'moment'
+    moment.locale('th')
+
     const modalAdd = ref(false)
     const modelDeleteConfirm = ref(false)
     const itemDelete = ref()
