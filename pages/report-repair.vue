@@ -172,9 +172,6 @@
         key: 'req_date',
         label: 'ว/ด/ป'
     }, {
-        key: 'name',
-        label: 'เวลา'
-    }, {
         key: 'description',
         label: 'ความเสีย/ปัญหา'
     }, {
