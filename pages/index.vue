@@ -94,7 +94,12 @@
 
                 <div class="grid grid-cols-4 gap-8 mb-4">
                     <UFormGroup label="ผู้ยืม" name="req_by_user_id" size="xl">
-                        <UInput v-model="form.req_by_user_id" placeholder="" required/>
+                        <UInput v-model="form.req_by_user_id" placeholder="กรอกชื่อเพื่อค้นหา" required @input="searchUserId"/>
+
+                        <div class="bg-white divide-y-2 rounded absolute z-10" v-if="users.length">
+
+                            <div v-for="user in users" class="cursor-pointer hover:bg-slate-300 p-2 " @click="selectUserName(user)">{{ user.fullName }} - {{ user.username }}</div>
+                        </div>
                     </UFormGroup>
                     <UFormGroup label="ศูนย์เขต" name="location_unit" size="xl">
                        <UInput v-model="form.location_unit" placeholder="" />
@@ -114,27 +119,42 @@
 
                 <div class="text-lg font-bold mb-2"> อุปกรณ์ที่ต้องการยืม </div>
                 <div class="p-8 pt-4 mb-2 border rounded-lg grid grid-cols-2 gap-2" v-for="item in form.items">
-                    <UFormGroup label="ประเภทอุปกรณ์" name="telephone" size="xl">
+                    <UFormGroup label="ประเภทอุปกรณ์" name="item_type" size="xl">
                         <USelectMenu 
-                            :options="products" 
-                            placeholder="อุปกรณ์" 
+                            :options="itemsType" 
+                            placeholder="ประเภทอุปกรณ์" 
                             size="xl"
+                            v-model="item.item_type"
+                            value-attribute="valueTXT" 
+                            option-attribute="valueTXT" 
+                            @update:model-value="selectItem($event, item)"
                             searchable
-                            searchable-placeholder="ค้นหาอุปกรณ์"
+                            searchable-placeholder="ค้นหาประเภทอุปกรณ์"
                         />
                     </UFormGroup>
-                    <UFormGroup label="อุปกรณ์" name="telephone" size="xl">
+                    <UFormGroup label="อุปกรณ์" name="inventory" size="xl">
                         <USelectMenu 
-                            :options="products" 
-                            placeholder="อุปกรณ์" 
-                            v-model="item.item_id"
-                            size="xl"
+                            v-model="item.item_id" 
+                            :options="item.inventory" 
+                            value-attribute="item_id" 
+                            option-attribute="item_name" 
+                            placeholder="เลือกอุปกรณ์" 
                             searchable
                             searchable-placeholder="ค้นหาอุปกรณ์"
-                        />
+                        > 
+                            <template #label>
+                                <template v-if="item.item_id">
+                                    {{ itemSelect(item.inventory, item.item_id).item_name }}
+                                </template>
+                                <template v-else>
+                                    <span class="text-gray-500 dark:text-gray-400 truncate">เลือกอุปกรณ์</span>
+                                </template>
+                            </template>
+                        
+                        </USelectMenu>
                     </UFormGroup>
                    
-                    <UFormGroup label="จำนวน" name="telephone" size="xl">
+                    <UFormGroup label="จำนวน" name="qty" size="xl">
                        <UInput v-model="item.qty" placeholder="กรอกจำนวน" />
                     </UFormGroup>
                 </div>
@@ -172,6 +192,9 @@
 </template>
 
 <script setup>
+    import moment from 'moment'
+    moment.locale('th')
+
     const modalAdd = ref(false)
     const textSearch = ref('')
 
@@ -182,9 +205,6 @@
         key: 'req_date',
         label: 'ว/ด/ป'
     }, {
-        key: 'title',
-        label: 'เวลา'
-    }, {
         key: 'email',
         label: 'อุปกรณ์'
     }, {
@@ -194,10 +214,10 @@
         key: 'department_id',
         label: 'หน่วยงาน'
     }, {
-        key: 'priority',
+        key: 'location_unit',
         label: 'ศูนย์เขต'
     }, {
-        key: 'phone',
+        key: 'phone_req',
         label: 'โทรศัพท์'
     }, {
         key: 'status',
@@ -236,26 +256,39 @@
 
     const selected = ref([])
 
-    const dateTime = ref(new Date())
-    const labelDateTime = computed(() => dateTime.value.toLocaleDateString('th', { year: 'numeric', month: 'long', day: 'numeric' }) + ' เวลา ' + date.value.toLocaleTimeString('th', { hour: "2-digit", minute: "2-digit" }))
+    const users = ref([])
 
+    const selectUserName = (user) => {
+        form.value.req_by_user_id = user.username
+        form.value.req_by_fullname = user.fullName
+
+        users.value = []
+    }
+
+    const searchUserId = async (event) => {
+
+        if(event.target.value.length < 5) return
+        const data = await searchUserApi(event.target.value)
+
+        users.value = data
+
+    }
 
     const startDate = ref(new Date())
-    const labelStartDate = computed(() => startDate.value.toLocaleDateString('th', { year: 'numeric', month: 'long', day: 'numeric' }))
+    const labelStartDate = computed(() => moment(form.value.date_begin).format('DD/MM/YYYY'))
 
     const endDate = ref(new Date())
-    const labelEndDate = computed(() => endDate.value.toLocaleDateString('th', { year: 'numeric', month: 'long', day: 'numeric' }))
+    const labelEndDate = computed(() => moment(form.value.date_end).format('DD/MM/YYYY'))
 
-    const products = ['อุปกรณ์ 1', 'อุปกรณ์ 2']
 
     const form = ref({
         req_id: '',
-        req_date: '',
+        req_date: moment(new Date()).format('YYYY-MM-DD'),
         req_by_user_id: '',
         phone_req:'',
         emal_req: '',
-        date_begin: startDate,
-        date_end: endDate,
+        date_begin: startDate.value,
+        date_end: endDate.value,
         purpose_id:"",//รหัสวัตถุประสงค์
         purpose_desc:"",//คำบรรยายวัตถุประสงค์ 
         location:"",//สถานที่ใช้งาน
@@ -266,6 +299,8 @@
         items: [{
             item_id: '',
             qty: '',
+            item_type: '',
+            inventory: []
 
         }]
     })
@@ -273,7 +308,8 @@
     const addItem = () => {
         form.value.items.push({ 
             item_id: '',
-            qty: ''
+            qty: '',
+            item_type: ''
         })
     }
 
@@ -296,6 +332,23 @@
         }
     )
 
+    const itemsType = ref([])
+
+    const itemSelect = (inventory, id) => {
+        return inventory.find(item => item.item_id === id)
+    }
+
+    onMounted(() => {
+        fetchTypeItems()
+    })
+
+    const selectItem = async (value, item) => {
+        item.inventory = await getListItems('', '', value)
+    }
+    const fetchTypeItems = async (item) => {
+        itemsType.value = await getMasterType(`HD_ITEMTYPE`, '')
+    }
+  
     const modelDeleteConfirm = ref(false)
     const itemDelete = ref()
 
@@ -313,6 +366,12 @@
             RequestHead: form.value,
             RequestItem: form.value.items
         })
+
+        if(res.outputAction.result === 'ok') {
+            refresh()
+        }
+
+        modalAdd.value = false
     }
 </script>
 
