@@ -27,3 +27,10 @@
     ]
   })
 </script>
+
+
+<style>
+  * {
+    font-family: 'Kanit', sans-serif;
+  }
+</style>
