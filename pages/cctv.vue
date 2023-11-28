@@ -206,7 +206,7 @@
         key: 'req_date',
         label: 'ว/ด/ป'
     }, {
-        key: 'title',
+        key: 'item_name',
         label: 'รายการคำขอ'
     }, {
         key: 'req_by_fullname',
