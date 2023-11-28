@@ -30,6 +30,10 @@
                     <div >{{  index + 1 }}</div>
                 </template>
 
+                <template #req_date-data="{ row }">
+                    <div>{{ moment(row.req_date).format('DD-MM-YYYY') }}</div>
+                </template>
+
                 <template #actions-data="{ row }">
                     <UDropdown :items="items(row)" :popper="{ placement: 'bottom-start' }">
                         <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
