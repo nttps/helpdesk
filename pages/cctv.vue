@@ -26,6 +26,9 @@
                 :loading-state="{ label: 'กำลังโหลด ...' }" 
                 :empty-state="{ label: 'ไม่พบรายการ' }"
             > 
+                <template #id-data="{ row, index }">
+                    <div>{{ index+1 }}</div>
+                </template>
 
                 <template #req_date-data="{ row }">
                     <div>{{ moment(row.req_date).format('DD/MM/YYYY') }}</div>
@@ -205,9 +208,6 @@
     }, {
         key: 'req_date',
         label: 'ว/ด/ป'
-    }, {
-        key: 'item_name',
-        label: 'รายการคำขอ'
     }, {
         key: 'req_by_fullname',
         label: 'ผู้ส่งคำขอ'

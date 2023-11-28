@@ -209,7 +209,7 @@
         key: 'req_date',
         label: 'ว/ด/ป'
     }, {
-        key: 'email',
+        key: 'item_name',
         label: 'อุปกรณ์'
     }, {
         key: 'req_by_fullname',

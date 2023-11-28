@@ -26,7 +26,9 @@
                 :empty-state="{ label: 'ไม่พบรายการ' }"
             > 
 
-                
+                <template #id-data="{ row, index }">
+                    <div>{{ index+1 }}</div>
+                </template>
                 <template #req_date-data="{ row }">
                     <div>{{ moment(row.req_date).format('DD/MM/YYYY') }}</div>
                 </template>
@@ -178,6 +180,9 @@
     }, {
         key: 'req_date',
         label: 'ว/ด/ป'
+    }, {
+        key: 'item_name',
+        label: 'อุปกรณ์'
     }, {
         key: 'description',
         label: 'ความเสีย/ปัญหา'
