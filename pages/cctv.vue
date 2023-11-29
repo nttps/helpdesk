@@ -5,10 +5,11 @@
             <div class="search-bar flex justify-between mb-2">
                 <div>
                     <UButtonGroup size="lg" orientation="horizontal">
-                        <UButton label="รายการคำขอ" color="white" />
-                        <UButton label="อนุมัติ" color="white" />
-                        <UButton label="ไม่อนุมัติ" color="white" />
-
+                        <UButton :label="status.name" v-for="status in statusList" @click="switchStatus(status.name)" :color="statusActive === status.name ? `${status.color}` : 'white'">
+                            <template #leading>
+                                <UBadge :label="status.count" :color="statusActive === status.name ? 'white' : status.color" />
+                            </template>
+                        </UButton>
                     </UButtonGroup>
                 </div>
                 <div class="w-96">
@@ -172,6 +173,58 @@
         </UForm>
     </UModal>
 
+    <UModal v-model="modalApprove" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
+        <UForm :state="form" @submit="submitRequest">
+            <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
+                <template #header>
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-2xl text-center font-bold leading-6 text-gray-900 dark:text-white">
+                            อนุมัติคำขอ CCTV
+                        </h3>
+                        <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalApprove = false" />
+                    </div>
+                </template>
+
+                
+                <template #footer>
+                    <div class="flex items-center justify-end space-x-4">
+                        <UButton color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
+                        <UButton color="red" label="ไม่อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(false)" />
+                        <UButton color="gray" @click="modalApprove = false" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                    </div>
+                </template>
+            </UCard>
+        </UForm>
+
+        <UModal v-model="modalConfirmApprove" prevent-close>
+            <UForm :state="dataApprove" @submit="submitApprove">
+                <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+                    <template #header>
+                        <div class="text-center">แจ้งเตือนการยืนยัน</div>
+                    </template>
+
+                    <div class="font-bold text-xl text-center" v-if="dataApprove.Action === 'อนุมัติ'">อนุมัติข้อมูลนี้ใช่หรือไม่</div>
+
+                    <div v-else>
+                        
+                        <div class="text-red-600 font-bold text-xl text-center">ไม่อนุมัติรายการนี้ใช่หรือไม่</div>
+                        <UFormGroup label="กรอกเหตุผล" name="Reason" size="xl">
+                            <UTextarea v-model="dataApprove.Reason" placeholder="" required/>
+                        </UFormGroup>
+                    </div>
+
+
+                    <template #footer>
+                        <div class="flex justify-between">
+                            <button type="submit" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white">ตกลง</button>
+                            <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalConfirmApprove = false">ยกเลิก</button>
+                        </div>
+                    </template>
+                </UCard>
+            </UForm>
+        </UModal>
+    </UModal>
+
     <UModal v-model="modelDeleteConfirm">
         <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
           <template #header>
@@ -196,6 +249,9 @@
 
     const modalAdd = ref(false)
     const modelDeleteConfirm = ref(false)
+    
+    const modalApprove = ref(false)
+    const modalConfirmApprove = ref(false)
     const itemDelete = ref()
 
     const textSearch = ref('')
@@ -231,7 +287,8 @@
             click: () => fetchEditData(row.req_id)
         }, {
             label: 'อนุมัติ',
-            icon: 'i-heroicons-archive-box-20-solid'
+            icon: 'i-heroicons-archive-box-20-solid',
+            click: () => fetchEditData(row.req_id, true)
         },{
             label: 'ลบ',
             icon: 'i-heroicons-trash-20-solid',
@@ -261,27 +318,10 @@
     const dateRequest = ref(new Date())
     const labelDateRequest = computed(() => dateRequest.value.toLocaleDateString('th', { year: 'numeric', month: 'long', day: 'numeric' }))
 
-    const { data: lists, pending, refresh } = await useAsyncData(
-        'lists',
-        async () => {
-            const data = await postApi('/api/hd/request/ListCCTV', {
-                "SearchText": textSearch.value,//ค้นหาใน department_desc ,description,phone_req,purpose_desc,item_id,item_name,req_by_fullname ,ค่าว่างค้นหาทั้งหมด  
-                "DateBegin": null,//วันที่แจ้งซ่อมเริ่ม
-                "DateEnd": null,//ถึงวันที่ซ่อม
-                "Status":""//รอตรวจสอบ(ทส.),รออนุมัติ(ทส.) 
-            })
-
-            return {
-                total: data.length,
-                data: data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
-            }
-        }, {
-            watch: [page, pageCount, textSearch]
-        }
-    )
 
     onMounted(() => {
         fetchCaseCCTV()
+        countStatus()
     })
     const fetchCaseCCTV = async () => {
         const data = await getMasterType(`HD_CCTV_CASE`, '')
@@ -319,12 +359,113 @@
     const form = ref(templateEmpty)
 
 
-    const fetchEditData = async (id) => {
-        modalAdd.value = true; 
+    const statusSearch = ref('')
+    const statusList = ref([{
+        name : 'รายการคำขอ',
+        count: 0,
+        color: 'blue'
+    }, {
+        name : 'รออนุมัติ',
+        count: 0,
+        color: 'yellow'
+    }, {
+        name : 'อนุมัติ',
+        count: 0,
+        color: 'green'
+    }, {
+        name : 'ไม่อนุมัติ',
+        count: 0,
+        color: 'red'
+    }])
+    const statusActive = ref('รายการคำขอ')
+
+    const dataApprove = ref({
+        ReqID:"",  
+        Action:"",//สถานะมี 2 สถานะคือ  (อนุมัติ , ปฏิเสธ)
+        ActiondBy:"tammon.y",//อนุมัติหรือปฏิเสธโดย
+        Reason:""//เหตุผลการไม่อนุมัติ ถ้าอนุมัติไม่ต้องใส่
+    })
+
+    const approveRequest = (approve) => {
+        dataApprove.value.Action = approve ? "อนุมัติ" : "ปฏิเสธ"
+        modalConfirmApprove.value = true
+    }
+
+    const switchStatus = (status) => {
+        const active = coditionStatus(status)
+
+        statusActive.value = status
+        statusSearch.value = active
+    }
+
+    const countStatus = () => {
+        statusList.value.forEach(async s => { 
+
+            const status = coditionStatus(s.name)
+            const data = await postApi('/api/hd/request/ListCCTV', {
+                "SearchText": textSearch.value,//ค้นหาใน department_desc ,description,phone_req,purpose_desc,item_id,item_name,req_by_fullname ,ค่าว่างค้นหาทั้งหมด  
+                "DateBegin": null,//วันที่แจ้งซ่อมเริ่ม
+                "DateEnd": null,//ถึงวันที่ซ่อม
+                "Status": status//รอตรวจสอบ(ทส.),รออนุมัติ(ทส.) 
+            })
+            s.count = data.length
+        })
+
+    }
+
+    const coditionStatus = (status) => {
+        let statusSearch
+        switch (status) {
+            case 'รายการคำขอ':
+                statusSearch = ''
+                break;
+            case 'รออนุมัติ':
+                statusSearch = 'รออนุมัติหน่วยงาน,รอตรวจสอบ(ทส.)'
+                break;
+            case 'อนุมัติ':
+                statusSearch = 'อนุมัติ'
+                break;
+            case 'ไม่อนุมัติ':
+                statusSearch = 'ปฏิเสธ'
+                break;
+            default:
+                break;
+        }
+        return statusSearch
+    }
+
+     const { data: lists, pending, refresh } = await useAsyncData(
+        'lists',
+        async () => {
+            const data = await postApi('/api/hd/request/ListCCTV', {
+                "SearchText": textSearch.value,//ค้นหาใน department_desc ,description,phone_req,purpose_desc,item_id,item_name,req_by_fullname ,ค่าว่างค้นหาทั้งหมด  
+                "DateBegin": null,//วันที่แจ้งซ่อมเริ่ม
+                "DateEnd": null,//ถึงวันที่ซ่อม
+                "Status":statusSearch.value//รอตรวจสอบ(ทส.),รออนุมัติ(ทส.) 
+            })
+
+            return {
+                total: data.length,
+                data: data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
+            }
+        }, {
+            watch: [page, pageCount, textSearch, statusSearch]
+        }
+    )
 
 
+    const fetchEditData = async (id, approve = false) => {
+
+        dataApprove.value.ReqID = id
         const data = await getApi(`/api/hd/request/GetDocSet?req_id=${id}`)
         form.value = data.requestHead
+
+
+        if(!approve) {
+            modalAdd.value = true; 
+        }else {
+            modalApprove.value = true;
+        }
     }
     
     const closeModal = () => {
@@ -372,6 +513,15 @@
 
         modelDeleteConfirm.value = false
 
+        refresh()
+    }
+
+    const submitApprove = async () => {
+        const res = await postApi('/api/hd/request/ApproveDocument', dataApprove.value)
+        console.log(res);
+
+        modalConfirmApprove.value = false
+        modalApprove.value = false
         refresh()
     }
 

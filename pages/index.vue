@@ -176,7 +176,6 @@
     const textSearch = ref('')
 
     const statusSearch = ref('')
-
     const statusList = ref([{
         name : 'รายการคำขอยืม',
         count: 0,
@@ -198,7 +197,6 @@
         count: 0,
         color: 'green'
     }])
-
     const statusActive = ref('รายการคำขอยืม')
 
     const dataApprove = ref({
