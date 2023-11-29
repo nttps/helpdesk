@@ -252,8 +252,8 @@
     
     const modalApprove = ref(false)
     const modalConfirmApprove = ref(false)
+    
     const itemDelete = ref()
-
     const textSearch = ref('')
     const caseSelect = ref([])
     const users = ref([])
@@ -434,7 +434,7 @@
         return statusSearch
     }
 
-     const { data: lists, pending, refresh } = await useAsyncData(
+    const { data: lists, pending, refresh } = await useAsyncData(
         'lists',
         async () => {
             const data = await postApi('/api/hd/request/ListCCTV', {
