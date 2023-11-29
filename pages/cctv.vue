@@ -567,6 +567,7 @@
 
         if(res.outputAction.result === 'ok') {
             refresh()
+            countStatus()
         }
 
         modalAdd.value = false
@@ -587,6 +588,7 @@
         modalConfirmApprove.value = false
         modalApprove.value = false
         refresh()
+        countStatus()
     }
 
 </script>

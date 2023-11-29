@@ -149,29 +149,49 @@
         </UForm>
     </UModal>
 
-     <UModal v-model="modalApprove" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
+    <UModal v-model="modalApprove" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
         <UForm :state="form" @submit="submitRequest">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
                     <div class="flex items-center justify-between">
                         <h3 class="text-2xl text-center font-bold leading-6 text-gray-900 dark:text-white">
-                            อนุมัติคำขอ CCTV
+                            อนุมัติรายการแจ้งซ่อม
                         </h3>
                         <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalApprove = false" />
                     </div>
                 </template>
 
 
-                <div>
-                    <div></div>
-
+                <div class="grid grid-cols-3 gap-8 mb-8">
+                    <UFormGroup label="วันที่" name="start_date" size="md">
+                        {{ labelDate }}
+                    </UFormGroup>
+                    <UFormGroup label="ผู้แจ้ง" name="req_by_user_id" size="md">
+                        {{ form.req_by_fullname }}
+                    </UFormGroup>
+                    <UFormGroup label="เบอร์โทรศัพท์" name="telephone" size="md">
+                       {{ form.phone_req }}
+                    </UFormGroup>
                 </div>
+
+                <div class="grid grid-cols-3 gap-8 mb-8">
+                    <UFormGroup label="ประเภทอุปกรณ์" name="dCenter" size="md">
+                        {{ form.item_type }}
+                    </UFormGroup>
+                    <UFormGroup label="อุปกรณ์" name="dCenter" size="md">
+                        {{ form.item_name }}
+                    </UFormGroup>
+                </div>
+                <UFormGroup label="อาการเสีย/ปัญหา" name="dCenter" size="md">
+                    {{ form.description }}
+                </UFormGroup>
 
                 
                 <template #footer>
                     <div class="flex items-center justify-end space-x-4">
-                        <UButton color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
-                        <UButton color="red" label="ไม่อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(false)" />
+                        <UButton v-if="form.status !== 'ส่งซ่อม'" color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
+                        <UButton v-else color="green" label="แจ้งซ่อมเสร็จ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="modalFinish = true" />
+                        <UButton color="red" v-if="form.status !== 'ส่งซ่อม'"  label="ไม่อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(false)" />
                         <UButton color="gray" @click="modalApprove = false" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
@@ -200,6 +220,29 @@
                         <div class="flex justify-between">
                             <button type="submit" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white">ตกลง</button>
                             <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalConfirmApprove = false">ยกเลิก</button>
+                        </div>
+                    </template>
+                </UCard>
+            </UForm>
+        </UModal>
+
+        <UModal v-model="modalFinish" prevent-close>
+            <UForm :state="dataFinish" @submit="submitFinish">
+                <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+                    <template #header>
+                        <div class="text-center">แจ้งเตือนการยืนยัน</div>
+                    </template>
+                    <div>
+                        <UFormGroup label="ผลการแก้ไข" name="Result_report" size="xl">
+                            <UTextarea v-model="dataFinish.Result_report" placeholder="" required/>
+                        </UFormGroup>
+                    </div>
+
+
+                    <template #footer>
+                        <div class="flex justify-between">
+                            <button type="submit" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white">ตกลง</button>
+                            <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalFinish = false">ยกเลิก</button>
                         </div>
                     </template>
                 </UCard>
@@ -234,6 +277,9 @@
      
     const modalApprove = ref(false)
     const modalConfirmApprove = ref(false)
+
+    const modalFinish = ref(false)
+
 
     const textSearch = ref('')
    
@@ -275,24 +321,50 @@
         key: 'actions'
     }]
 
-    const items = (row) => [
-        [{
-            label: 'รายละเอียดคำขอ',
-            icon: 'i-heroicons-pencil-square-20-solid',
-            click: () => fetchEditData(row.req_id)
-        }, {
-            label: 'อนุมัติ',
-            icon: 'i-heroicons-archive-box-20-solid',
-            click: () => fetchEditData(row.req_id, true)
-        },{
-            label: 'ลบ',
-            icon: 'i-heroicons-trash-20-solid',
-             click: () => {
-                modelDeleteConfirm.value = true; 
-                itemDelete.value = row.req_id;
-            }
-        }]
-    ]
+    const items = (row) => {
+
+        let btn
+
+        if(row.status == 'รออนุมัติหน่วยงาน' || row.status == 'รอตรวจสอบ(ทส.)') {
+            btn = [{
+                label: 'รายละเอียดคำขอ',
+                icon: 'i-heroicons-pencil-square-20-solid',
+                click: () => fetchEditData(row.req_id)
+            }, {
+                label: 'อนุมัติ',
+                icon: 'i-heroicons-archive-box-20-solid',
+                click: () => fetchEditData(row.req_id, true)
+            },{
+                label: 'ลบ',
+                icon: 'i-heroicons-trash-20-solid',
+                click: () => {
+                    modelDeleteConfirm.value = true; 
+                    itemDelete.value = row.req_id;
+                }
+            }]
+        }
+
+        if(row.status == 'ซ่อมเสร็จ') {
+            btn = [{
+                label: 'รายละเอียดคำขอ',
+                icon: 'i-heroicons-pencil-square-20-solid',
+                click: () => fetchEditData(row.req_id, true, true)
+            }]
+        }
+
+        if(row.status == 'ส่งซ่อม') {
+            btn = [{
+                label: 'รายละเอียดคำขอ',
+                icon: 'i-heroicons-pencil-square-20-solid',
+                click: () => fetchEditData(row.req_id, true, true)
+            }, {
+                label: 'แจ้งซ่อมเสร็จ',
+                icon: 'i-heroicons-archive-box-20-solid',
+                click: () => fetchEditData(row.req_id, true)
+            }]
+        }
+        return [btn]
+    }
 
     const page = ref(1)
     const pageCount = ref(20)
@@ -352,6 +424,11 @@
         Reason:""//เหตุผลการไม่อนุมัติ ถ้าอนุมัติไม่ต้องใส่
     })
 
+    const dataFinish = ref({
+        ReqID:"",  
+        ActiondBy:"tammon.y",//อนุมัติหรือปฏิเสธโดย
+        Result_report:""//เหตุผลการไม่อนุมัติ ถ้าอนุมัติไม่ต้องใส่
+    })
     const approveRequest = (approve) => {
         dataApprove.value.Action = approve ? "อนุมัติ" : "ปฏิเสธ"
         modalConfirmApprove.value = true
@@ -434,9 +511,10 @@
         countStatus()
     })
 
-
-    const fetchEditData = async (id, approve = false) => {
+    const isView = ref(false)
+    const fetchEditData = async (id, approve = false, view = false) => {
         dataApprove.value.ReqID = id
+        dataFinish.value.ReqID = id
 
 
         const data = await getApi(`/api/hd/request/GetDocSet?req_id=${id}`)
@@ -447,6 +525,8 @@
         }else {
             modalApprove.value = true;
         }
+
+        isView.value = view
     }
 
    
@@ -477,7 +557,7 @@
         })
 
         if(res.outputAction.result === 'ok') {
-            refresh()
+            refreshDataAll()
         }
 
         modalAdd.value = false
@@ -491,7 +571,7 @@
 
         modelDeleteConfirm.value = false
 
-        refresh()
+        refreshDataAll()
     }
 
      const submitApprove = async () => {
@@ -500,9 +580,22 @@
 
         modalConfirmApprove.value = false
         modalApprove.value = false
-        refresh()
+        refreshDataAll()
+    }
+    
+
+    const submitFinish = async () => {
+        const res = await postApi('/api/hd/request/FinishRepair', dataFinish.value)
+
+        modalApprove.value = false
+        modalFinish.value = false
+        refreshDataAll()
     }
 
+    const refreshDataAll = () => {
+        refresh()
+        countStatus()
+    }
 </script>
 
 <style lang="scss" scoped>
