@@ -35,7 +35,7 @@
                     <div>{{ moment(row.req_date).format('DD/MM/YYYY') }}</div>
                 </template>
                 <template #actions-data="{ row }">
-                    <UDropdown :items="items(row)" :popper="{ placement: 'bottom-start' }">
+                    <UDropdown :items="row.status !== 'ปฏิเสธ' && row.status !== 'อนุมัติ' ? items(row) : menuNotApprove(row)" :popper="{ placement: 'bottom-start' }">
                         <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
                     </UDropdown>
                 </template>
@@ -78,7 +78,7 @@
                 </template>
 
             
-                <h3 class="font-bold leading-6 text-xl mb-4">รายละเอียดผู้ยื่นนคำร้อง</h3>
+                <h3 class="font-bold leading-6 text-xl mb-4">รายละเอียดผู้ยื่นคำร้อง</h3>
                 <div class="grid grid-cols-2 gap-8 bg-zinc-300/80 p-8 rounded-xl mb-4 relative">
                     <UFormGroup label="ชื่อ-นามสกุล" name="type" size="xl">
                         <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" @input="searchUserId" />
@@ -179,20 +179,72 @@
                 <template #header>
                     <div class="flex items-center justify-between">
                         <h3 class="text-2xl text-center font-bold leading-6 text-gray-900 dark:text-white">
-                            อนุมัติคำขอ CCTV
+                            รายการคำขอ
                         </h3>
                         <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalApprove = false" />
                     </div>
                 </template>
 
-                
-                <template #footer>
-                    <div class="flex items-center justify-end space-x-4">
-                        <UButton color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
-                        <UButton color="red" label="ไม่อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(false)" />
-                        <UButton color="gray" @click="modalApprove = false" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <h3 class="font-bold leading-6 text-xl">รายละเอียดคำร้อง</h3>
+
+                        <div class="flex items-center space-x-4" v-if="!isView">
+                            <UButton color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
+                            <UButton color="red" label="ไม่อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(false)" />
+                        </div>
                     </div>
-                </template>
+
+                    <div class="grid grid-cols-2 gap-8">
+                        <div>
+                            <div class="grid grid-cols-2 mb-2">
+                                <UFormGroup label="วันที่ยื่นคำร้อง" name="type" size="xl">
+                                    <div class="text-zinc-700">{{ labelDateRequest }}</div>
+                                </UFormGroup>
+                                <UFormGroup label="ความสำคัญ" name="type" size="xl">
+                                    <div class="text-zinc-700">{{ form.urgent_level  }}</div>
+                                </UFormGroup>
+                            </div>
+                            <UFormGroup label="สถานที่" class="mb-4" name="type" size="xl">
+                                <div class="text-zinc-700">{{ form.location != "" ? form.location : '-' }}</div>
+                            </UFormGroup>
+                            <div class="grid grid-cols-2 mb-4">
+                                <UFormGroup label="ตั้งแต่วันที่" class="mb-4" name="type" size="xl">
+                                    <div class="text-zinc-700">{{ labelDateTimeBegin }}</div>
+                                </UFormGroup>
+                                <UFormGroup label="ถึงวันที่" name="type" size="xl">
+                                    <div class="text-zinc-700"> {{ labelDateTimeEnd }}</div>
+                                </UFormGroup>
+                            </div>
+                        </div>
+                        <div>
+                            <UFormGroup label="วัตถุประสงค์" class="mb-2" name="type" size="xl">
+                                <div class="text-zinc-700">{{ form.purpose_desc }}</div>
+                            </UFormGroup>
+                            <div class="grid grid-cols-2 gap-x-4 w-full">
+                                <UFormGroup label="อาคาร" class="mb-4" name="type" size="xl">
+                                    <div class="text-zinc-700">{{ form.building_id }}</div>
+                                </UFormGroup>
+                                <UFormGroup label="ชั้น" class="mb-4" name="type" size="xl">
+                                    <div class="text-zinc-700">{{ form.floor }}</div>
+                                </UFormGroup>
+                            </div>
+                            <UFormGroup label="กรณี" name="type" size="xl">
+                                <div class="text-zinc-700">{{ form.case_type === 'กรณีอื่น ๆ' ? form.case_desc : form.case_type }}</div>
+                            </UFormGroup>
+                        </div>
+                    </div>
+
+                    <h3 class="font-bold leading-6 text-xl mb-4">รายละเอียดผู้ยื่นคำร้อง</h3>
+                    <div class="grid grid-cols-2 gap-8">
+                        <UFormGroup label="ชื่อ-นามสกุล" name="type" size="xl">
+                            <div class="text-zinc-700">{{ form.req_by_fullname }}</div>
+                        </UFormGroup>
+                        <UFormGroup label="เบอร์โทรศัพท์" name="phone_req" size="xl">
+                            <div class="text-zinc-700">{{ form.phone_req }}</div>
+                        </UFormGroup>
+                    </div>
+                </div>
             </UCard>
         </UForm>
 
@@ -252,6 +304,8 @@
     
     const modalApprove = ref(false)
     const modalConfirmApprove = ref(false)
+
+    const isView = ref(false)
     
     const itemDelete = ref()
     const textSearch = ref('')
@@ -296,6 +350,14 @@
                 modelDeleteConfirm.value = true; 
                 itemDelete.value = row.req_id;
             }
+        }]
+    ]
+
+    const menuNotApprove = (row) => [
+        [{
+            label: 'รายละเอียดคำขอ',
+            icon: 'i-heroicons-pencil-square-20-solid',
+            click: () => fetchEditData(row.req_id, true, true)
         }]
     ]
 
@@ -454,7 +516,7 @@
     )
 
 
-    const fetchEditData = async (id, approve = false) => {
+    const fetchEditData = async (id, approve = false, view = false) => {
 
         dataApprove.value.ReqID = id
         const data = await getApi(`/api/hd/request/GetDocSet?req_id=${id}`)
@@ -466,6 +528,8 @@
         }else {
             modalApprove.value = true;
         }
+
+        isView.value = view
     }
     
     const closeModal = () => {
