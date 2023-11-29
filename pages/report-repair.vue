@@ -368,7 +368,7 @@
 
     const page = ref(1)
     const pageCount = ref(20)
-    const pageTotal = computed(() => lists.total)
+    const pageTotal = computed(() => lists.value.total)
     const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
     const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
 
