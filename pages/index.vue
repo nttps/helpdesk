@@ -66,7 +66,7 @@
 
     </div>
 
-    <UModal v-model="modalAdd" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
+    <UModal v-model="modalAdd" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}" @close="closeModal">
         <UForm :state="form" @submit="submitRequest">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
@@ -74,7 +74,7 @@
                         <h3 class="text-2xl text-center font-bold leading-6 text-gray-900 dark:text-white">
                             ยืม-คืนพัสดุ
                         </h3>
-                        <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalAdd = false" />
+                        <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalAdd = false; form = templateEmpty" />
                     </div>
                 </template>
 
@@ -84,14 +84,14 @@
                 <template #footer>
                     <div class="flex items-center justify-end space-x-4">
                         <UButton color="amber" label="บันทึก" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
-                        <UButton color="gray" @click="modalAdd = false" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                        <UButton color="gray" @click="modalAdd = false; form = templateEmpty" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
             </UCard>
         </UForm>
     </UModal>
 
-    <UModal v-model="modalApprove" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
+    <UModal v-model="modalApprove" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}" @close="closeModal">
         <UForm :state="form" @submit="submitRequest">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
@@ -99,18 +99,92 @@
                         <h3 class="text-2xl text-center font-bold leading-6 text-gray-900 dark:text-white">
                             อนุมัติยืม-คืนพัสดุ
                         </h3>
-                        <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalApprove = false" />
+                        <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalApprove = false; form = templateEmpty" />
                     </div>
                 </template>
 
                 
                 <FormBorrow :form="form" />
 
-                <template #footer>
-                    <div class="flex items-center justify-end space-x-4">
+                <template #footer v-if="form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)'">
+                    <div class="flex items-center justify-end space-x-4" >
                         <UButton color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
                         <UButton color="red" label="ไม่อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(false)" />
-                        <UButton color="gray" @click="modalApprove = false" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                        <UButton color="gray" @click="modalApprove = false; form = templateEmpty" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                    </div>
+                </template>
+            </UCard>
+        </UForm>
+
+        <UModal v-model="modalConfirmApprove" prevent-close>
+            <UForm :state="dataApprove" @submit="submitApprove">
+                <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+                    <template #header>
+                        <div class="text-center">แจ้งเตือนการยืนยัน</div>
+                    </template>
+
+                    <div class="font-bold text-xl text-center" v-if="dataApprove.Action === 'อนุมัติ'">อนุมัติข้อมูลนี้ใช่หรือไม่</div>
+
+                    <div v-else>
+                        
+                        <div class="text-red-600 font-bold text-xl text-center">ไม่อนุมัติรายการนี้ใช่หรือไม่</div>
+                        <UFormGroup label="กรอกเหตุผล" name="Reason" size="xl">
+                            <UTextarea v-model="dataApprove.Reason" placeholder="" required/>
+                        </UFormGroup>
+                    </div>
+
+
+                    <template #footer>
+                        <div class="flex justify-between">
+                            <button type="submit" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white">ตกลง</button>
+                            <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalConfirmApprove = false; form = templateEmpty">ยกเลิก</button>
+                        </div>
+                    </template>
+                </UCard>
+            </UForm>
+        </UModal>
+    </UModal>
+
+
+    <UModal v-model="modalReturn" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}" @close="closeModal">
+        <UForm :state="form" @submit="submitReturn">
+            <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
+                <template #header>
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-2xl text-center font-bold leading-6 text-gray-900 dark:text-white">
+                            แจ้งคืนพัสดุ
+                        </h3>
+                        <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalReturn = false" />
+                    </div>
+                </template>
+
+                
+                <div class="text-lg font-bold mb-2"> อุปกรณ์ที่ต้องการคืน </div>
+                <UCheckbox v-model="dataReturn.returnAll" name="notifications" label="คืนทั้งหมด" :ui="{label:'text-base font-bold', wrapper: 'items-center'}" />
+                <div class="p-8 pt-4 mb-2 border items-center rounded-lg grid grid-cols-3 gap-2" v-for="item in form.items" v-if="!dataReturn.returnAll">
+                    <UFormGroup label="ประเภทอุปกรณ์" name="item_type" size="xl">
+                        {{ item.item_type }}
+                    </UFormGroup>
+                    <UFormGroup label="อุปกรณ์" name="inventory" size="xl">
+                        {{ item.item_name }}
+                    </UFormGroup>
+
+                    <UFormGroup label="จำนวนที่ยืม" name="qty" size="xl">
+                        {{ item.qty }}
+                    </UFormGroup>
+
+                    
+                    <UFormGroup label="จำนวนที่ต้องการคืน" name="qty" size="xl">
+                        <UInput v-model="item.return_qty" placeholder="กรอกจำนวนที่ต้องการคืน" required/>
+                    </UFormGroup>
+
+                    
+                </div>
+
+                <template #footer>
+                    <div class="flex items-center justify-end space-x-4">
+                        <UButton color="green" label="แจ้งคืนพัสดุ" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" />
+                        <UButton color="gray" @click="modalReturn = false; form = templateEmpty" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
             </UCard>
@@ -171,7 +245,7 @@
 
     const modalAdd = ref(false)
     const modalApprove = ref(false)
-
+    const modalReturn = ref(false)
     const modalConfirmApprove = ref(false)
     const textSearch = ref('')
 
@@ -196,6 +270,10 @@
         name : 'รายการที่คืนแล้ว',
         count: 0,
         color: 'green'
+    }, {
+        name : 'รายการที่ถูกปฎิเสธ',
+        count: 0,
+        color: 'gray'
     }])
     const statusActive = ref('รายการคำขอยืม')
 
@@ -206,6 +284,12 @@
         Reason:""//เหตุผลการไม่อนุมัติ ถ้าอนุมัติไม่ต้องใส่
     })
 
+     const dataReturn = ref({
+        ReqID: "",
+        ActiondBy:"tammon.y",
+        returnAll: false
+    })
+
     const approveRequest = (approve) => {
         dataApprove.value.Action = approve ? "อนุมัติ" : "ปฏิเสธ"
         modalConfirmApprove.value = true
@@ -213,7 +297,8 @@
 
     const columns = [{
         key: 'id',
-        label: 'ลำดับที่'
+        label: 'ลำดับที่',
+        sortable: false
     }, {
         key: 'req_date',
         label: 'ว/ด/ป'
@@ -239,24 +324,50 @@
         key: 'actions'
     }]
 
-    const items = (row) => [
-        [{
-            label: 'รายละเอียดคำขอ',
-            icon: 'i-heroicons-pencil-square-20-solid',
-            click: () => fetchEditData(row.req_id)
-        }, {
-            label: 'อนุมัติ',
-            icon: 'i-heroicons-archive-box-20-solid',
-            click: () => fetchEditData(row.req_id, true)
-        },{
-            label: 'ลบ',
-            icon: 'i-heroicons-trash-20-solid',
-            click: () => {
-                modelDeleteConfirm.value = true; 
-                itemDelete.value = row.req_id;
-            }
-        }]
-        ]
+    const items = (row) => {
+
+        let btn
+
+        if(row.status == 'รออนุมัติหน่วยงาน' || row.status == 'รอตรวจสอบ(ทส.)') {
+            btn = [{
+                label: 'รายละเอียดคำขอ',
+                icon: 'i-heroicons-pencil-square-20-solid',
+                click: () => fetchEditData(row.req_id)
+            }, {
+                label: 'อนุมัติ',
+                icon: 'i-heroicons-archive-box-20-solid',
+                click: () => fetchEditData(row.req_id, true)
+            },{
+                label: 'ลบ',
+                icon: 'i-heroicons-trash-20-solid',
+                click: () => {
+                    modelDeleteConfirm.value = true; 
+                    itemDelete.value = row.req_id;
+                }
+            }]
+        }
+
+        if(row.status == 'คืน' || row.status == 'ปฏิเสธจาก(ทส.)' || row.status == 'ปฏิเสธจากหน่วยงาน') {
+            btn = [{
+                label: 'รายละเอียดคำขอ',
+                icon: 'i-heroicons-pencil-square-20-solid',
+                click: () => fetchEditData(row.req_id, true, true)
+            }]
+        }
+
+        if(row.status == 'ส่งมอบใช้งาน') {
+            btn = [{
+                label: 'รายละเอียดคำขอ',
+                icon: 'i-heroicons-pencil-square-20-solid',
+                click: () => fetchEditData(row.req_id, true, false)
+            }, {
+                label: 'คืนสินค้า',
+                icon: 'i-heroicons-archive-box-20-solid',
+                click: () => fetchEditData(row.req_id, false, true)
+            }]
+        }
+        return [btn]
+    }
 
     const page = ref(1)
     const pageCount = ref(20)
@@ -269,7 +380,7 @@
     const startDate = ref(new Date())
     const endDate = ref(new Date())
     
-    const form = ref({
+    const templateEmpty = {
         req_id: '',
         req_date: moment(new Date()).format('YYYY-MM-DD'),
         req_by_user_id: '',
@@ -291,7 +402,13 @@
             inventory: []
 
         }]
-    })
+    }
+
+    const form = ref(templateEmpty)
+
+    const closeModal = () => {
+        form.value = templateEmpty
+    }
 
     onMounted(() => {
         countStatus()
@@ -344,6 +461,9 @@
             case 'รายการที่คืนแล้ว':
                 statusSearch = 'คืน'
                 break;
+            case 'รายการที่ถูกปฎิเสธ':
+                statusSearch = 'ปฏิเสธจาก(ทส.),ปฏิเสธจากหน่วยงาน'
+                break;
             default:
                 break;
         }
@@ -391,10 +511,12 @@
         }
 
         modalAdd.value = false
+        form.value = templateEmpty
     }
+    
 
 
-    const fetchEditData = async (id, approve = false) => {
+    const fetchEditData = async (id, approve = false, isReturn = false) => {
 
         dataApprove.value.ReqID = id
         const data = await getApi(`/api/hd/request/GetDocSet?req_id=${id}`)
@@ -410,22 +532,36 @@
             return data
         })
        
-        if(!approve) {
-            modalAdd.value = true; 
-        }else {
+        if(approve) {
             modalApprove.value = true;
+        }else if(isReturn) {
+            dataReturn.value.ReqID = id
+            modalReturn.value = true
+        }else {
+            modalAdd.value = true; 
         }
 
     }
 
     const submitApprove = async () => {
         const res = await postApi('/api/hd/request/ApproveDocument', dataApprove.value)
+
+        modalConfirmApprove.value = false
+        modalApprove.value = false
+        refresh()
+        form.value = templateEmpty
+    }
+
+    const submitReturn = async () => {
+        const res = await postApi('/api/hd/request/SetReturn', dataReturn.value)
         console.log(res);
 
         modalConfirmApprove.value = false
         modalApprove.value = false
         refresh()
+        form.value = templateEmpty
     }
+
     
 </script>
 

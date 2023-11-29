@@ -125,8 +125,8 @@
     const itemsType = ref([])
 
     const selectUserName = (user) => {
-        props.form.value.req_by_user_id = user.username
-        props.form.value.req_by_fullname = user.fullName
+        props.form.req_by_user_id = user.username
+        props.form.req_by_fullname = user.fullName
 
         users.value = []
     }
