@@ -501,11 +501,19 @@
     }
 
     const submitRequest = async () => {
+
+        console.log(form.value.items);
         const res = await postApi('/api/hd/request/SaveBorrow', {
             RequestHead: form.value,
-            RequestItem: form.value.items
+            RequestItem: form.value.items.map(item => {
+                return {
+                    item_id: item.item_id,
+                    qty: parseInt(item.qty)
+                }
+            })
         })
 
+        
         if(res.outputAction.result === 'ok') {
             refresh()
         }
