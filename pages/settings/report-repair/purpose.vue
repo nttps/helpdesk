@@ -174,14 +174,14 @@
 
         if(res.outputAction.result === 'ok') {
             modalAdd.value = false
-
+            refresh()
             form.value = {
                 MasterTypeID: "HD_REPAIR_PURPOSE",
                 ValueTXT: `REPAIR_PURPOSE_${(lists.value.total+1)}`,
                 description1: "", 
                 description2: ""
             }
-            refresh()
+            
         }
     }
   
