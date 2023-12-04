@@ -124,7 +124,7 @@
                         > 
                             <template #label>
                                 <template v-if="form.item_id">
-                                    {{ itemSelect.item_name }}
+                                    {{ itemSelect?.item_name ?? form.item_name}}
                                 </template>
                                 <template v-else>
                                     <span class="text-gray-500 dark:text-gray-400 truncate">เลือกอุปกรณ์</span>
@@ -233,6 +233,9 @@
                         <div class="text-center">แจ้งเตือนการยืนยัน</div>
                     </template>
                     <div>
+                        <UFormGroup label="ซ่อมโดย" name="ActiondBy" size="xl">
+                            <UTextarea v-model="dataFinish.ActiondBy" placeholder="" required/>
+                        </UFormGroup>
                         <UFormGroup label="ผลการแก้ไข" name="Result_report" size="xl">
                             <UTextarea v-model="dataFinish.Result_report" placeholder="" required/>
                         </UFormGroup>
@@ -426,7 +429,7 @@
 
     const dataFinish = ref({
         ReqID:"",  
-        ActiondBy:"tammon.y",//อนุมัติหรือปฏิเสธโดย
+        ActiondBy:"",//อนุมัติหรือปฏิเสธโดย
         Result_report:""//เหตุผลการไม่อนุมัติ ถ้าอนุมัติไม่ต้องใส่
     })
     const approveRequest = (approve) => {
@@ -558,6 +561,7 @@
 
         if(res.outputAction.result === 'ok') {
             refreshDataAll()
+            users.value = []
         }
 
         modalAdd.value = false
