@@ -86,7 +86,16 @@
                         <UInput v-model="form.item_name" placeholder="" required />
                     </UFormGroup>
                     <UFormGroup label="ประเภทอุปกรณ์" name="item_type" size="xl" >
-                        <UInput v-model="form.item_type" placeholder="" required />
+                        <USelectMenu 
+                            :options="itemsType" 
+                            placeholder="เลือกประเภทอุปกรณ์" 
+                            size="xl"
+                            v-model="form.item_type"
+                            value-attribute="description1" 
+                            option-attribute="description1" 
+                            searchable
+                            searchable-placeholder="ค้นหาประเภทอุปกรณ์"
+                        />
                     </UFormGroup>
                     <UFormGroup label="ยีห้อ" name="brand" size="xl">
                        <UInput v-model="form.brand" placeholder="" />
@@ -94,8 +103,8 @@
                     <UFormGroup label="รุ่น" name="model" size="xl">
                        <UInput v-model="form.model" placeholder="" />
                     </UFormGroup>
-                    <UFormGroup label="จำนวน" name="dCenter" size="xl">
-                       <UInput v-model="form.model" placeholder="" required />
+                    <UFormGroup label="จำนวน" name="qty_bal" size="xl">
+                       <UInput v-model="form.qty_bal" placeholder="" required />
                     </UFormGroup>
                   
                 </div>
@@ -108,7 +117,7 @@
                     </UFormGroup>
 
                     <UFormGroup label="ยังอยู่ในช่วงรับประกัน" name="is_in_warranty" class="flex space-x-4 items-center" size="xl">
-                        <UToggle color="primary" v-model="form.is_in_warranty" />
+                        <UToggle color="primary" v-model="form.is_in_warranty" :model-value="form.is_in_warranty" />
                     </UFormGroup>
                     <UFormGroup label="หมายเหตุ" name="remark" size="xl">
                         <UInput v-model="form.remark" placeholder="" />
@@ -183,6 +192,9 @@
         label: 'การรับประกัน',
         class: 'text-center'
     }, {
+        key: 'qty_bal',
+        label: 'จำนวน'
+    }, {
         key: 'status',
         label: 'สถานะ',
         class: 'text-center'
@@ -204,6 +216,7 @@
     onMounted(() => {
         getItemType()
     })
+    
 
     const getItemType = async () => {
         const res = await getMasterType('HD_ITEMTYPE', '', '')
@@ -240,6 +253,7 @@
         contract:"",//เลขที่สัญญา 
         created_by:"tammon.y",//current user login 
         modified_by:"",//current user login กรณีที่ต้องการแก้ไข
+        qty_bal: "",
         is_active: true
     })
 
