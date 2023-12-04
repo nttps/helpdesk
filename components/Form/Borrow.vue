@@ -47,7 +47,10 @@
     </div>
 
     <div class="text-lg font-bold mb-2"> อุปกรณ์ที่ต้องการยืม </div>
-    <div class="p-8 pt-4 mb-2 border rounded-lg grid grid-cols-2 gap-2" v-for="item in form.items">
+    <div class="p-8 pt-4 mb-2 border rounded-lg grid grid-cols-2 gap-2 relative" v-for="item, index in form.items">
+        <div class="absolute right-0 p-2" v-if="form.items.length > 1 && form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)'">
+            <UButton color="red" :padded="false" icon="i-heroicons-x-mark-20-solid" size="xl" @click="deleteItem(index)" />
+        </div>
         <UFormGroup label="ประเภทอุปกรณ์" name="item_type" size="xl">
             <USelectMenu 
                 :options="itemsType" 
@@ -156,6 +159,10 @@
     }
     const fetchTypeItems = async (item) => {
         itemsType.value = await getMasterType(`HD_ITEMTYPE`, '')
+    }
+
+    const deleteItem = (index) => {
+        props.form.items.splice(index, 1)
     }
 </script>
 
