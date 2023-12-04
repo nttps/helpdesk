@@ -564,10 +564,7 @@
     }
 
     const deleteItem = async () => {
-        const res = await deleteApi('/api/hd/Items/DeleteDoc', {
-            ItemID: itemDelete.value,//รหัสสินค้า
-            DeletedBy:"tammon.y"//current user login
-        })
+        const res = await deleteRequestApi(itemDelete.value)
 
         modelDeleteConfirm.value = false
 
