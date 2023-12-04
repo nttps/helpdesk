@@ -187,7 +187,10 @@
 
                 <div>
                     <div class="flex justify-between mb-2">
-                        <h3 class="font-bold leading-6 text-xl">รายละเอียดคำร้อง</h3>
+                        <div class="flex justify-between w-full">
+                            <h3 class="font-bold leading-6 text-xl">รายละเอียดคำร้อง</h3>
+                            <UBadge size="lg" :label="form.status" :color="form.status == 'ปฏิเสธ' ? 'red' : 'emerald'" variant="subtle" />
+                        </div>
 
                         <div class="flex items-center space-x-4" v-if="!isView">
                             <UButton color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
@@ -243,6 +246,11 @@
                         <UFormGroup label="เบอร์โทรศัพท์" name="phone_req" size="xl">
                             <div class="text-zinc-700">{{ form.phone_req }}</div>
                         </UFormGroup>
+                    </div>
+
+                    <div v-if="form.status === 'ปฏิเสธ'" class="text-red-600">
+                        <h3 class="font-bold leading-6 text-xl mb-2 ">เหตุผลการปฏิเสธ</h3>
+                        <div>{{ form.status1_reason || form.status2_reason }}</div>
                     </div>
                 </div>
             </UCard>
