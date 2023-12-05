@@ -147,7 +147,7 @@
 
 
     <UModal v-model="modalReturn" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}" @close="closeModal">
-        <UForm :state="form" @submit="submitReturn">
+        <UForm :state="form" @submit="modalConfirmReturn = true">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
                     <div class="flex items-center justify-between">
@@ -161,7 +161,7 @@
                 
                 <div class="text-lg font-bold mb-2"> อุปกรณ์ที่ต้องการคืน </div>
                 <UCheckbox v-model="dataReturn.returnAll" name="notifications" label="คืนทั้งหมด" :ui="{label:'text-base font-bold', wrapper: 'items-center'}" />
-                <div class="p-8 pt-4 mb-2 border items-center rounded-lg grid grid-cols-3 gap-2" v-for="item in form.items" v-if="!dataReturn.returnAll">
+                <div class="p-8 pt-4 mb-2 border items-center rounded-lg grid grid-cols-4 gap-2 relative" v-for="item in form.items" v-if="!dataReturn.returnAll">
                     <UFormGroup label="ประเภทอุปกรณ์" name="item_type" size="xl">
                         {{ item.item_type }}
                     </UFormGroup>
@@ -169,15 +169,19 @@
                         {{ item.item_name }}
                     </UFormGroup>
 
-                    <UFormGroup label="จำนวนที่ยืม" name="qty" size="xl">
+                    <UFormGroup label="ที่ยืม" name="qty" size="xl">
                         {{ item.qty }}
                     </UFormGroup>
-
-                    
-                    <UFormGroup label="จำนวนที่ต้องการคืน" name="qty" size="xl">
-                        <UInput v-model="item.return_qty" placeholder="กรอกจำนวนที่ต้องการคืน" required/>
+                    <UFormGroup label="คืนแล้ว" name="qty" size="xl">
+                        {{ item.qty_return }}
                     </UFormGroup>
 
+                    <UFormGroup label="จำนวนที่ต้องการคืน" name="qty" size="xl" v-if="item.qty_remain > 0">
+                        <UInput v-model="item.return_qty" placeholder="กรอกจำนวนที่ต้องการคืน" required/>
+                    </UFormGroup>
+                    <div  class="text-xl font-bold absolute right-2 top-2" :class="{ 'text-red-600': item.qty_remain > 0, 'text-green-500': item.qty_remain === 0 }">
+                        {{ item.qty_remain > 0 ? 'ยังคืนไม่ครบ' : 'คืนครบแล้ว' }}
+                    </div>
                     
                 </div>
 
@@ -190,28 +194,18 @@
             </UCard>
         </UForm>
 
-        <UModal v-model="modalConfirmApprove" prevent-close>
+        <UModal v-model="modalConfirmReturn" prevent-close>
             <UForm :state="dataApprove" @submit="submitApprove">
                 <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
                     <template #header>
                         <div class="text-center">แจ้งเตือนการยืนยัน</div>
                     </template>
 
-                    <div class="font-bold text-xl text-center" v-if="dataApprove.Action === 'อนุมัติ'">อนุมัติข้อมูลนี้ใช่หรือไม่</div>
-
-                    <div v-else>
-                        
-                        <div class="text-red-600 font-bold text-xl text-center">ไม่อนุมัติรายการนี้ใช่หรือไม่</div>
-                        <UFormGroup label="กรอกเหตุผล" name="Reason" size="xl">
-                            <UTextarea v-model="dataApprove.Reason" placeholder="" required/>
-                        </UFormGroup>
-                    </div>
-
-
+                    <div class="font-bold text-xl text-center">ต้องการทำรายการคืนใช่หรือไม่</div>
                     <template #footer>
                         <div class="flex justify-between">
-                            <button type="submit" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white">ตกลง</button>
-                            <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalConfirmApprove = false">ยกเลิก</button>
+                            <button type="submit" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white" @click="submitReturn">ตกลง</button>
+                            <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalConfirmReturn = false">ยกเลิก</button>
                         </div>
                     </template>
                 </UCard>
@@ -247,6 +241,7 @@
     const modalApprove = ref(false)
     const modalReturn = ref(false)
     const modalConfirmApprove = ref(false)
+    const modalConfirmReturn = ref(false)
     const textSearch = ref('')
 
     const statusSearch = ref('')
@@ -355,7 +350,7 @@
             }]
         }
 
-        if(row.status == 'ส่งมอบใช้งาน') {
+        if(row.status == 'ส่งมอบใช้งาน' || row.status == 'รายการคงค้าง') {
             btn = [{
                 label: 'รายละเอียดคำขอ',
                 icon: 'i-heroicons-pencil-square-20-solid',
@@ -561,11 +556,19 @@
     }
 
     const submitReturn = async () => {
-        const res = await postApi('/api/hd/request/SetReturn', dataReturn.value)
-        console.log(res);
 
-        modalConfirmApprove.value = false
-        modalApprove.value = false
+        const returnItems = form.value.items.map(item => {
+            return {
+                item_id: item.item_id,
+                qty_return: item.return_qty,
+            }
+        })
+        dataReturn.value.items = returnItems
+
+        const res = await postApi('/api/hd/request/SetReturn', dataReturn.value)
+
+        modalReturn.value = false
+        modalConfirmReturn.value = false
         refresh()
         form.value = templateEmpty
     }
