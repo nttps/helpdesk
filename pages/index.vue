@@ -74,7 +74,7 @@
                         <h3 class="text-2xl text-center font-bold leading-6 text-gray-900 dark:text-white">
                             ยืม-คืนพัสดุ
                         </h3>
-                        <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalAdd = false; form = templateEmpty" />
+                        <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalAdd = false; resetForm()" />
                     </div>
                 </template>
 
@@ -84,7 +84,7 @@
                 <template #footer>
                     <div class="flex items-center justify-end space-x-4">
                         <UButton color="amber" label="บันทึก" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
-                        <UButton color="gray" @click="modalAdd = false; form = templateEmpty" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                        <UButton color="gray" @click="modalAdd = false; resetForm()" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
             </UCard>
@@ -99,18 +99,32 @@
                         <h3 class="text-2xl text-center font-bold leading-6 text-gray-900 dark:text-white">
                             อนุมัติยืม-คืนพัสดุ
                         </h3>
-                        <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalApprove = false; form = templateEmpty" />
+                        <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalApprove = false; resetForm()" />
                     </div>
                 </template>
 
+
+                <div class="relative">
+                    <div class="absolute right-2 top-0">
+                        <UBadge size="lg" :label="form.status" :color="form.status == 'ปฏิเสธจากหน่วยงาน' || form.status == 'ปฏิเสธจาก(ทส.)' ? 'red' : 'emerald'" variant="subtle" />
+                    </div>
+
+                    <div v-if="form.status === 'ปฏิเสธจากหน่วยงาน' || form.status == 'ปฏิเสธจาก(ทส.)'" class="text-red-600 mb-8">
+                        <h3 class="font-bold leading-6 text-xl mb-2 ">เหตุผลการปฏิเสธ</h3>
+                        <div>{{ form.status1_reason || form.status2_reason }}</div>
+                    </div>
+                    <FormBorrow :form="form" />
+
+                    
+                </div>
                 
-                <FormBorrow :form="form" />
+             
 
                 <template #footer v-if="form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)'">
                     <div class="flex items-center justify-end space-x-4" >
                         <UButton color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
                         <UButton color="red" label="ไม่อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(false)" />
-                        <UButton color="gray" @click="modalApprove = false; form = templateEmpty" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                        <UButton color="gray" @click="modalApprove = false; resetForm()" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
             </UCard>
@@ -137,7 +151,7 @@
                     <template #footer>
                         <div class="flex justify-between">
                             <button type="submit" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white">ตกลง</button>
-                            <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalConfirmApprove = false; form = templateEmpty">ยกเลิก</button>
+                            <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalConfirmApprove = false; resetForm()">ยกเลิก</button>
                         </div>
                     </template>
                 </UCard>
@@ -188,7 +202,7 @@
                 <template #footer>
                     <div class="flex items-center justify-end space-x-4">
                         <UButton color="green" label="แจ้งคืนพัสดุ" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" />
-                        <UButton color="gray" @click="modalReturn = false; form = templateEmpty" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                        <UButton color="gray" @click="modalReturn = false; resetForm()" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
             </UCard>
@@ -374,8 +388,7 @@
     const selected = ref([])
     const startDate = ref(new Date())
     const endDate = ref(new Date())
-    
-    const templateEmpty = {
+    const form = ref({
         req_id: '',
         req_date: moment(new Date()).format('YYYY-MM-DD'),
         req_by_user_id: '',
@@ -397,12 +410,10 @@
             inventory: []
 
         }]
-    }
-
-    const form = ref(templateEmpty)
+    })
 
     const closeModal = () => {
-        form.value = templateEmpty
+        resetForm()
     }
 
     onMounted(() => {
@@ -416,7 +427,34 @@
         })
     }
 
+    const resetForm = () => {
+        form.value = {
+            req_id: '',
+            req_date: moment(new Date()).format('YYYY-MM-DD'),
+            req_by_user_id: '',
+            phone_req:'',
+            emal_req: '',
+            date_begin: startDate.value,
+            date_end: endDate.value,
+            purpose_id:"",//รหัสวัตถุประสงค์
+            purpose_desc:"",//คำบรรยายวัตถุประสงค์ 
+            location:"",//สถานที่ใช้งาน
+            location_unit:"",//ศูนย์เขต  
+            description:"",//รายละเอียด  
+            created_by:"tammon.y", //ผู้ทำรายการ
+            modified_by: "",
+            items: [{
+                item_id: '',
+                qty: '',
+                item_type: '',
+                inventory: []
+
+            }]
+        }
+    }
+
     const switchStatus = (status) => {
+        page.value = 1
         const active = coditionStatus(status)
 
         statusActive.value = status
@@ -514,7 +552,7 @@
         }
 
         modalAdd.value = false
-        form.value = templateEmpty
+        resetForm()
     }
     
 
@@ -552,7 +590,7 @@
         modalConfirmApprove.value = false
         modalApprove.value = false
         refresh()
-        form.value = templateEmpty
+        resetForm()
     }
 
     const submitReturn = async () => {
@@ -570,7 +608,7 @@
         modalReturn.value = false
         modalConfirmReturn.value = false
         refresh()
-        form.value = templateEmpty
+        resetForm()
     }
 
     

@@ -67,7 +67,7 @@
     </div>
 
     <UModal v-model="modalAdd" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
-        <UForm :state="form" @submit="submit">
+        <UForm :state="form" @submit="submit" :schema="schema" autocomplete="off">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
                     <div class="flex items-center justify-between">
@@ -78,7 +78,7 @@
                     </div>
                 </template>
 
-                <div class="grid grid-cols-3 gap-8 mb-8">
+                <div class="grid grid-cols-3 gap-x-8 gap-y-4 mb-8">
                     <UFormGroup label="วันที่" name="start_date" size="md">
                         <UPopover :popper="{ placement: 'bottom-start' }">
                             <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDate" />
@@ -88,31 +88,36 @@
                         </UPopover>
                     </UFormGroup>
                     <UFormGroup label="ผู้แจ้ง" name="req_by_user_id" size="md">
-                        <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" @input="searchUserId" />
+                        <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" @input="searchUserId" required />
 
-                        <div class="bg-white divide-y-2 rounded absolute z-10" v-if="users.length">
-
+                        <div class="bg-white divide-y-2 rounded absolute z-10 border w-full" v-if="users.length">
+                            <div class="py-1 px-2 text-gray-500 text-sm text-center">กรุณาเลือกรายชื่อผู้แจ้ง</div>
                             <div v-for="user in users" class="cursor-pointer hover:bg-slate-300 p-2 " @click="selectUserName(user)">{{ user.fullName }} - {{ user.username }}</div>
                         </div>
                     </UFormGroup>
+                    <UFormGroup label="หน่วยงาน" name="department_desc" size="md">
+                       <UInput v-model="form.department_desc" placeholder="" required disabled />
+                    </UFormGroup>
                     <UFormGroup label="เบอร์โทรศัพท์" name="telephone" size="md">
-                       <UInput v-model="form.phone_req" placeholder="" />
+                       <UInput v-model="form.phone_req" placeholder="" required/>
                     </UFormGroup>
                 </div>
 
                 <div class="grid grid-cols-3 gap-8 mb-8">
                     
-                    <UFormGroup label="ประเภทอุปกรณ์" name="dCenter" size="md">
+                    <UFormGroup label="ประเภทอุปกรณ์" name="item_type" size="md">
                         <USelectMenu 
                             v-model="form.item_type" 
                             :options="itemsType" 
-                            value-attribute="valueTXT" 
-                            option-attribute="valueTXT" 
+                            value-attribute="description1" 
+                            option-attribute="description1" 
+                            placeholder="เลือกประเภทอุปกรณ์" 
                             searchable
                             searchable-placeholder="ค้นหาประเภทอุปกรณ์"
+                            required
                         />
                     </UFormGroup>
-                    <UFormGroup label="อุปกรณ์" name="dCenter" size="md">
+                    <UFormGroup label="อุปกรณ์" name="item_id" size="md">
                         <USelectMenu 
                             v-model="form.item_id" 
                             :options="inventoryitems" 
@@ -121,6 +126,7 @@
                             placeholder="เลือกอุปกรณ์" 
                             searchable
                             searchable-placeholder="ค้นหาอุปกรณ์"
+                            required
                         > 
                             <template #label>
                                 <template v-if="form.item_id">
@@ -136,7 +142,7 @@
                     </UFormGroup>
                 </div>
                 <UFormGroup label="อาการเสีย/ปัญหา" name="dCenter" size="md">
-                     <UTextarea :rows="4" v-model="form.description"/>
+                     <UTextarea :rows="4" v-model="form.description" required />
                 </UFormGroup>
 
                 <template #footer>
@@ -155,39 +161,50 @@
                 <template #header>
                     <div class="flex items-center justify-between">
                         <h3 class="text-2xl text-center font-bold leading-6 text-gray-900 dark:text-white">
-                            อนุมัติรายการแจ้งซ่อม
+                            {{ (isView ? 'รายการแจ้งซ่อม' : 'อนุมัติรายการแจ้งซ่อม') }}
                         </h3>
                         <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalApprove = false" />
                     </div>
                 </template>
 
 
-                <div class="grid grid-cols-3 gap-8 mb-8">
-                    <UFormGroup label="วันที่" name="start_date" size="md">
-                        {{ labelDate }}
-                    </UFormGroup>
-                    <UFormGroup label="ผู้แจ้ง" name="req_by_user_id" size="md">
-                        {{ form.req_by_fullname }}
-                    </UFormGroup>
-                    <UFormGroup label="เบอร์โทรศัพท์" name="telephone" size="md">
-                       {{ form.phone_req }}
-                    </UFormGroup>
-                </div>
-
-                <div class="grid grid-cols-3 gap-8 mb-8">
-                    <UFormGroup label="ประเภทอุปกรณ์" name="dCenter" size="md">
-                        {{ form.item_type }}
-                    </UFormGroup>
-                    <UFormGroup label="อุปกรณ์" name="dCenter" size="md">
-                        {{ form.item_name }}
-                    </UFormGroup>
-                </div>
-                <UFormGroup label="อาการเสีย/ปัญหา" name="dCenter" size="md">
-                    {{ form.description }}
-                </UFormGroup>
-
+                <div class="relative">
+                    <div class="absolute right-2 top-2">
+                        <UBadge size="lg" :label="form.status" :color="form.status == 'ปฏิเสธจากหน่วยงาน' ? 'red' : 'emerald'" variant="subtle" />
+                    </div>
                 
-                <template #footer>
+
+                    <div class="grid grid-cols-3 gap-8 mb-4">
+                        <UFormGroup label="วันที่" name="start_date" size="md">
+                            {{ labelDate }}
+                        </UFormGroup>
+                        <UFormGroup label="ผู้แจ้ง" name="req_by_user_id" size="md">
+                            {{ form.req_by_fullname }}
+                        </UFormGroup>
+                        <UFormGroup label="เบอร์โทรศัพท์" name="telephone" size="md">
+                        {{ form.phone_req }}
+                        </UFormGroup>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-8 mb-4">
+                        <UFormGroup label="ประเภทอุปกรณ์" name="dCenter" size="md">
+                            {{ form.item_type }}
+                        </UFormGroup>
+                        <UFormGroup label="อุปกรณ์" name="dCenter" size="md">
+                            {{ form.item_name }}
+                        </UFormGroup>
+                    </div>
+                    <UFormGroup label="อาการเสีย/ปัญหา" name="dCenter" size="md" class="mb-6">
+                        {{ form.description }}
+                    </UFormGroup>
+
+                    <div v-if="form.status === 'ปฏิเสธจากหน่วยงาน'" class="text-red-600">
+                        <h3 class="font-bold leading-6 text-xl mb-2 ">เหตุผลการปฏิเสธ</h3>
+                        <div>{{ form.status1_reason || form.status2_reason }}</div>
+                    </div>
+                </div>
+                
+                <template #footer v-if="!isView">
                     <div class="flex items-center justify-end space-x-4">
                         <UButton v-if="form.status !== 'ส่งซ่อม'" color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
                         <UButton v-else color="green" label="แจ้งซ่อมเสร็จ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="modalFinish = true" />
@@ -274,7 +291,7 @@
 <script setup>
 
     import moment from 'moment'
-
+    import { number, object, string } from 'yup'
     moment.locale('th')
     const modalAdd = ref(false)
      
@@ -312,7 +329,7 @@
         key: 'fix_by',
         label: 'ผู้ซ่อม'
     }, {
-        key: 'status1_reason',
+        key: 'result_report',
         label: 'ผลการแก้ไข'
     }, {
         key: 'urgent_level',
@@ -366,6 +383,14 @@
                 click: () => fetchEditData(row.req_id, true)
             }]
         }
+
+         if(row.status == 'ปฏิเสธจากหน่วยงาน') {
+            btn = [{
+                label: 'รายละเอียดคำขอ',
+                icon: 'i-heroicons-pencil-square-20-solid',
+                click: () => fetchEditData(row.req_id, true, true)
+            }]
+        }
         return [btn]
     }
 
@@ -378,11 +403,12 @@
     const date = ref(new Date())
     const labelDate = computed(() => moment(form.value.req_date).format('DD/MM/YYYY'))
 
-    const form = ref({
+    const form = ref( {
         req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
         req_date: date.value,//วันที่ขอ
         req_by_fullname:"",
         req_by_user_id:"",
+        department_desc: "",
         phone_req: "",
         item_id: "",
         fix_by: "",
@@ -391,6 +417,11 @@
         created_by:"tammon.y", //ผู้ทำรายการ
         modified_by:""//ผู้แก้ไขรายการ
     })
+
+    const schema = object({
+        department_desc: string().required('กรุณาค้นหาและเลือกชื่อผู้แจ้งให้ถูกต้อง ')
+    })
+
 
     const modelDeleteConfirm = ref(false)
     const itemDelete = ref()
@@ -438,6 +469,8 @@
     }
 
     const switchStatus = (status) => {
+
+        page.value = 1
         const active = coditionStatus(status)
 
         statusActive.value = status
@@ -541,6 +574,7 @@
     const selectUserName = (user) => {
         form.value.req_by_user_id = user.username
         form.value.req_by_fullname = user.fullName
+        form.value.department_desc = user.departmentID
 
         users.value = []
     }
@@ -554,6 +588,22 @@
 
     }
 
+    const resetForm = () => {
+        form.value = {
+            req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
+            req_date: date.value,//วันที่ขอ
+            req_by_fullname:"",
+            req_by_user_id:"",
+            phone_req: "",
+            item_id: "",
+            fix_by: "",
+            item_type: "",
+            description:"",//รายละเอียด  
+            created_by:"tammon.y", //ผู้ทำรายการ
+            modified_by:""//ผู้แก้ไขรายการ
+        }
+    }
+
     const submit = async () => {
         const res = await postApi('/api/hd/request/SaveRepair', {
             RequestHead: form.value
@@ -562,9 +612,12 @@
         if(res.outputAction.result === 'ok') {
             refreshDataAll()
             users.value = []
+            
         }
 
+        resetForm()
         modalAdd.value = false
+       
     }
 
     const deleteItem = async () => {

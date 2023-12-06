@@ -40,7 +40,7 @@
                     <div class="text-center">{{  index + 1 }}</div>
                 </template>
                 <template #actions-data="{ row }">
-                    <UButton color="amber" variant="ghost" icon="i-heroicons-pencil-solid" @click="modalAdd = true; form = row"/>
+                    <UButton color="amber" variant="ghost" icon="i-heroicons-pencil-solid" @click="fetchEditData(row.item_id)"/>
                     <UButton color="red" variant="ghost" icon="i-heroicons-trash-20-solid" @click="modelDeleteConfirm = true; itemDelete = row.item_id" />
                 </template>
             </UTable>
@@ -70,7 +70,7 @@
     </div>
 
     <UModal v-model="modalAdd" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
-        <UForm :state="form" @submit="submit">
+        <UForm :state="form" @submit="submit" :schema="schema">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
                     <div class="flex items-center justify-between">
@@ -118,7 +118,17 @@
 
                     <UFormGroup label="ยังอยู่ในช่วงรับประกัน" name="is_in_warranty" class="flex space-x-4 items-center" size="xl">
                         <UToggle color="primary" v-model="form.is_in_warranty" :model-value="form.is_in_warranty" />
+
+                        <UFormGroup label="" name="warranty_expiration_date" v-if="form.is_in_warranty">
+                            <UPopover :popper="{ placement: 'bottom-start' }" >
+                                <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" size="md" :label="labelDateExpire" />
+                                <template #panel="{ close }">
+                                    <FormDatePicker v-model="form.warranty_expiration_date" @close="close" required/>
+                                </template>
+                            </UPopover>
+                        </UFormGroup>
                     </UFormGroup>
+                    
                     <UFormGroup label="หมายเหตุ" name="remark" size="xl">
                         <UInput v-model="form.remark" placeholder="" />
                     </UFormGroup>
@@ -160,6 +170,9 @@
 </template>
 
 <script setup>
+    import moment from 'moment'
+    import { number, object, string } from 'yup'
+    moment.locale('th')
     const modalAdd = ref(false)
 
     const modelDeleteConfirm = ref(false)
@@ -209,7 +222,7 @@
     const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
     const selected = ref([])
     const search = ref('')
-
+   
     const itemsType = ref()
 
 
@@ -238,7 +251,7 @@
         }
     )
 
-    const form = ref({
+    const empty = {
         item_id:"",//กรณีเพิ่มใหม่ให้ปล่อยว่างถ้า แก้ไขให้ใส่ค่าพัสดุที่ต้องการ update
         item_ref:"",//รหัสอ้างอิง ใช้แทนรหัสพัสดุ
         item_name:"",//ชื่อพัสดุ
@@ -246,7 +259,7 @@
         brand:"",//ยี่ห้อพัสดุ
         model:"",//รุ่น
         serial_number:"",
-        is_in_warranty: true,
+        is_in_warranty: false,
         warranty_expiration_date: null,
         remark:"",  
         contact:"",//เบอร์ติดต่อ
@@ -255,7 +268,27 @@
         modified_by:"",//current user login กรณีที่ต้องการแก้ไข
         qty_bal: "",
         is_active: true
+    }
+
+    const form = ref(empty)
+
+      
+    const schema = object({
+        warranty_expiration_date: string().nullable(true).when('is_in_warranty', {
+            is: (is_in_warranty) =>  is_in_warranty === true,
+            then: (schema) => schema.required('ระบุวันที่หมดประกัน'),
+        }),
+        qty_bal: number().typeError("กรอกจำนวนเป็นตัวเลข").required('กรอกจำนวน')
     })
+
+    const labelDateExpire = computed(() => form.value.warranty_expiration_date ? moment(form.value.warranty_expiration_date).format('DD/MM/YYYY') : 'หมดประกันวันที่')
+
+    const fetchEditData = async (id) => {
+        const data = await getApi(`/api/hd/Items/GetDocSet?item_id=${id}`)
+        form.value = data.itemInfo
+
+        modalAdd.value = true
+    }
 
     const submit = async () => {
         const res = await postApi('/api/hd/Items/Save', form.value)
@@ -263,7 +296,7 @@
         if(res.outputAction.result === 'ok') {
             refresh()
         }
-
+        form.value = empty
         modalAdd.value = false
     }
 

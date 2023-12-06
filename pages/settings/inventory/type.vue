@@ -54,14 +54,14 @@
                 <template #header>
                     <div class="flex items-center justify-between">
                         <h3 class="text-xl text-center font-bold leading-6 text-gray-900 dark:text-white">
-                            เพิ่มรายละเอียดวัตถุประสงค์
+                            เพิ่มประเภท
                         </h3>
                         <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalAdd = false" />
                     </div>
                 </template>
 
-                <UFormGroup label="วัตถุประสงค์" name="ValueTXT" size="xl">
-                    <UTextarea v-model="form.ValueTXT" placeholder="" autoresize :rows="8" />
+                <UFormGroup label="ประเภท" name="description1" size="xl">
+                    <UInput v-model="form.description1" placeholder="" />
                 </UFormGroup>
                 
                 <template #footer>
@@ -85,7 +85,7 @@
         key: 'id',
         label: 'ลำดับที่'
     }, {
-        key: 'valueTXT',
+        key: 'description1',
         label: 'รายการ'
     }, {
         key: 'actions'
@@ -119,13 +119,13 @@
 
     const form = ref({
         MasterTypeID: "HD_ITEMTYPE",
-        ValueTXT: "",
-        Description1: "", 
-        Description2: ""
+        ValueTXT: `HD_ITEMTYPE_${(lists.value.total+1)}`,
+        description1: "", 
+        description2: ""
     })
 
     const schema = object({
-        ValueTXT: string().required('กรอกรายละเอียดวัตถุประสงค์'),
+        description1: string().required('กรอกรายละเอียดวัตถุประสงค์'),
     })
 
 
@@ -135,7 +135,13 @@
         if(res.outputAction.result === 'ok') {
             modalAdd.value = false
 
-            form.value.ValueTXT = ''
+            refresh()
+            form.value = {
+                MasterTypeID: "HD_ITEMTYPE",
+                ValueTXT: `HD_ITEMTYPE_${(lists.value.total+1)}`,
+                description1: "", 
+                description2: ""
+            }
             refresh()
         }
     }

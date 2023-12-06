@@ -463,6 +463,7 @@
     }
 
     const switchStatus = (status) => {
+        page.value = 1
         const active = coditionStatus(status)
 
         statusActive.value = status
