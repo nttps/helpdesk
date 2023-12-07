@@ -315,7 +315,7 @@
         key: 'item_name',
         label: 'อุปกรณ์'
     }, {
-        key: 'req_by_fullname',
+        key: 'req_by_user_id',
         label: 'ผู้ยืม'
     }, {
         key: 'department_id',
