@@ -34,6 +34,9 @@
                 <template #req_date-data="{ row }">
                     <div>{{ moment(row.req_date).format('DD/MM/YYYY') }}</div>
                 </template>
+                <template #req_by_user_id-data="{ row }">
+                    <div>{{ row.req_by_fullname ? row.req_by_fullname : row.req_by_user_id }}</div>
+                </template>
 
                 <template #actions-data="{ row }">
                     <UDropdown :items="items(row)" :popper="{ placement: 'bottom-start' }">
@@ -317,7 +320,7 @@
         key: 'description',
         label: 'ความเสีย/ปัญหา'
     }, {
-        key: 'req_by_fullname',
+        key: 'req_by_user_id',
         label: 'ผู้แจ้ง'
     }, {
         key: 'department_id',

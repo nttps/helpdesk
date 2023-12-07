@@ -31,6 +31,10 @@
                     <div>{{ index+1 }}</div>
                 </template>
 
+                <template #req_by_user_id-data="{ row }">
+                    <div>{{ row.req_by_fullname ? row.req_by_fullname : row.req_by_user_id }}</div>
+                </template>
+
                 <template #req_date-data="{ row }">
                     <div>{{ moment(row.req_date).format('DD/MM/YYYY') }}</div>
                 </template>
@@ -327,7 +331,7 @@
         key: 'req_date',
         label: 'ว/ด/ป'
     }, {
-        key: 'req_by_fullname',
+        key: 'req_by_user_id',
         label: 'ผู้ส่งคำขอ'
     }, {
         key: 'department_id',
