@@ -370,11 +370,11 @@
 
 
     const dateTimeBegin = ref(new Date())
-    const labelDateTimeBegin = computed(() => moment(form.value.date_begin).format('YYYY-MM-DDTHH:mm:ss'))
+    const labelDateTimeBegin = computed(() => moment(form.value.date_begin).format('DD/MM/YYYY h:m:s'))
 
 
     const dateTimeEnd = ref(new Date())
-    const labelDateTimeEnd = computed(() => moment(form.value.date_end).format('YYYY-MM-DDTHH:mm:ss'))
+    const labelDateTimeEnd = computed(() => moment(form.value.date_end).format('DD/MM/YYYY h:m:s'))
 
 
     const dateRequest = ref(new Date())
