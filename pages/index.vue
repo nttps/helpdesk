@@ -31,6 +31,11 @@
                     <div >{{  index + 1 }}</div>
                 </template>
 
+                <template #department_id-data="{ row }">
+                    <div>{{ row.department_id ?? '-' }}</div>
+                </template>
+                
+
                 <template #req_date-data="{ row }">
                     <div>{{ moment(row.req_date).format('DD/MM/YYYY') }}</div>
                 </template>
