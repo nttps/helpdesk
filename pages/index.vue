@@ -36,7 +36,7 @@
                 </template>
 
                 <template #req_by_user_id-data="{ row }">
-                    <div>{{ row.req_by_user_fullname ? row.req_by_user_fullname : row.req_by_user_id }}</div>
+                    <div>{{ row.req_by_fullname ? row.req_by_fullname : row.req_by_user_id }}</div>
                 </template>
                 
 
