@@ -96,20 +96,7 @@
                        <UInput v-model="form.phone_req" placeholder="" />
                     </UFormGroup>
                 </div>
-                <div class="flex items-center space-x-2  mb-4">
-                    <h3 class="font-bold leading-6 text-xl">รายละเอียดคำร้อง</h3>
-
-                    <div class="flex items-center space-x-4">
-                        <label>
-                            <input type="radio" name="walkin" v-model="form.howto_inform" value="walkin" class="mr-1"> 
-                            Walkin
-                        </label>
-                        <label>
-                            <input type="radio" name="walkin" v-model="form.howto_inform" value="email" class="mr-1"> Email
-                        </label>
-                        <UInput v-model="form.emal_req" placeholder="" v-if="form.howto_inform === 'email'" :disabled="form.howto_inform !== 'email'" />
-                    </div>
-                </div>
+                <h3 class="font-bold leading-6 text-xl mb-4">รายละเอียดคำร้อง</h3>
                 <div class="grid grid-cols-2 gap-8 bg-zinc-300/80 p-8 rounded-xl">
                     <div>
                         <div class="grid grid-cols-2 mb-4">
