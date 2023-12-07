@@ -34,6 +34,10 @@
                 <template #department_id-data="{ row }">
                     <div>{{ row.department_id ?? '-' }}</div>
                 </template>
+
+                <template #req_by_user_id-data="{ row }">
+                    <div>{{ row.req_by_user_fullname ? row.req_by_user_fullname : row.req_by_user_id }}</div>
+                </template>
                 
 
                 <template #req_date-data="{ row }">
