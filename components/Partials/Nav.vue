@@ -30,12 +30,12 @@
                             <div :class="isActive ? 'text-black' : ''">คลังอุปกรณ์</div>
                         </NuxtLink>
                     </li>
-                    <li>
+                    <!-- <li>
                         <NuxtLink to="/dashboard" v-slot="{ isActive }">
                             <Icon name="mdi:monitor-dashboard" size="40" :class="isActive ? 'text-black' : ''"/>
                             <div :class="isActive ? 'text-black' : ''">แดชบอร์ด</div>
                         </NuxtLink>
-                    </li>
+                    </li> -->
                 </ul>
             </nav>
         </div>
