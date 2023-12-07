@@ -25,7 +25,7 @@
         <UFormGroup label="ผู้ยืม" name="req_by_user_id" size="xl">
             <UInput v-model="form.req_by_user_id" placeholder="กรอกชื่อเพื่อค้นหา" required @input="searchUserId" :disabled="!notDisable"/>
 
-            <div class="bg-white divide-y-2 rounded absolute z-10" v-if="users.length">
+            <div class="bg-white divide-y-2 rounded absolute z-10 border" v-if="users.length">
 
                 <div v-for="user in users" class="cursor-pointer hover:bg-slate-300 p-2 " @click="selectUserName(user)">{{ user.fullName }} - {{ user.username }}</div>
             </div>
