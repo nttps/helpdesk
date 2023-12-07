@@ -368,16 +368,17 @@
 
     const selected = ref([])
 
+
     const dateTimeBegin = ref(new Date())
-    const labelDateTimeBegin = computed(() => dateTimeBegin.value.toLocaleDateString('th', { year: 'numeric', month: 'long', day: 'numeric' }) + ' เวลา ' + dateTimeBegin.value.toLocaleTimeString('th', { hour: "2-digit", minute: "2-digit" }))
+    const labelDateTimeBegin = computed(() => moment(form.value.date_begin).format('YYYY-MM-DDTHH:mm:ss'))
 
 
     const dateTimeEnd = ref(new Date())
-    const labelDateTimeEnd = computed(() => dateTimeEnd.value.toLocaleDateString('th', { year: 'numeric', month: 'long', day: 'numeric' }) + ' เวลา ' + dateTimeEnd.value.toLocaleTimeString('th', { hour: "2-digit", minute: "2-digit" }))
+    const labelDateTimeEnd = computed(() => moment(form.value.date_end).format('YYYY-MM-DDTHH:mm:ss'))
 
 
     const dateRequest = ref(new Date())
-    const labelDateRequest = computed(() => dateRequest.value.toLocaleDateString('th', { year: 'numeric', month: 'long', day: 'numeric' }))
+    const labelDateRequest = computed(() => moment(form.value.req_date).format('DD/MM/YYYY'))
 
 
     onMounted(() => {
