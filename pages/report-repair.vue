@@ -69,7 +69,7 @@
 
     </div>
 
-    <UModal v-model="modalAdd" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
+    <UModal v-model="modalAdd" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}" @close="closeModal">
         <UForm :state="form" @submit="submit" :schema="schema" autocomplete="off">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
@@ -77,7 +77,7 @@
                         <h3 class="text-2xl text-center font-bold leading-6 text-gray-900 dark:text-white">
                             แบบฟอร์มการแจ้งซ่อม
                         </h3>
-                        <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="md" class="-my-1" @click="modalAdd = false" />
+                        <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="md" class="-my-1" @click="modalAdd = false; closeModal()" />
                     </div>
                 </template>
 
@@ -99,7 +99,7 @@
                         </div>
                     </UFormGroup>
                     <UFormGroup label="หน่วยงาน" name="department_desc" size="md">
-                       <UInput v-model="form.department_desc" placeholder="" required disabled />
+                       <UInput v-model="form.department_id" placeholder="" required disabled />
                     </UFormGroup>
                     <UFormGroup label="เบอร์โทรศัพท์" name="telephone" size="md">
                        <UInput v-model="form.phone_req" placeholder="" required/>
@@ -151,14 +151,14 @@
                 <template #footer>
                     <div class="flex items-center justify-end space-x-4">
                         <UButton color="amber" label="บันทึก" type="submit" size="md" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
-                        <UButton color="gray" @click="modalAdd = false" label="ยกเลิก" type="button" size="md" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                        <UButton color="gray" @click="modalAdd = false; closeModal()" label="ยกเลิก" type="button" size="md" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
             </UCard>
         </UForm>
     </UModal>
 
-    <UModal v-model="modalApprove" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
+    <UModal v-model="modalApprove" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}" @close="closeModal">
         <UForm :state="form" @submit="submitRequest">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
@@ -166,7 +166,7 @@
                         <h3 class="text-2xl text-center font-bold leading-6 text-gray-900 dark:text-white">
                             {{ (isView ? 'รายการแจ้งซ่อม' : 'อนุมัติรายการแจ้งซ่อม') }}
                         </h3>
-                        <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalApprove = false" />
+                        <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalApprove = false; closeModal()" />
                     </div>
                 </template>
 
@@ -212,7 +212,7 @@
                         <UButton v-if="form.status !== 'ส่งซ่อม'" color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
                         <UButton v-else color="green" label="แจ้งซ่อมเสร็จ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="modalFinish = true" />
                         <UButton color="red" v-if="form.status !== 'ส่งซ่อม'"  label="ไม่อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(false)" />
-                        <UButton color="gray" @click="modalApprove = false" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                        <UButton color="gray" @click="modalApprove = false; closeModal()" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
             </UCard>
@@ -406,12 +406,16 @@
     const date = ref(new Date())
     const labelDate = computed(() => moment(form.value.req_date).format('DD/MM/YYYY'))
 
-    const form = ref( {
+
+
+    const template =  {
         req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
         req_date: date.value,//วันที่ขอ
         req_by_fullname:"",
         req_by_user_id:"",
+        department_id: "",
         department_desc: "",
+
         phone_req: "",
         item_id: "",
         fix_by: "",
@@ -419,7 +423,8 @@
         description:"",//รายละเอียด  
         created_by:"tammon.y", //ผู้ทำรายการ
         modified_by:""//ผู้แก้ไขรายการ
-    })
+    }
+    const form = ref(template)
 
     const schema = object({
         department_desc: string().required('กรุณาค้นหาและเลือกชื่อผู้แจ้งให้ถูกต้อง ')
@@ -495,6 +500,24 @@
 
     }
 
+    const closeModal = () => {
+        form.value = {
+            req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
+            req_date: date.value,//วันที่ขอ
+            req_by_fullname:"",
+            req_by_user_id:"",
+            department_id: "",
+            department_desc: "",
+
+            phone_req: "",
+            item_id: "",
+            fix_by: "",
+            item_type: "",
+            description:"",//รายละเอียด  
+            created_by:"tammon.y", //ผู้ทำรายการ
+            modified_by:""//ผู้แก้ไขรายการ
+        }
+    }
     const coditionStatus = (status) => {
         let statusSearch
         switch (status) {
@@ -577,7 +600,9 @@
     const selectUserName = (user) => {
         form.value.req_by_user_id = user.username
         form.value.req_by_fullname = user.fullName
+        form.value.department_id = user.departmentID
         form.value.department_desc = user.departmentID
+        
 
         users.value = []
     }
