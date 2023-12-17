@@ -25,6 +25,7 @@
                         label="อนุมัติ"
                         :trailing="false"
                         class="bg-blue-600 hover:bg-blue-700"
+                        @click="modalAlertApproveAll = true"
                     />
                 </div>
                 <UButton class="ml-auto" icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray"/>
@@ -284,6 +285,23 @@
                 </UCard>
             </UForm>
         </UModal>
+    </UModal>
+
+    <UModal v-model="modalAlertApproveAll">
+        <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+          <template #header>
+              <div class="text-center">แจ้งเตือนการยืนยัน</div>
+          </template>
+
+          <div class="font-bold text-xl text-center">ต้องการยืนยันอนุมัติข้อมูลทั้งหมดใช่หรือไม่</div>
+
+          <template #footer>
+              <div class="flex justify-between">
+                  <button type="button" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white" @click="approveAll">ยืนยัน</button>
+                  <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalAlertApproveAll = false">ยกเลิก</button>
+              </div>
+          </template>
+        </UCard>
     </UModal>
 
     <UModal v-model="modelDeleteConfirm">
@@ -602,6 +620,26 @@
         modalApprove.value = false
         refresh()
         countStatus()
+    }
+
+    const modalAlertApproveAll = ref(false)
+
+    const approveAll = async () => {
+
+
+        
+        const dataApproveed =  selected.value.filter(re => re.status != 'ปฏิเสธ' && re.status != 'ปฏิเสธจาก(ทส.)' && re.status != 'อนุมัติ').map(re => re.req_id).join(',')
+        
+        dataApprove.value.Action = 'อนุมัติ'
+        dataApprove.value.ReqID = dataApproveed
+
+        modalAlertApproveAll.value = false
+        const res = await postApi('/api/hd/request/ApproveDocument', dataApprove.value)
+
+        refresh()
+        countStatus()
+
+
     }
 
 </script>
