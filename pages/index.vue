@@ -605,6 +605,9 @@
         form.value = data.requestHead
         form.value.items = data.requestItem
 
+        form.value.location_unit = data.requestHead.location_unit ||  data.requestHead.department_id 
+
+
         form.value.items.map(async e => {
             const data = e
 

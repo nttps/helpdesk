@@ -23,14 +23,14 @@
 
     <div class="grid grid-cols-4 gap-8 mb-4">
         <UFormGroup label="ผู้ยืม" name="req_by_user_id" size="xl">
-            <UInput v-model="form.req_by_user_id" placeholder="กรอกชื่อเพื่อค้นหา" required @input="searchUserId" :disabled="!notDisable"/>
+            <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" required @input="searchUserId" :disabled="!notDisable"/>
 
             <div class="bg-white divide-y-2 rounded absolute z-10 border" v-if="users.length">
 
                 <div v-for="user in users" class="cursor-pointer hover:bg-slate-300 p-2 " @click="selectUserName(user)">{{ user.fullName }} - {{ user.username }}</div>
             </div>
         </UFormGroup>
-        <UFormGroup label="ศูนย์เขต" name="location_unit" size="xl">
+        <UFormGroup label="ศูนย์เขต / หน่วยงาน" name="location_unit" size="xl">
             <UInput v-model="form.location_unit" placeholder="" :disabled="!notDisable" />
         </UFormGroup>
         <UFormGroup label="อีเมล" name="emal_req" size="xl">
@@ -128,8 +128,12 @@
     const itemsType = ref([])
 
     const selectUserName = (user) => {
+
+        console.log(user);
         props.form.req_by_user_id = user.username
         props.form.req_by_fullname = user.fullName
+        props.form.location_unit = user.fullName
+        
 
         users.value = []
     }
