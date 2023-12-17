@@ -2,7 +2,12 @@
 
 ## Version 1.0.0-alpha.3 (2023-12-18)
 
+### Features
+
+- สามารถอนุมัติคำขอดู CCTV ได้หลายรายการในครั้งเดียว ([DH-27](https://ck-consulting.atlassian.net/browse/DH-27)) 
+  
 ### Improves performance
+
 - แก้ไขชื่อปุ่ม คืนสินค้า เป็น คืนพัสดุ ([DH-68](https://ck-consulting.atlassian.net/browse/DH-68)) 
 
 ### Fix bugs

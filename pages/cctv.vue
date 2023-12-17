@@ -24,7 +24,7 @@
                         variant="solid"
                         label="อนุมัติ"
                         :trailing="false"
-                        class="bg-blue-600 hover:bg-blue-700"
+                        class="bg-green-600 hover:bg-green-700"
                         @click="modalAlertApproveAll = true"
                     />
                 </div>
