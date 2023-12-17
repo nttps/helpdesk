@@ -221,7 +221,7 @@
                     </UFormGroup>
 
                     <UFormGroup label="จำนวนที่ต้องการคืน" name="qty" size="xl" v-if="item.qty_remain > 0">
-                        <UInput v-model="item.return_qty" placeholder="กรอกจำนวนที่ต้องการคืน" required/>
+                        <UInput v-model="item.return_qty" @update:model-value="e => checkMaxReturn(e, item.item_id, item.qty)" placeholder="กรอกจำนวนที่ต้องการคืน" required/>
                     </UFormGroup>
                     <div  class="text-xl font-bold absolute right-2 top-2" :class="{ 'text-red-600': item.qty_remain > 0, 'text-green-500': item.qty_remain === 0 }">
                         {{ item.qty_remain > 0 ? 'ยังคืนไม่ครบ' : 'คืนครบแล้ว' }}
@@ -595,6 +595,13 @@
         resetForm()
     }
     
+
+    const checkMaxReturn = (value, id, max) => {
+        const item = form.value.items.find(item => item.item_id === id)
+
+
+        item.return_qty = value > max ? max : value
+    }
 
 
     const fetchEditData = async (id, approve = false, isReturn = false) => {
