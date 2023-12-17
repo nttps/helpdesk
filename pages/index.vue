@@ -16,16 +16,37 @@
                     <UInput v-model="textSearch" placeholder="ค้นหาจากชื่อผู้ยืม, เบอร์โทรศัพท์" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
                 </div>
             </div>
-            <div class="text-right">
-                <UButton class="ml-auto" icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray"/>
+            <div class="flex items-center justify-end space-x-2">
+                <div v-if="selectedRows.length > 0">
+                    <UButton
+                        icon="i-heroicons-plus-20-solid"
+                        size="sm"
+                        variant="solid"
+                        color="green"
+                        label="อนุมัติ"
+                        :trailing="false"
+                        class="mr-2"
+                    />
+                    <UButton
+                        icon="i-heroicons-plus-20-solid"
+                        size="sm"
+                        variant="solid"
+                        color="red"
+                        label="ไม่อนุมัติ"
+                        :trailing="false"
+                    />
+                </div>
+                <UButton icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray"/>
             </div>
             <UTable 
-                v-model="selected" 
+                v-model="selectedRows" 
                 :columns="columns" 
                 :rows="lists.data" 
                 :loading="pending" 
                 :loading-state="{ label: 'กำลังโหลด ...' }" 
                 :empty-state="{ label: 'ไม่พบรายการ' }"
+                @update:model-value="updateSelected"
+                by="req_id"
             > 
                 <template #id-data="{ row, index }">
                     <div >{{  index + 1 }}</div>
@@ -394,7 +415,8 @@
     const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
 
 
-    const selected = ref([])
+    const selectedRows = ref([])
+    const selectApprove = ref([])
     const startDate = ref(new Date())
     const endDate = ref(new Date())
     const form = ref({
@@ -420,6 +442,14 @@
 
         }]
     })
+
+    const forDeletion = ['คืน', 'ปฏิเสธจาก(ทส.)', 'ปฏิเสธจากหน่วยงาน', 'ส่งมอบใช้งาน']
+
+    const updateSelected = (row) => {
+       
+        const data = row.filter(v => !forDeletion.includes(v.status))
+        selectedRows.value = data
+    }
 
     const closeModal = () => {
         resetForm()

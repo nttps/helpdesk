@@ -16,7 +16,17 @@
                     <UInput placeholder="ค้นหา" v-model="textSearch" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
                 </div>
             </div>
-            <div class="text-right">
+            <div class="text-right flex justify-end">
+                <div v-if="selected.length > 0">
+                    <UButton
+                        icon="i-heroicons-plus-20-solid"
+                        size="sm"
+                        variant="solid"
+                        label="อนุมัติ"
+                        :trailing="false"
+                        class="bg-blue-600 hover:bg-blue-700"
+                    />
+                </div>
                 <UButton class="ml-auto" icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray"/>
             </div>
             <UTable 
@@ -543,6 +553,7 @@
             form.value.case_desc = value
         }else {
             form.value.case_desc = ''
+            form.value.case_type = 'กรณีอื่น ๆ'
         }
        
 
