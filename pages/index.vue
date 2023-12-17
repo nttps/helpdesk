@@ -400,7 +400,7 @@
                 icon: 'i-heroicons-pencil-square-20-solid',
                 click: () => fetchEditData(row.req_id, true, false)
             }, {
-                label: 'คืนสินค้า',
+                label: 'คืนพัสดุ',
                 icon: 'i-heroicons-archive-box-20-solid',
                 click: () => fetchEditData(row.req_id, false, true)
             }]
