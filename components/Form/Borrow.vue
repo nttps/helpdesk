@@ -46,9 +46,9 @@
         </UFormGroup>
     </div>
 
-    <div class="text-lg font-bold mb-2"> อุปกรณ์ที่ต้องการยืม </div>
+    <div class="text-lg font-bold mb-2"> อุปกรณ์ที่ต้องการยืม {{ form.status }}</div>
     <div class="p-8 pt-4 mb-2 border rounded-lg grid grid-cols-2 gap-2 relative" v-for="item, index in form.items">
-        <div class="absolute right-0 p-2" v-if="form.items.length > 1 && form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)'">
+        <div class="absolute right-0 p-2" v-if="form.items.length > 1 && form.status == '' || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)'">
             <UButton color="red" :padded="false" icon="i-heroicons-x-mark-20-solid" size="xl" @click="deleteItem(index)" v-if="notDisable" />
         </div>
         <UFormGroup label="ประเภทอุปกรณ์" name="item_type" size="xl">

@@ -434,6 +434,7 @@
         description:"",//รายละเอียด  
         created_by:"tammon.y", //ผู้ทำรายการ
         modified_by: "",
+        status: "",
         items: [{
             item_id: '',
             qty: '',
