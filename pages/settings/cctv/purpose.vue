@@ -1,5 +1,5 @@
 <template>
-    <SettingsCCTV type="purpose" @add="modalAdd = true" >
+    <SettingsCCTV type="purpose" @add="modalAdd = true" v-model="search">
 
             <UTable 
                 v-model="selected" 
@@ -118,8 +118,8 @@
     const { data: lists, pending, refresh } = await useAsyncData(
         'lists',
         async () => {
-            const data = await getMasterType(`HD_CCTV_PURPOSE`, '')
-
+            const data = await getMasterType(`HD_CCTV_PURPOSE`, search.value)
+            page.value = 1
             return {
                 total: data.length,
                 data: data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)

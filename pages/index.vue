@@ -49,7 +49,7 @@
                 by="req_id"
             > 
                 <template #id-data="{ row, index }">
-                    <div >{{  index + 1 }}</div>
+                    <div >{{ pageFrom + index }}</div>
                 </template>
 
                 <template #department_id-data="{ row }">
@@ -435,6 +435,7 @@
         created_by:"tammon.y", //ผู้ทำรายการ
         modified_by: "",
         status: "",
+        department_id: "",
         items: [{
             item_id: '',
             qty: '',
@@ -483,6 +484,7 @@
             description:"",//รายละเอียด  
             created_by:"tammon.y", //ผู้ทำรายการ
             modified_by: "",
+            department_id: "",
             items: [{
                 item_id: '',
                 qty: '',
@@ -551,7 +553,7 @@
                 "DateEnd": null,//ถึงวันที่ซ่อม
                 "Status":statusSearch.value//รอตรวจสอบ(ทส.),รออนุมัติ(ทส.) 
             })
-
+            page.value = 1
             return {
                 total: data.length,
                 data: data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)

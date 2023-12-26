@@ -70,7 +70,7 @@
     </div>
 
     <UModal v-model="modalAdd" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}" @close="closeModal">
-        <UForm :state="form" @submit="submit" :schema="schema" autocomplete="off">
+        <UForm :state="form" @submit="submit" autocomplete="off">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
                     <div class="flex items-center justify-between">
@@ -98,7 +98,7 @@
                             <div v-for="user in users" class="cursor-pointer hover:bg-slate-300 p-2 " @click="selectUserName(user)">{{ user.fullName }} - {{ user.username }}</div>
                         </div>
                     </UFormGroup>
-                    <UFormGroup label="หน่วยงาน" name="department_desc" size="md">
+                    <UFormGroup label="หน่วยงาน" name="department_id" size="md">
                        <UInput v-model="form.department_id" placeholder="" required disabled />
                     </UFormGroup>
                     <UFormGroup label="เบอร์โทรศัพท์" name="telephone" size="md">
@@ -427,7 +427,7 @@
     const form = ref(template)
 
     const schema = object({
-        department_desc: string().required('กรุณาค้นหาและเลือกชื่อผู้แจ้งให้ถูกต้อง ')
+        department_id: string().required('กรุณาค้นหาและเลือกชื่อผู้แจ้งให้ถูกต้อง ')
     })
 
 
@@ -548,7 +548,7 @@
                 "DateEnd": null,//ถึงวันที่ซ่อม
                 "Status":statusSearch.value//รอตรวจสอบ(ทส.),รออนุมัติ(ทส.) 
             })
-
+            page.value = 1
             return {
                 total: data.length,
                 data: data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)

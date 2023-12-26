@@ -4,7 +4,7 @@
         <div class="mt-8">
             <div class="search-bar flex justify-between mb-2">
                 <div class="w-96">
-                    <UInput placeholder="ค้นหา" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
+                    <UInput placeholder="ค้นหา" v-model="search" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
                 </div>
                 <div>
                     <UButton
@@ -242,6 +242,7 @@
         async () => {
             const data = await getListItems(search.value, '')
 
+            page.value = 1
             return {
                 total: data.length,
                 data: data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
