@@ -90,6 +90,8 @@
           </template>
         </UCard>
     </UModal>
+
+    
 </template>
 
 
@@ -140,7 +142,7 @@
 
     const form = ref({
         MasterTypeID: "HD_REPAIR_PURPOSE",
-        ValueTXT: `REPAIR_PURPOSE_${(lists.value.total+1)}`,
+        ValueTXT: `REPAIR_PURPOSE_${Math.random().toString(16).slice(2)}`,
         description1: "", 
         description2: ""
     })
@@ -162,7 +164,7 @@
     const closeModal = () => {
         form.value = {
             MasterTypeID: "HD_REPAIR_PURPOSE",
-            ValueTXT: `REPAIR_PURPOSE_${(lists.value.total+1)}`,//value
+            ValueTXT: `REPAIR_PURPOSE_${Math.random().toString(16).slice(2)}`,//value
             description1: "", //คำบรรยาย 1
             description2: ""//คำบรรยาย 2
         }
@@ -177,7 +179,7 @@
             refresh()
             form.value = {
                 MasterTypeID: "HD_REPAIR_PURPOSE",
-                ValueTXT: `REPAIR_PURPOSE_${(lists.value.total+1)}`,
+                ValueTXT: `REPAIR_PURPOSE_${Math.random().toString(16).slice(2)}`,
                 description1: "", 
                 description2: ""
             }

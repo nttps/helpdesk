@@ -133,7 +133,7 @@
 
      const form = ref({
         MasterTypeID: "HD_CCTV_PURPOSE",
-        ValueTXT: `CCTV_PURPOSE_${(lists.value.total+1)}`,//value
+        ValueTXT: `CCTV_PURPOSE_${(Math.random().toString(16).slice(2))}`,//value
         description1: "", //คำบรรยาย 1
         description2: ""//คำบรรยาย 2
     })
@@ -156,7 +156,7 @@
     const closeModal = () => {
         form.value = {
             MasterTypeID: "HD_CCTV_PURPOSE",
-            ValueTXT: `CCTV_PURPOSE_${(lists.value.total+1)}`,//value
+            ValueTXT: `CCTV_PURPOSE_${Math.random().toString(16).slice(2)}`,//value
             description1: "", //คำบรรยาย 1
             description2: ""//คำบรรยาย 2
         }
@@ -169,7 +169,7 @@
 
             form.value = {
                 MasterTypeID: "HD_CCTV_PURPOSE",
-                ValueTXT: `CCTV_PURPOSE_${(lists.value.total+1)}`,//value
+                ValueTXT: `CCTV_PURPOSE_${Math.random().toString(16).slice(2)}`,//value
                 description1: "", //คำบรรยาย 1
                 description2: ""//คำบรรยาย 2
             }

@@ -132,7 +132,7 @@
     const modalAdd = ref(false)
     const form = ref({
         MasterTypeID: "HD_CCTV_CASE",
-        ValueTXT: `CCTV_CASE_${(lists.value.total+1)}`,//value
+        ValueTXT: `CCTV_CASE_${Math.random().toString(16).slice(2)}`,//value
         description1: "", //คำบรรยาย 1
         description2: ""//คำบรรยาย 2
     })
@@ -151,7 +151,7 @@
     const closeModal = () => {
         form.value = {
             MasterTypeID: "HD_CCTV_CASE",
-            ValueTXT: `CCTV_CASE_${(lists.value.total+1)}`,//value
+            ValueTXT: `CCTV_CASE_${Math.random().toString(16).slice(2)}`,//value
             description1: "", //คำบรรยาย 1
             description2: ""//คำบรรยาย 2
         }
@@ -170,7 +170,7 @@
 
             form.value = {
                 MasterTypeID: "HD_CCTV_CASE",
-                ValueTXT: `CCTV_CASE_${(lists.value.total+1)}`,//value
+                ValueTXT: `CCTV_CASE_${Math.random().toString(16).slice(2)}`,//value
                 description1: "", //คำบรรยาย 1
                 description2: ""//คำบรรยาย 2
             }

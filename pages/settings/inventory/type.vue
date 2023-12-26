@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PartialsTitle title="อุปกรณ์" url-back="/settings/inventory" :text-button="`เพิ่มประเภท`" title-breadcrum="ประเภท" @add="modalAdd = true" :priority="false" />
+        <PartialsTitle title="อุปกรณ์" url-back="/settings/inventory" :text-button="`เพิ่มประเภท`" title-breadcrum="ประเภท" @add="addNew" :priority="false" />
         <div class="mt-8">
             <div class="search-bar flex justify-center items-center mb-2">
                 <div class="min-w-3xl w-96">
@@ -23,7 +23,7 @@
 
                 <template #actions-data="{ row }">
                     <UButton color="amber" variant="ghost" icon="i-heroicons-pencil-solid"  @click="fetchEditData(row.valueTXT)" />
-                    <UButton color="red" variant="ghost" icon="i-heroicons-trash-20-solid" @click="deleteItem(row.valueTXT)" />
+                    <UButton color="red" variant="ghost" icon="i-heroicons-trash-20-solid" @click="modelDeleteConfirm = true; itemDelete = row.valueTXT" />
                 </template>
             </UTable>
             <div class="flex flex-wrap justify-between items-center px-3 pt-3.5">
@@ -73,6 +73,22 @@
             </UCard>
         </UForm>
     </UModal>
+     <UModal v-model="modelDeleteConfirm">
+        <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+          <template #header>
+              <div class="text-center">แจ้งเตือนการยืนยัน</div>
+          </template>
+
+          <div class="font-bold text-xl text-center">คุณต้องการยืนยันที่จะลบข้อมูลนี้ใช่หรือไม่</div>
+
+          <template #footer>
+              <div class="flex justify-between">
+                  <button type="button" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white" @click="deleteItem">ยืนยัน</button>
+                  <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modelDeleteConfirm = false">ยกเลิก</button>
+              </div>
+          </template>
+        </UCard>
+    </UModal>
 </template>
 
 
@@ -100,7 +116,9 @@
     const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
     const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
 
-    
+    const modelDeleteConfirm = ref(false)
+    const itemDelete = ref(null)
+
     const rows = computed(() => {
         return  types.value.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
     })
@@ -118,10 +136,19 @@
 
     const form = ref({
         MasterTypeID: "HD_ITEMTYPE",
-        valueTXT: `HD_ITEMTYPE_${(types.value.length+1)}`,
+        valueTXT: `HD_ITEMTYPE_${Math.random().toString(16).slice(2)}`,
         description1: "", 
         description2: ""
     })
+
+    const addNew = () => {
+        form.value ={
+            masterTypeID:"HD_ITEMTYPE",
+            valueTXT: `HD_ITEMTYPE_${Math.random().toString(16).slice(2)}`,
+            description1:"",
+        }
+        modalAdd.value = true
+    }
 
     const schema = object({
         description1: string().required('กรอกรายประเภทอุุปกรณ์'),
@@ -131,17 +158,17 @@
     const submit = async () => {
         const res = await addMasterType(form.value)
         refresh()
-
-        console.log(types.value.length+1);
-        resetForm(types.value.length)
+        resetForm()
     }
   
-    const deleteItem = async (value) => {
+    const deleteItem = async () => {
         const res = await deleteMasterType({
             MasterTypeID:"HD_ITEMTYPE",
-            Value: value,
+            Value: itemDelete.value,
             DeletedBy:"tammon.y"
         })
+
+         modelDeleteConfirm.value = false
 
         refresh()
        
@@ -157,11 +184,11 @@
         modalAdd.value = true; 
     }
 
-    const resetForm = (c) => {
+    const resetForm = () => {
        
         form.value ={
             masterTypeID:"HD_ITEMTYPE",
-            valueTXT: `HD_ITEMTYPE_${(c +1)}`,
+            valueTXT: `HD_ITEMTYPE_${Math.random().toString(16).slice(2)}`,
             description1:"",
         }
 
