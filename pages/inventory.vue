@@ -242,7 +242,9 @@
         async () => {
             const data = await getListItems(search.value, '')
 
-            page.value = 1
+            if(page.value < 2) {
+                page.value = 1
+            }
             return {
                 total: data.length,
                 data: data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)

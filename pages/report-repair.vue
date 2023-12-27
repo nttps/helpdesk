@@ -548,7 +548,9 @@
                 "DateEnd": null,//ถึงวันที่ซ่อม
                 "Status":statusSearch.value//รอตรวจสอบ(ทส.),รออนุมัติ(ทส.) 
             })
-            page.value = 1
+            if(page.value < 2) {
+                page.value = 1
+            }
             return {
                 total: data.length,
                 data: data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
