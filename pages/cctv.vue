@@ -536,7 +536,7 @@
                 "Status":statusSearch.value//รอตรวจสอบ(ทส.),รออนุมัติ(ทส.) 
             })
 
-            if(page.value < 2) {
+            if(page.value < 2 && textSearch.value !== '' && statusSearch.value !== '' ) {
                 page.value = 1
             }
             return {

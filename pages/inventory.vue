@@ -242,7 +242,7 @@
         async () => {
             const data = await getListItems(search.value, '')
 
-            if(page.value < 2) {
+             if(page.value < 2 && search.value !== '') {
                 page.value = 1
             }
             return {
