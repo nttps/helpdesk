@@ -548,7 +548,7 @@
                 "DateEnd": null,//ถึงวันที่ซ่อม
                 "Status":statusSearch.value//รอตรวจสอบ(ทส.),รออนุมัติ(ทส.) 
             })
-            if(textSearch.value !== '') {
+            if(textSearch.value !== '' && page.value > 1) {
                 page.value = 1
             }
             return {
