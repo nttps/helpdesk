@@ -128,7 +128,9 @@
         'lists',
         async () => {
             const data = await getMasterType(`HD_REPAIR_PURPOSE`, search.value)
-            page.value = 1
+            if(search.value !== ''  && page.value > 1 ) {
+                page.value = 1
+            }
             return {
                 total: data.length,
                 data: data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)

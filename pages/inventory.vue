@@ -4,7 +4,7 @@
         <div class="mt-8">
             <div class="search-bar flex justify-between mb-2">
                 <div class="w-96">
-                    <UInput placeholder="ค้นหา" v-model="search" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
+                    <UInput placeholder="ค้นหาจากชื่ออุปกรณ์" v-model="search" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
                 </div>
                 <div>
                     <UButton
