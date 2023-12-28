@@ -620,6 +620,8 @@
 
         modalConfirmApprove.value = false
         modalApprove.value = false
+
+        
         refresh()
         countStatus()
     }
@@ -640,6 +642,8 @@
 
         refresh()
         countStatus()
+
+        selected.value = []
 
 
     }
