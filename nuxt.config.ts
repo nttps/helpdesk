@@ -15,7 +15,9 @@ export default defineNuxtConfig({
             Kanit: true,
         },
     },
-
+    imports: {
+        dirs: ["stores"],
+    },
     runtimeConfig: {
         public: {
             cookieLifetime: 7,
