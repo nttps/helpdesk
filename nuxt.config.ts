@@ -6,7 +6,18 @@ const apiBaseUrl = process.env.NUXT_PUBLIC_API_URL;
 export default defineNuxtConfig({
     devtools: { enabled: true },
     ssr: false,
-    modules: ["@nuxtjs/google-fonts", "@nuxt/ui", "nuxt-icon"],
+    modules: [
+        "@nuxtjs/google-fonts",
+        "@nuxt/ui",
+        "nuxt-icon",
+        [
+            "@pinia/nuxt",
+            {
+                autoImports: ["defineStore", "acceptHMRUpdate"],
+            },
+        ],
+        "@pinia-plugin-persistedstate/nuxt",
+    ],
     googleFonts: {
         display: "swap",
         prefetch: true,
