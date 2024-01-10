@@ -297,6 +297,11 @@
     import { number, object, string } from 'yup'
     moment.locale('th')
     const modalAdd = ref(false)
+
+    definePageMeta({
+        middleware: ["auth"]
+    })
+
      
     const modalApprove = ref(false)
     const modalConfirmApprove = ref(false)

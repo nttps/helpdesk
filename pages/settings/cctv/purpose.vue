@@ -94,6 +94,10 @@
     const modelDeleteConfirm = ref(false)
     const itemDelete = ref(null)
 
+     definePageMeta({
+        middleware: ["auth"]
+    })
+
 
     const columns = [{
         key: 'id',
