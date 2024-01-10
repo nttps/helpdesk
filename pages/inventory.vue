@@ -175,6 +175,11 @@
     moment.locale('th')
     const modalAdd = ref(false)
 
+    definePageMeta({
+        middleware: ["auth"]
+    })
+
+
     const modelDeleteConfirm = ref(false)
    
 

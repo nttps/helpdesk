@@ -326,6 +326,11 @@
     import moment from 'moment'
     moment.locale('th')
 
+    definePageMeta({
+        middleware: ["auth"]
+    })
+
+
     const modalAdd = ref(false)
     const modelDeleteConfirm = ref(false)
     

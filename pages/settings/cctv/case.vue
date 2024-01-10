@@ -90,6 +90,9 @@
 <script setup>
 
     import { object, string } from 'yup'
+    definePageMeta({
+        middleware: ["auth"]
+    })
 
 
     const columns = [{

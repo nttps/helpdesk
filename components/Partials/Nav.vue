@@ -55,12 +55,30 @@
                     </NuxtLink>
                 </li>
                 <li>
-                    <NuxtLink>
-                        <div class="w-10 h-10 rounded-full bg-gray-400">
-                            <img src="" alt="">
+                    <a>
+                        <UPopover mode="hover" :popper="{ offsetDistance: -15 }">
+                            <UAvatar
+                                :alt="authStore.fullName"
+                                size="md"
+                            />
+                            <template #panel>
+                                    <div class="px-4">
+                                        <button 
+                                            class="py-2 px-2 flex items-center space-x-4 border-l-8 border-transparent text-black" 
+                                            exact-active-class="!border-amber-600" 
+                                            active-class="!border-amber-600"
+                                            @click="logout"
+                                        >
+                                            <div>ออกจากระบบ</div>
+                                        </button>
+                                    </div>
+                            </template>
+                        </UPopover>
+                        <div class="text-center">
+                            {{ authStore.username }}
                         </div>
-                        <div>Admin</div>
-                    </NuxtLink>
+                    </a>
+                   
                 </li>
             </ul>
         </nav>
@@ -81,3 +99,14 @@
         @apply mb-4 last:mb-0
     }
 </style>
+
+<script setup>
+    const authStore = useAuthStore();
+
+    const logout = () => {
+        authStore.logout()
+
+        navigateTo('/login')
+    }
+
+</script>
