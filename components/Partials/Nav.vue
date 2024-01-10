@@ -48,7 +48,7 @@
                         <div :class="isActive ? 'text-black' : ''">ช่วยเหลือ</div>
                     </NuxtLink>
                 </li>
-                <li>
+                <li v-if="authStore.isAdmin">
                     <NuxtLink to="/settings" v-slot="{ isActive }">
                         <Icon name="material-symbols:settings" size="40" :class="isActive ? 'text-black' : ''"/>
                         <div :class="isActive ? 'text-black' : ''">ตั้งค่า</div>

@@ -209,7 +209,7 @@
 
                 <template #footer v-if="!isView">
                     <div class="flex items-center justify-end space-x-4">
-                        <UButton v-if="form.status === 'รอตรวจสอบ(ทส.)' && auth.user.userInMenuDisplay.some(g => g.menuName.includes('ผู้ตรวจสอบการแจ้งซ่อม(ทส.)')) || form.status === 'รออนุมัติหน่วยงาน' && auth.user.userInMenuDisplay.some(g => g.menuName.includes('ผู้อนุมัติแจ้งซ่อมประจำหน่วยงาน'))" color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
+                        <UButton v-if="form.status === 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId.includes('ผู้ตรวจสอบการแจ้งซ่อม(ทส.)' && g.isInGroup === true)) || form.status === 'รออนุมัติหน่วยงาน' && auth.user.userInGroups.some(g => g.userGroupId.includes('ผู้อนุมัติแจ้งซ่อมประจำหน่วยงาน') && g.isInGroup === true)" color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
                         <UButton v-else color="green" label="แจ้งซ่อมเสร็จ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="modalFinish = true" />
                         <UButton color="red" v-if="form.status !== 'ส่งซ่อม'"  label="ไม่อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(false)" />
                         <UButton color="gray" @click="modalApprove = false; closeModal()" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
@@ -363,7 +363,7 @@
 
        
 
-        if((row.status == 'รออนุมัติหน่วยงาน' && auth.user.userInMenuDisplay.some(g => g.menuName.includes('ผู้อนุมัติแจ้งซ่อมประจำหน่วยงาน')) ) || (row.status == 'รอตรวจสอบ(ทส.)' &&  auth.user.userInMenuDisplay.some(g => g.menuName.includes('ผู้ตรวจสอบการแจ้งซ่อม(ทส.)')))) {
+        if((row.status == 'รออนุมัติหน่วยงาน' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติแจ้งซ่อมประจำหน่วยงาน' && g.isInGroup === true) ) || (row.status == 'รอตรวจสอบ(ทส.)' &&  auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบการแจ้งซ่อม(ทส.)'  && g.isInGroup === true))) {
             btn.push({
                 label: 'อนุมัติ',
                 icon: 'i-heroicons-archive-box-20-solid',
@@ -378,7 +378,7 @@
             })
         }
 
-        if(row.status == 'ส่งซ่อม' && auth.user.userInMenuDisplay.some(g => g.menuName.includes('ผู้แจ้งซ่อมเสร็จ'))) {
+        if(row.status == 'ส่งซ่อม' && auth.user.userInGroups.some(g => g.userGroupId.includes('ผู้แจ้งซ่อมเสร็จ'))) {
             btn.push({
                 label: 'แจ้งซ่อมเสร็จ',
                 icon: 'i-heroicons-archive-box-20-solid',

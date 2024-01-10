@@ -383,8 +383,7 @@
                 click: () => fetchEditData(row.req_id)
             }]
 
-
-            if(row.status == 'รออนุมัติหน่วยงาน' && auth.user.userInMenuDisplay.some(g => g.menuName.includes('ผู้อนุมัติยืมพัสดุประจำหน่วยงาน')) || row.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInMenuDisplay.some(g => g.menuName.includes('ผู้ตรวจสอบยืมพัสดุประจำ ทศ.'))) {
+            if(row.status == 'รออนุมัติหน่วยงาน' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติยืมพัสดุประจำหน่วยงาน' && g.isInGroup === true) || row.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)) {
                 btn.push({
                     label: 'อนุมัติ',
                     icon: 'i-heroicons-archive-box-20-solid',
