@@ -285,6 +285,8 @@
         middleware: ["auth"]
     })
 
+    const auth = useAuthStore();
+
     const modalAdd = ref(false)
     const modalApprove = ref(false)
     const modalReturn = ref(false)
@@ -367,7 +369,7 @@
         key: 'actions'
     }]
 
-    const auth = useAuthStore();
+   
 
 
 

@@ -367,9 +367,9 @@
         key: 'actions'
     }]
 
-        const auth = useAuthStore();
+    const auth = useAuthStore();
 
-     const items = (row) => {
+    const items = (row) => {
 
         let btn = [{
             label: 'รายละเอียดคำขอ',
