@@ -19,11 +19,11 @@
             </div>
             <div class="flex w-full justify-center space-x-10 mt-4">
                 <NuxtLink to="/settings/users" class="p-6 text-center border rounded-xl w-1/6">
-                    <Icon name="icon-park-solid:surveillance-cameras-two" size="80" color="gray" />
+                    <Icon name="i-majesticons-users-line" size="80" color="gray" />
                     <div class="mt-2">ผู้ใช้งาน</div>
                 </NuxtLink>
                 <NuxtLink to="/settings/user-groups" class="p-6 text-center border rounded-xl w-1/6">
-                    <Icon name="ic:baseline-handyman" size="80" color="gray" />
+                    <Icon name="i-tdesign-usergroup" size="80" color="gray" />
                     <div class="mt-2">กลุ่มผู้ใช้งาน</div>
                 </NuxtLink>
             </div>
