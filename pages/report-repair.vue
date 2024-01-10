@@ -206,10 +206,10 @@
                         <div>{{ form.status1_reason || form.status2_reason }}</div>
                     </div>
                 </div>
-                
+
                 <template #footer v-if="!isView">
                     <div class="flex items-center justify-end space-x-4">
-                        <UButton v-if="form.status !== 'ส่งซ่อม'" color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
+                        <UButton v-if="form.status === 'รอตรวจสอบ(ทส.)' && auth.user.userInMenuDisplay.some(g => g.menuName.includes('ผู้ตรวจสอบการแจ้งซ่อม(ทส.)')) || form.status === 'รออนุมัติหน่วยงาน' && auth.user.userInMenuDisplay.some(g => g.menuName.includes('ผู้อนุมัติแจ้งซ่อมประจำหน่วยงาน'))" color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
                         <UButton v-else color="green" label="แจ้งซ่อมเสร็จ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="modalFinish = true" />
                         <UButton color="red" v-if="form.status !== 'ส่งซ่อม'"  label="ไม่อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(false)" />
                         <UButton color="gray" @click="modalApprove = false; closeModal()" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
@@ -349,16 +349,22 @@
         key: 'actions'
     }]
 
+    const auth = useAuthStore();
+
+
     const items = (row) => {
 
-        let btn
+        let btn = [{
+            label: 'รายละเอียดคำขอ',
+            icon: 'i-heroicons-pencil-square-20-solid',
+            click: () => fetchEditData(row.req_id)
+        }]
 
-        if(row.status == 'รออนุมัติหน่วยงาน' || row.status == 'รอตรวจสอบ(ทส.)') {
-            btn = [{
-                label: 'รายละเอียดคำขอ',
-                icon: 'i-heroicons-pencil-square-20-solid',
-                click: () => fetchEditData(row.req_id)
-            }, {
+
+       
+
+        if((row.status == 'รออนุมัติหน่วยงาน' && auth.user.userInMenuDisplay.some(g => g.menuName.includes('ผู้อนุมัติแจ้งซ่อมประจำหน่วยงาน')) ) || (row.status == 'รอตรวจสอบ(ทส.)' &&  auth.user.userInMenuDisplay.some(g => g.menuName.includes('ผู้ตรวจสอบการแจ้งซ่อม(ทส.)')))) {
+            btn.push({
                 label: 'อนุมัติ',
                 icon: 'i-heroicons-archive-box-20-solid',
                 click: () => fetchEditData(row.req_id, true)
@@ -369,36 +375,17 @@
                     modelDeleteConfirm.value = true; 
                     itemDelete.value = row.req_id;
                 }
-            }]
+            })
         }
 
-        if(row.status == 'ซ่อมเสร็จ') {
-            btn = [{
-                label: 'รายละเอียดคำขอ',
-                icon: 'i-heroicons-pencil-square-20-solid',
-                click: () => fetchEditData(row.req_id, true, true)
-            }]
-        }
-
-        if(row.status == 'ส่งซ่อม') {
-            btn = [{
-                label: 'รายละเอียดคำขอ',
-                icon: 'i-heroicons-pencil-square-20-solid',
-                click: () => fetchEditData(row.req_id, true, true)
-            }, {
+        if(row.status == 'ส่งซ่อม' && auth.user.userInMenuDisplay.some(g => g.menuName.includes('ผู้แจ้งซ่อมเสร็จ'))) {
+            btn.push({
                 label: 'แจ้งซ่อมเสร็จ',
                 icon: 'i-heroicons-archive-box-20-solid',
                 click: () => fetchEditData(row.req_id, true)
-            }]
+            })
         }
 
-         if(row.status == 'ปฏิเสธจากหน่วยงาน') {
-            btn = [{
-                label: 'รายละเอียดคำขอ',
-                icon: 'i-heroicons-pencil-square-20-solid',
-                click: () => fetchEditData(row.req_id, true, true)
-            }]
-        }
         return [btn]
     }
 
@@ -426,7 +413,7 @@
         fix_by: "",
         item_type: "",
         description:"",//รายละเอียด  
-        created_by:"tammon.y", //ผู้ทำรายการ
+        created_by:auth.username, //ผู้ทำรายการ
         modified_by:""//ผู้แก้ไขรายการ
     }
     const form = ref(template)
@@ -467,7 +454,7 @@
     const dataApprove = ref({
         ReqID:"",  
         Action:"",//สถานะมี 2 สถานะคือ  (อนุมัติ , ปฏิเสธ)
-        ActiondBy:"tammon.y",//อนุมัติหรือปฏิเสธโดย
+        ActiondBy:auth.username,//อนุมัติหรือปฏิเสธโดย
         Reason:""//เหตุผลการไม่อนุมัติ ถ้าอนุมัติไม่ต้องใส่
     })
 
@@ -519,7 +506,7 @@
             fix_by: "",
             item_type: "",
             description:"",//รายละเอียด  
-            created_by:"tammon.y", //ผู้ทำรายการ
+            created_by:auth.username, //ผู้ทำรายการ
             modified_by:""//ผู้แก้ไขรายการ
         }
     }
@@ -634,7 +621,7 @@
             fix_by: "",
             item_type: "",
             description:"",//รายละเอียด  
-            created_by:"tammon.y", //ผู้ทำรายการ
+            created_by:auth.username, //ผู้ทำรายการ
             modified_by:""//ผู้แก้ไขรายการ
         }
     }

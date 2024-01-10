@@ -101,6 +101,7 @@
     definePageMeta({
         middleware: ["auth"]
     })
+    const auth = useAuthStore();
 
 
     const columns = [{
@@ -196,7 +197,7 @@
         const res = await deleteMasterType({
             MasterTypeID:"HD_REPAIR_PURPOSE",
             Value: itemDelete.value,
-            DeletedBy:"tammon.y"
+            DeletedBy:auth.username
         })
 
         modelDeleteConfirm.value = false

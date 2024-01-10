@@ -157,6 +157,7 @@
         description1: string().required('กรอกรายประเภทอุุปกรณ์'),
     })
 
+    const auth = useAuthStore();
 
     const submit = async () => {
         const res = await addMasterType(form.value)
@@ -168,7 +169,7 @@
         const res = await deleteMasterType({
             MasterTypeID:"HD_ITEMTYPE",
             Value: itemDelete.value,
-            DeletedBy:"tammon.y"
+            DeletedBy:auth.username
         })
 
          modelDeleteConfirm.value = false

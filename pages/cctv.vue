@@ -50,7 +50,7 @@
                     <div>{{ moment(row.req_date).format('DD/MM/YYYY') }}</div>
                 </template>
                 <template #actions-data="{ row }">
-                    <UDropdown :items="row.status !== 'ปฏิเสธ' && row.status !== 'อนุมัติ' ? items(row) : menuNotApprove(row)" :popper="{ placement: 'bottom-start' }">
+                    <UDropdown :items="items(row)" :popper="{ placement: 'bottom-start' }">
                         <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
                     </UDropdown>
                 </template>
@@ -331,6 +331,7 @@
     })
 
 
+
     const modalAdd = ref(false)
     const modelDeleteConfirm = ref(false)
     
@@ -366,33 +367,57 @@
         key: 'actions'
     }]
 
-    const items = (row) => [
-        [{
+        const auth = useAuthStore();
+
+     const items = (row) => {
+
+        let btn = [{
             label: 'รายละเอียดคำขอ',
             icon: 'i-heroicons-pencil-square-20-solid',
             click: () => fetchEditData(row.req_id)
-        }, {
-            label: 'อนุมัติ',
-            icon: 'i-heroicons-archive-box-20-solid',
-            click: () => fetchEditData(row.req_id, true)
-        },{
-            label: 'ลบ',
-            icon: 'i-heroicons-trash-20-solid',
-            click: () => {
-                modelDeleteConfirm.value = true; 
-                itemDelete.value = row.req_id;
-            }
         }]
-    ]
 
-    const menuNotApprove = (row) => [
-        [{
+        if(row.status == 'รออนุมัติ(ทส.)' && auth.user.userInMenuDisplay.some(g => g.menuName.includes('ผู้อนุมัติการขอดู CCTV (ทส.)')) || row.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInMenuDisplay.some(g => g.menuName.includes('ผู้ตรวจสอบการขอดู CCTV (ทส.)'))) {
+            btn.push({
+                label: 'อนุมัติ',
+                icon: 'i-heroicons-archive-box-20-solid',
+                click: () => fetchEditData(row.req_id, true)
+            },{
+                label: 'ลบ',
+                icon: 'i-heroicons-trash-20-solid',
+                click: () => {
+                    modelDeleteConfirm.value = true; 
+                    itemDelete.value = row.req_id;
+                }
+            })
+        }
+        return [btn]
+    }
+
+
+    const menuNotApprove = (row) =>{
+
+        let btn =  [{
             label: 'รายละเอียดคำขอ',
             icon: 'i-heroicons-pencil-square-20-solid',
             click: () => fetchEditData(row.req_id, true, true)
         }]
-    ]
 
+        if(row.status === 'รอตรวจสอบ(ทส.)') {
+            btn.push({
+                label: 'ลบ',
+                icon: 'i-heroicons-trash-20-solid',
+                click: () => {
+                    modelDeleteConfirm.value = true; 
+                    itemDelete.value = row.req_id;
+                }
+            })
+        }
+
+        return [btn]
+       
+
+    }
     const page = ref(1)
     const pageCount = ref(20)
     const pageTotal = computed(() => lists.value.total)
@@ -449,7 +474,7 @@
         building_id:"",//รหัสตึก
         floor:"",//ชั้นที่
         description:"",//รายละเอียด  
-        created_by:"tammon.y", //ผู้ทำรายการ
+        created_by: auth.username, //ผู้ทำรายการ
         modified_by:""//ผู้แก้ไขรายการ
     }
     const form = ref(templateEmpty)
@@ -478,7 +503,7 @@
     const dataApprove = ref({
         ReqID:"",  
         Action:"",//สถานะมี 2 สถานะคือ  (อนุมัติ , ปฏิเสธ)
-        ActiondBy:"tammon.y",//อนุมัติหรือปฏิเสธโดย
+        ActiondBy: auth.username,//อนุมัติหรือปฏิเสธโดย
         Reason:""//เหตุผลการไม่อนุมัติ ถ้าอนุมัติไม่ต้องใส่
     })
 

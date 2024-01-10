@@ -323,13 +323,13 @@
     const dataApprove = ref({
         ReqID:"",  
         Action:"",//สถานะมี 2 สถานะคือ  (อนุมัติ , ปฏิเสธ)
-        ActiondBy:"tammon.y",//อนุมัติหรือปฏิเสธโดย
+        ActiondBy:auth.username,//อนุมัติหรือปฏิเสธโดย
         Reason:""//เหตุผลการไม่อนุมัติ ถ้าอนุมัติไม่ต้องใส่
     })
 
      const dataReturn = ref({
         ReqID: "",
-        ActiondBy:"tammon.y",
+        ActiondBy:auth.username,
         returnAll: false
     })
 
@@ -367,48 +367,42 @@
         key: 'actions'
     }]
 
+    const auth = useAuthStore();
+
+
+
+
     const items = (row) => {
 
-        let btn
-
-        if(row.status == 'รออนุมัติหน่วยงาน' || row.status == 'รอตรวจสอบ(ทส.)') {
-            btn = [{
+        let btn = [{
                 label: 'รายละเอียดคำขอ',
                 icon: 'i-heroicons-pencil-square-20-solid',
                 click: () => fetchEditData(row.req_id)
-            }, {
-                label: 'อนุมัติ',
-                icon: 'i-heroicons-archive-box-20-solid',
-                click: () => fetchEditData(row.req_id, true)
-            },{
-                label: 'ลบ',
-                icon: 'i-heroicons-trash-20-solid',
-                click: () => {
-                    modelDeleteConfirm.value = true; 
-                    itemDelete.value = row.req_id;
-                }
             }]
-        }
 
-        if(row.status == 'คืน' || row.status == 'ปฏิเสธจาก(ทส.)' || row.status == 'ปฏิเสธจากหน่วยงาน') {
-            btn = [{
-                label: 'รายละเอียดคำขอ',
-                icon: 'i-heroicons-pencil-square-20-solid',
-                click: () => fetchEditData(row.req_id, true, true)
-            }]
-        }
 
-        if(row.status == 'ส่งมอบใช้งาน' || row.status == 'รายการคงค้าง') {
-            btn = [{
-                label: 'รายละเอียดคำขอ',
-                icon: 'i-heroicons-pencil-square-20-solid',
-                click: () => fetchEditData(row.req_id, true, false)
-            }, {
-                label: 'คืนพัสดุ',
-                icon: 'i-heroicons-archive-box-20-solid',
-                click: () => fetchEditData(row.req_id, false, true)
-            }]
-        }
+            if(row.status == 'รออนุมัติหน่วยงาน' && auth.user.userInMenuDisplay.some(g => g.menuName.includes('ผู้อนุมัติยืมพัสดุประจำหน่วยงาน')) || row.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInMenuDisplay.some(g => g.menuName.includes('ผู้ตรวจสอบยืมพัสดุประจำ ทศ.'))) {
+                btn.push({
+                    label: 'อนุมัติ',
+                    icon: 'i-heroicons-archive-box-20-solid',
+                    click: () => fetchEditData(row.req_id, true)
+                },{
+                    label: 'ลบ',
+                    icon: 'i-heroicons-trash-20-solid',
+                    click: () => {
+                        modelDeleteConfirm.value = true; 
+                        itemDelete.value = row.req_id;
+                    }
+                })
+            }
+            if(row.status == 'ส่งมอบใช้งาน' || row.status == 'รายการคงค้าง') {
+                btn.push( {
+                    label: 'คืนพัสดุ',
+                    icon: 'i-heroicons-archive-box-20-solid',
+                    click: () => fetchEditData(row.req_id, false, true)
+                })
+            }
+            
         return [btn]
     }
 
@@ -436,7 +430,7 @@
         location:"",//สถานที่ใช้งาน
         location_unit:"",//ศูนย์เขต  
         description:"",//รายละเอียด  
-        created_by:"tammon.y", //ผู้ทำรายการ
+        created_by:auth.username, //ผู้ทำรายการ
         modified_by: "",
         status: "",
         department_id: "",
@@ -486,7 +480,7 @@
             location:"",//สถานที่ใช้งาน
             location_unit:"",//ศูนย์เขต  
             description:"",//รายละเอียด  
-            created_by:"tammon.y", //ผู้ทำรายการ
+            created_by:auth.username, //ผู้ทำรายการ
             modified_by: "",
             department_id: "",
             items: [{

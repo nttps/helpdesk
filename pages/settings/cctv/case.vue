@@ -93,6 +93,7 @@
     definePageMeta({
         middleware: ["auth"]
     })
+    const auth = useAuthStore();
 
 
     const columns = [{
@@ -187,7 +188,7 @@
         const res = await deleteMasterType({
             MasterTypeID:"HD_CCTV_CASE",//HD_CCTV_CASE , HD_CCTV_PURPOSE ,  HD_ITEMCATE , HD_ITEMTYPE ,HD_REPAIR_PURPOSE
             Value: itemDelete.value,//ค่าที่ต้องการลบ
-            DeletedBy:"tammon.y"//current user login
+            DeletedBy: auth.username//current user login
         })
 
         modelDeleteConfirm.value = false

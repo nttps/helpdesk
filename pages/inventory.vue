@@ -178,6 +178,7 @@
     definePageMeta({
         middleware: ["auth"]
     })
+    const auth = useAuthStore();
 
 
     const modelDeleteConfirm = ref(false)
@@ -272,7 +273,7 @@
         remark:"",  
         contact:"",//เบอร์ติดต่อ
         contract:"",//เลขที่สัญญา 
-        created_by:"tammon.y",//current user login 
+        created_by:auth.username,//current user login 
         modified_by:"",//current user login กรณีที่ต้องการแก้ไข
         qty_bal: "",
         is_active: true
@@ -315,7 +316,7 @@
     const deleteItem = async () => {
         const res = await deleteApi('/api/hd/Items/DeleteDoc', {
             ItemID: itemDelete.value,//รหัสสินค้า
-            DeletedBy:"tammon.y"//current user login
+            DeletedBy:auth.username//current user login
         })
 
         modelDeleteConfirm.value = false
