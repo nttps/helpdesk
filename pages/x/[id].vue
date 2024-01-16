@@ -11,7 +11,7 @@ definePageMeta({
     const route = useRoute()
     const config = useRuntimeConfig();
 
-    const url = `${config.public.authUrl}/api/AppsLogin/GetCrossAppReq?request=${route.params.id}`;
+    const url = `${config.public.authUrl}/api_dx/AppsLogin/GetCrossAppReq?request=${route.params.id}`;
     const authStore = useAuthStore();
 
 
@@ -41,7 +41,7 @@ definePageMeta({
 
       
 
-    // const url = `${config.public.authUrl}/api/AppsLogin/CreateCrossAppReq`
+    // const url = `${config.public.authUrl}/api_dx/AppsLogin/CreateCrossAppReq`
 
     // var raw = JSON.stringify({
     //     UserName:"tammon.y",

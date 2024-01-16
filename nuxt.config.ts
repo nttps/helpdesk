@@ -1,4 +1,4 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+// https://nuxt.com/docs/api_dx/configuration/nuxt-config
 import pkg from "./package.json";
 
 const apiBaseUrl = process.env.NUXT_PUBLIC_API_URL;

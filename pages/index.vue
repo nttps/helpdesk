@@ -507,7 +507,7 @@
         statusList.value.forEach(async s => { 
 
             const status = coditionStatus(s.name)
-            const data = await postApi('/api/hd/request/ListBorrow', {
+            const data = await postApi('/api_dx/hd/request/ListBorrow', {
                 "SearchText": textSearch.value,//ค้นหาใน department_desc ,description,phone_req,purpose_desc,item_id,item_name,req_by_fullname ,ค่าว่างค้นหาทั้งหมด  
                 "DateBegin": null,//วันที่แจ้งซ่อมเริ่ม
                 "DateEnd": null,//ถึงวันที่ซ่อม
@@ -547,7 +547,7 @@
     const { data: lists, pending, refresh } = await useAsyncData(
         'lists',
         async () => {
-            const data = await postApi('/api/hd/request/ListBorrow', {
+            const data = await postApi('/api_dx/hd/request/ListBorrow', {
                 "SearchText": textSearch.value,//ค้นหาใน department_desc ,description,phone_req,purpose_desc,item_id,item_name,req_by_fullname ,ค่าว่างค้นหาทั้งหมด  
                 "DateBegin": null,//วันที่แจ้งซ่อมเริ่ม
                 "DateEnd": null,//ถึงวันที่ซ่อม
@@ -580,7 +580,7 @@
     const submitRequest = async () => {
 
         console.log(form.value.items);
-        const res = await postApi('/api/hd/request/SaveBorrow', {
+        const res = await postApi('/api_dx/hd/request/SaveBorrow', {
             RequestHead: form.value,
             RequestItem: form.value.items.map(item => {
                 return {
@@ -611,7 +611,7 @@
     const fetchEditData = async (id, approve = false, isReturn = false) => {
 
         dataApprove.value.ReqID = id
-        const data = await getApi(`/api/hd/request/GetDocSet?req_id=${id}`)
+        const data = await getApi(`/api_dx/hd/request/GetDocSet?req_id=${id}`)
 
         form.value = data.requestHead
         form.value.items = data.requestItem
@@ -639,7 +639,7 @@
     }
 
     const submitApprove = async () => {
-        const res = await postApi('/api/hd/request/ApproveDocument', dataApprove.value)
+        const res = await postApi('/api_dx/hd/request/ApproveDocument', dataApprove.value)
 
         modalConfirmApprove.value = false
         modalApprove.value = false
@@ -657,7 +657,7 @@
         })
         dataReturn.value.items = returnItems
 
-        const res = await postApi('/api/hd/request/SetReturn', dataReturn.value)
+        const res = await postApi('/api_dx/hd/request/SetReturn', dataReturn.value)
 
         modalReturn.value = false
         modalConfirmReturn.value = false

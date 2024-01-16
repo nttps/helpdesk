@@ -17,7 +17,7 @@ export const getMasterType = async (type, search) => {
 
     try {
         const response = await fetch(
-            `${config.public.apiUrl}/api/MasterType/ListData`,
+            `${config.public.apiUrl}/api_dx/MasterType/ListData`,
             requestOptions
         );
         return await response.json();
@@ -41,7 +41,7 @@ export const getListItems = async (search, status, type = '') => {
 
     try {
         const response = await fetch(
-            `${config.public.apiUrl}/api/hd/Items/ListData`,
+            `${config.public.apiUrl}/api_dx/hd/Items/ListData`,
             requestOptions
         );
         return await response.json();
@@ -67,7 +67,7 @@ export const getListCCTV = async (search, dataBegin, dateEnd, status) => {
 
     try {
         const response = await fetch(
-            `${config.public.apiUrl}/api/hd/request/ListCCTV`,
+            `${config.public.apiUrl}/api_dx/hd/request/ListCCTV`,
             requestOptions
         );
         return await response.json();
@@ -88,7 +88,7 @@ export const addMasterType = async (data) => {
 
     try {
         const response = await fetch(
-            `${config.public.apiUrl}/api/MasterType/Add`,
+            `${config.public.apiUrl}/api_dx/MasterType/Add`,
             requestOptions
         );
         return await response.json();
@@ -109,7 +109,7 @@ export const deleteMasterType = async (data) => {
 
     try {
         const response = await fetch(
-            `${config.public.apiUrl}/api/MasterType/Delete`,
+            `${config.public.apiUrl}/api_dx/MasterType/Delete`,
             requestOptions
         );
         return await response.json();
@@ -131,7 +131,7 @@ export const searchUserApi = async (search) => {
 
     try {
         const response = await fetch(
-            `${config.public.apiUrl}/api/Person/ListUserInfo`,
+            `${config.public.apiUrl}/api_dx/Person/ListUserInfo`,
             requestOptions
         );
         return await response.json();
@@ -204,7 +204,7 @@ export const deleteRequestApi = async (id) => {
 
     try {
         const response = await fetch(
-            `${config.public.apiUrl}/api/hd/request/DeleteDoc`,
+            `${config.public.apiUrl}/api_dx/hd/request/DeleteDoc`,
             requestOptions
         );
         return await response.json();
