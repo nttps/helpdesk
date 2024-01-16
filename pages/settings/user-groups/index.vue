@@ -161,7 +161,7 @@
     const { data: lists, pending, refresh } = await useAsyncData(
         'lists',
         async () => {
-            const data = await getApi('/api_dx/Person/ListUserGroup?appid=HELP DESK')
+            const data = await getApi('/Person/ListUserGroup?appid=HELP DESK')
 
             return data
         }, {
@@ -171,13 +171,13 @@
 
     const groupSubmit = async() => {
         if(!stateGroup.value) {
-            const data = await deleteApi('/api_dx/Person/DeleteUserFromGroup', {
+            const data = await deleteApi('/Person/DeleteUserFromGroup', {
                 "Username": userGroup.value,
                 "GroupID": selectGroup.value,
                 "AppID":"HELP DESK"
             })
         }else {
-            const data = await postApi('/api_dx/Person/AddUserToGroup', {
+            const data = await postApi('/Person/AddUserToGroup', {
                 "Username":  userGroup.value,
                 "GroupID":selectGroup.value,
                 "AppID":"HELP DESK"
@@ -194,7 +194,7 @@
     const form = ref({})
 
     const fetchEditData = async (value) => {
-        const data = await getApi(`/api_dx/Person/ListUserInGroup?username=${value.username}&appid=HELP DESK`)
+        const data = await getApi(`/Person/ListUserInGroup?username=${value.username}&appid=HELP DESK`)
        
         form.value = value
         form.value.groups = data

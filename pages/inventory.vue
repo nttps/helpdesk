@@ -293,14 +293,14 @@
     const labelDateExpire = computed(() => form.value.warranty_expiration_date ? moment(form.value.warranty_expiration_date).format('DD/MM/YYYY') : 'หมดประกันวันที่')
 
     const fetchEditData = async (id) => {
-        const data = await getApi(`/api_dx/hd/Items/GetDocSet?item_id=${id}`)
+        const data = await getApi(`/hd/Items/GetDocSet?item_id=${id}`)
         form.value = data.itemInfo
 
         modalAdd.value = true
     }
 
     const submit = async () => {
-        const res = await postApi('/api_dx/hd/Items/Save', form.value)
+        const res = await postApi('/hd/Items/Save', form.value)
 
         if(res.outputAction.result === 'ok') {
             refresh()
@@ -314,7 +314,7 @@
 
 
     const deleteItem = async () => {
-        const res = await deleteApi('/api_dx/hd/Items/DeleteDoc', {
+        const res = await deleteApi('/hd/Items/DeleteDoc', {
             ItemID: itemDelete.value,//รหัสสินค้า
             DeletedBy:auth.username//current user login
         })

@@ -151,7 +151,7 @@
     })
 
     const fetchGroups = async () => {
-        const data = await getApi('/api_dx/Person/ListUserGroup?appid=HELP DESK')
+        const data = await getApi('/Person/ListUserGroup?appid=HELP DESK')
 
         console.log(data);
         allGroups.value = data
@@ -181,7 +181,7 @@
     const { data: lists, pending, refresh } = await useAsyncData(
         'lists',
         async () => {
-            const data = await postApi('/api_dx/Person/ListUserInfoWithPage', {
+            const data = await postApi('/Person/ListUserInfoWithPage', {
                 "Search": textSearch.value,//ค้นหาใน department_desc ,description,phone_req,purpose_desc,item_id,item_name,req_by_fullname ,ค่าว่างค้นหาทั้งหมด  
                 "skip": page.value > 1 ? pageCount.value : 0,//วันที่แจ้งซ่อมเริ่ม
                 "take": pageCount.value,//ถึงวันที่ซ่อม
@@ -195,13 +195,13 @@
 
     const groupSubmit = async() => {
         if(!stateGroup.value) {
-            const data = await deleteApi('/api_dx/Person/DeleteUserFromGroup', {
+            const data = await deleteApi('/Person/DeleteUserFromGroup', {
                 "Username": userGroup.value,
                 "GroupID": selectGroup.value,
                 "AppID":"HELP DESK"
             })
         }else {
-            const data = await postApi('/api_dx/Person/AddUserToGroup', {
+            const data = await postApi('/Person/AddUserToGroup', {
                 "Username":  userGroup.value,
                 "GroupID":selectGroup.value,
                 "AppID":"HELP DESK"
@@ -218,7 +218,7 @@
     const form = ref({})
 
     const fetchEditData = async (value) => {
-        const data = await getApi(`/api_dx/Person/ListUserInGroup?username=${value.username}&appid=HELP DESK`)
+        const data = await getApi(`/Person/ListUserInGroup?username=${value.username}&appid=HELP DESK`)
        
         form.value = value
         form.value.groups = data

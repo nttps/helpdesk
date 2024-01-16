@@ -524,7 +524,7 @@
         statusList.value.forEach(async s => { 
 
             const status = coditionStatus(s.name)
-            const data = await postApi('/api_dx/hd/request/ListCCTV', {
+            const data = await postApi('/hd/request/ListCCTV', {
                 "SearchText": textSearch.value,//ค้นหาใน department_desc ,description,phone_req,purpose_desc,item_id,item_name,req_by_fullname ,ค่าว่างค้นหาทั้งหมด  
                 "DateBegin": null,//วันที่แจ้งซ่อมเริ่ม
                 "DateEnd": null,//ถึงวันที่ซ่อม
@@ -559,7 +559,7 @@
     const { data: lists, pending, refresh } = await useAsyncData(
         'lists',
         async () => {
-            const data = await postApi('/api_dx/hd/request/ListCCTV', {
+            const data = await postApi('/hd/request/ListCCTV', {
                 "SearchText": textSearch.value,//ค้นหาใน department_desc ,description,phone_req,purpose_desc,item_id,item_name,req_by_fullname ,ค่าว่างค้นหาทั้งหมด  
                 "DateBegin": null,//วันที่แจ้งซ่อมเริ่ม
                 "DateEnd": null,//ถึงวันที่ซ่อม
@@ -582,7 +582,7 @@
     const fetchEditData = async (id, approve = false, view = false) => {
 
         dataApprove.value.ReqID = id
-        const data = await getApi(`/api_dx/hd/request/GetDocSet?req_id=${id}`)
+        const data = await getApi(`/hd/request/GetDocSet?req_id=${id}`)
         form.value = data.requestHead
 
 
@@ -624,7 +624,7 @@
 
     }
     const submit = async () => {
-        const res = await postApi('/api_dx/hd/request/SaveCCTV', {
+        const res = await postApi('/hd/request/SaveCCTV', {
             RequestHead: form.value
         })
 
@@ -645,7 +645,7 @@
     }
 
     const submitApprove = async () => {
-        const res = await postApi('/api_dx/hd/request/ApproveDocument', dataApprove.value)
+        const res = await postApi('/hd/request/ApproveDocument', dataApprove.value)
         console.log(res);
 
         modalConfirmApprove.value = false
@@ -668,7 +668,7 @@
         dataApprove.value.ReqID = dataApproveed
 
         modalAlertApproveAll.value = false
-        const res = await postApi('/api_dx/hd/request/ApproveDocument', dataApprove.value)
+        const res = await postApi('/hd/request/ApproveDocument', dataApprove.value)
 
         refresh()
         countStatus()

@@ -144,7 +144,7 @@
     })
 
     const fetchEditData = async (value) => {
-        const data = await postApi(`/api_dx/MasterType/GetValue`, {
+        const data = await postApi(`/MasterType/GetValue`, {
             MasterTypeID:"HD_CCTV_CASE",
             Value: value
 
