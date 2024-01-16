@@ -2,9 +2,22 @@
 import pkg from "./package.json";
 
 const apiBaseUrl = process.env.NUXT_PUBLIC_API_URL;
+const baseURL = process.env.NUXT_BASE_URL;
+
 
 export default defineNuxtConfig({
     devtools: { enabled: true },
+    app: {
+        baseURL: "/" + baseURL || "/",
+    },
+    nitro: {
+        runtimeConfig: {
+            app: {
+                //baseURL: baseURL || "/",
+                buildAssetsDir: `${baseURL}_nuxt/`,
+            },
+        },
+    },
     ssr: false,
     modules: [
         "@nuxtjs/google-fonts",
