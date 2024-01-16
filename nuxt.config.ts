@@ -26,6 +26,10 @@ export default defineNuxtConfig({
             Kanit: true,
         },
     },
+    css: [
+        // CSS file in the project
+        "@/assets/css/main.css",
+    ],
     imports: {
         dirs: ["stores"],
     },
