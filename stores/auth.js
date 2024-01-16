@@ -21,7 +21,7 @@ export const useAuthStore = defineStore("auth-helpdesk", {
         async login(loginForm) {
             const config = useRuntimeConfig();
 
-            const baseUrl = `${config.public.apiUrl}/api/AppsLogin/LoginMini`;
+            const baseUrl = `${config.public.apiUrl}/AppsLogin/LoginMini`;
 
             const lifetime = 60 * 60 * 24 * config.public.cookieLifetime;
 
