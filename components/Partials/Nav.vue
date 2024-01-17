@@ -2,7 +2,7 @@
     <div class="flex flex-col justify-between h-full">
         <div>
             <NuxtLink class="text-center">
-                <img src="/logo.png" alt="logo" class="mx-auto">
+                <img src="~assets/images/logo.png" alt="logo" class="mx-auto">
             </NuxtLink>
             <nav class="nav-top">
                 <ul>
