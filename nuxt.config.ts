@@ -8,13 +8,13 @@ const baseURL = process.env.NUXT_BASE_URL;
 export default defineNuxtConfig({
     devtools: { enabled: true },
     app: {
-        baseURL: "/" + baseURL || "/",
+        baseURL: baseURL ? "/" + baseURL : "/",
     },
     nitro: {
         runtimeConfig: {
             app: {
                 //baseURL: baseURL || "/",
-                buildAssetsDir: `${baseURL}_nuxt/`,
+                buildAssetsDir: `${baseURL ? "/" + baseURL : "/"}_nuxt/`,
             },
         },
     },
