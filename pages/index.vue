@@ -26,6 +26,7 @@
                         label="อนุมัติ"
                         :trailing="false"
                         class="mr-2"
+                        @click="modalAlertApproveAll = true"
                     />
                     <UButton
                         icon="i-heroicons-plus-20-solid"
@@ -34,6 +35,7 @@
                         color="red"
                         label="ไม่อนุมัติ"
                         :trailing="false"
+                        @click="modalAlertNotApproveAll = true"
                     />
                 </div>
                 <UButton icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray"/>
@@ -274,6 +276,40 @@
         </UCard>
     </UModal>
 
+    <UModal v-model="modalAlertApproveAll">
+        <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+          <template #header>
+              <div class="text-center">แจ้งเตือนการยืนยัน</div>
+          </template>
+
+          <div class="font-bold text-xl text-center">ต้องการยืนยันอนุมัติข้อมูลทั้งหมดใช่หรือไม่</div>
+
+          <template #footer>
+              <div class="flex justify-between">
+                  <button type="button" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white" @click="approveAll">ยืนยัน</button>
+                  <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalAlertApproveAll = false">ยกเลิก</button>
+              </div>
+          </template>
+        </UCard>
+    </UModal>
+
+    <UModal v-model="modalAlertNotApproveAll">
+        <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+          <template #header>
+              <div class="text-center">แจ้งเตือนการยืนยัน</div>
+          </template>
+
+          <div class="font-bold text-xl text-center">ต้องการไม่อนุมัติข้อมูลทั้งหมดใช่หรือไม่</div>
+
+          <template #footer>
+              <div class="flex justify-between">
+                  <button type="button" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white" @click="notApproveAll">ยืนยัน</button>
+                  <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalAlertNotApproveAll = false">ยกเลิก</button>
+              </div>
+          </template>
+        </UCard>
+    </UModal>
+
     
 </template>
 
@@ -294,7 +330,8 @@
     const modalConfirmApprove = ref(false)
     const modalConfirmReturn = ref(false)
     const textSearch = ref('')
-
+    const modalAlertApproveAll = ref(false)
+    const modalAlertNotApproveAll = ref(false)
     const statusSearch = ref('')
     const statusList = ref([{
         name : 'รายการคำขอยืม',
@@ -665,6 +702,39 @@
         resetForm()
     }
 
+    const approveAll = async () => {
+        const dataApproveed =  selectedRows.value.filter(re => re.status != 'ปฏิเสธ' && re.status != 'ปฏิเสธจาก(ทส.)' && re.status != 'อนุมัติ').map(re => re.req_id).join(',')
+        
+        dataApprove.value.Action = 'อนุมัติ'
+        dataApprove.value.ReqID = dataApproveed
+
+        modalAlertApproveAll.value = false
+        const res = await postApi('/hd/request/ApproveDocument', dataApprove.value)
+
+        refresh()
+        countStatus()
+
+        selectedRows.value = []
+
+
+    }
+
+    const notApproveAll = async () => {
+        const dataApproveed =  selectedRows.value.filter(re => re.status != 'ปฏิเสธ' && re.status != 'ปฏิเสธจาก(ทส.)' && re.status != 'อนุมัติ').map(re => re.req_id).join(',')
+        
+        dataApprove.value.Action = 'ปฏิเสธ'
+        dataApprove.value.ReqID = dataApproveed
+
+        modalAlertNotApproveAll.value = false
+        const res = await postApi('/hd/request/ApproveDocument', dataApprove.value)
+
+        refresh()
+        countStatus()
+
+        selectedRows.value = []
+
+
+    }
     
 </script>
 
