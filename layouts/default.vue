@@ -13,8 +13,8 @@
 <script setup>
   const route = useRoute()
   useHead({
-    title: `E-Helpdesk - ${route.meta.title}`,
-    meta: [{ property: 'og:title', content: `E-Helpdesk - ${route.meta.title}` }],
+    title: `E-Helpdesk`,
+    meta: [{ property: 'og:title', content: `E-Helpdesk` }],
     htmlAttrs: {
       lang: 'en'
     },
