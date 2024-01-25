@@ -39,7 +39,7 @@
                 :empty-state="{ label: 'ไม่พบรายการ' }"
             > 
                 <template #id-data="{ row, index }">
-                    <div>{{ index+1 }}</div>
+                    <div>{{ pageFrom + index }}</div>
                 </template>
 
                 <template #req_by_user_id-data="{ row }">
@@ -542,7 +542,7 @@
                 statusSearch = ''
                 break;
             case 'รออนุมัติ':
-                statusSearch = 'รออนุมัติหน่วยงาน,รอตรวจสอบ(ทส.)'
+                statusSearch = 'รออนุมัติ(ทส.),รอตรวจสอบ(ทส.)'
                 break;
             case 'อนุมัติ':
                 statusSearch = 'อนุมัติ'

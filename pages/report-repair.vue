@@ -29,7 +29,7 @@
             > 
 
                 <template #id-data="{ row, index }">
-                    <div>{{ index+1 }}</div>
+                    <div>{{ pageFrom + index }}</div>
                 </template>
                 <template #req_date-data="{ row }">
                     <div>{{ moment(row.req_date).format('DD/MM/YYYY') }}</div>
