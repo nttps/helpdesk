@@ -334,7 +334,7 @@
     const modalAlertNotApproveAll = ref(false)
     const statusSearch = ref('')
     const statusList = ref([{
-        name : 'รายการคำขอยืม',
+        name : 'รายการทั้งหมด',
         count: 0,
         color: 'blue'
     }, {
@@ -342,7 +342,7 @@
         count: 0,
         color: 'red'
     }, {
-        name : 'รายการกำลังยืม',
+        name : 'รายการคำขอยืม',
         count: 0,
         color: 'yellow'
     }, {
@@ -350,7 +350,7 @@
         count: 0,
         color: 'yellow'
     }])
-    const statusActive = ref('รายการคำขอยืม')
+    const statusActive = ref('รายการทั้งหมด')
 
     const dataApprove = ref({
         ReqID:"",  
@@ -550,13 +550,13 @@
     const coditionStatus = (status) => {
         let statusSearch
         switch (status) {
-            case 'รายการคำขอยืม':
+            case 'รายการทั้งหมด':
                 statusSearch = ''
                 break;
             case 'รายการรออนุมัติ':
                 statusSearch = 'รออนุมัติหน่วยงาน,รอตรวจสอบ(ทส.)'
                 break;
-            case 'รายการกำลังยืม':
+            case 'รายการคำขอยืม':
                 statusSearch = 'ส่งมอบใช้งาน'
                 break;
             case 'รายการที่ค้าง':

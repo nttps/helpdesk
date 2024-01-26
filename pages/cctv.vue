@@ -482,7 +482,7 @@
 
     const statusSearch = ref('')
     const statusList = ref([{
-        name : 'รายการคำขอ',
+        name : 'รายการทั้งหมด',
         count: 0,
         color: 'blue'
     }, {
@@ -498,7 +498,7 @@
         count: 0,
         color: 'red'
     }])
-    const statusActive = ref('รายการคำขอ')
+    const statusActive = ref('รายการทั้งหมด')
 
     const dataApprove = ref({
         ReqID:"",  
@@ -538,7 +538,7 @@
     const coditionStatus = (status) => {
         let statusSearch
         switch (status) {
-            case 'รายการคำขอ':
+            case 'รายการทั้งหมด':
                 statusSearch = ''
                 break;
             case 'รออนุมัติ':
