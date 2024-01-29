@@ -16,8 +16,19 @@
                     <UInput v-model="textSearch" placeholder="ค้นหาจากชื่อผู้แจ้ง, เบอร์โทรศัพท์" size="md" icon="i-heroicons-magnifying-glass-20-solid" />
                 </div>
             </div>
-            <div class="text-right">
-                <UButton class="ml-auto" icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="md" color="gray"/>
+            <div class="flex items-center justify-end space-x-2">
+                <div v-if="selected.length > 0">
+                    <UButton
+                        icon="i-heroicons-plus-20-solid"
+                        size="sm"
+                        variant="solid"
+                        label="อนุมัติ"
+                        :trailing="false"
+                        class="bg-green-600 hover:bg-green-700"
+                        @click="modalAlertApproveAll = true"
+                    />
+                </div>
+                <UButton class="ml-auto" icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray"/>
             </div>
             <UTable 
                 v-model="selected" 
@@ -285,6 +296,23 @@
               <div class="flex justify-between">
                   <button type="button" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white" @click="deleteItem">ยืนยัน</button>
                   <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modelDeleteConfirm = false">ยกเลิก</button>
+              </div>
+          </template>
+        </UCard>
+    </UModal>
+
+    <UModal v-model="modalAlertApproveAll">
+        <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+          <template #header>
+              <div class="text-center">แจ้งเตือนการยืนยัน</div>
+          </template>
+
+          <div class="font-bold text-xl text-center">ต้องการยืนยันอนุมัติข้อมูลทั้งหมดใช่หรือไม่</div>
+
+          <template #footer>
+              <div class="flex justify-between">
+                  <button type="button" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white" @click="approveAll">ยืนยัน</button>
+                  <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalAlertApproveAll = false">ยกเลิก</button>
               </div>
           </template>
         </UCard>
@@ -671,6 +699,33 @@
     const refreshDataAll = () => {
         refresh()
         countStatus()
+    }
+
+    const modalAlertApproveAll = ref(false)
+
+    const approveAll = async () => {
+
+        if((auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติแจ้งซ่อมประจำหน่วยงาน' && g.isInGroup === true) ) || (auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบการแจ้งซ่อม(ทส.)'  && g.isInGroup === true))) {
+            const dataApproveed =  selected.value.filter(re => re.status != 'ซ่อมเสร็จ' && re.status != 'ส่งซ่อม' && re.status != 'ปฏิเสธจากหน่วยงาน').map(re => re.req_id).join(',')
+        
+            dataApprove.value.Action = 'อนุมัติ'
+            dataApprove.value.ReqID = dataApproveed
+
+            modalAlertApproveAll.value = false
+            const res = await postApi('/hd/request/ApproveDocument', dataApprove.value)
+
+            refresh()
+            countStatus()
+
+            selected.value = []
+
+            return
+        }
+
+         modalAlertApproveAll.value = false
+        return alert('คุณไม่มีสิทธิ์ในการจัดการ')
+       
+
     }
 </script>
 

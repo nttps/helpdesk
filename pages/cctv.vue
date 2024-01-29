@@ -16,7 +16,7 @@
                     <UInput placeholder="ค้นหา" v-model="textSearch" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
                 </div>
             </div>
-            <div class="text-right flex justify-end">
+            <div class="flex items-center justify-end space-x-2">
                 <div v-if="selected.length > 0">
                     <UButton
                         icon="i-heroicons-plus-20-solid"
