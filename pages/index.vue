@@ -183,7 +183,7 @@
                     <template #footer>
                         <div class="flex justify-between">
                             <button type="submit" class="px-4 py-2 bg-green-600 text-base rounded-[5px] text-white">ตกลง</button>
-                            <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalConfirmApprove = false; resetForm()">ยกเลิก</button>
+                            <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalConfirmApprove = false;">ยกเลิก</button>
                         </div>
                     </template>
                 </UCard>
@@ -478,8 +478,7 @@
 
     const updateSelected = (row) => {
        
-        const data = row.filter(v => !forDeletion.includes(v.status))
-        selectedRows.value = data
+        selectedRows.value = row
     }
 
     const closeModal = () => {
