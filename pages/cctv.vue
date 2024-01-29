@@ -157,7 +157,7 @@
                             <UInput v-model="form.floor" placeholder="" />
                         </UFormGroup>
                         <UFormGroup label="กรณี" name="type" size="xl">
-                            <USelectMenu :options="caseSelect" searchable searchable-placeholder="ค้นหากรณี" value-attribute="description1" option-attribute="description1" v-model="form.case_type" @update:model-value="updateCase" required/>
+                            <USelectMenu :options="caseSelect" searchable searchable-placeholder="ค้นหากรณี" value-attribute="description1" option-attribute="description1" v-model="form.case_desc" @update:model-value="updateCase" required/>
                         </UFormGroup>
                            
                         <UFormGroup label="กรณีอื่น ๆ" name="type" size="xl" v-if="form.case_type === 'กรณีอื่น ๆ'">
