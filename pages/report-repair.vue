@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PartialsTitle title="แจ้งซ่อม" @add="modalAdd = true" />
+        <PartialsTitle title="แจ้งซ่อม" @add="addItem" />
         <div class="mt-8">
             <div class="search-bar flex justify-between mb-2">
                 <div>
@@ -80,7 +80,7 @@
 
     </div>
 
-    <UModal v-model="modalAdd" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}" @close="closeModal">
+    <UModal v-model="modalAdd" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
         <UForm :state="form" @submit="submit" autocomplete="off">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
@@ -88,7 +88,7 @@
                         <h3 class="text-2xl text-center font-bold leading-6 text-gray-900 dark:text-white">
                             แบบฟอร์มการแจ้งซ่อม
                         </h3>
-                        <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="md" class="-my-1" @click="modalAdd = false; closeModal()" />
+                        <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="md" class="-my-1" @click="modalAdd = false;" />
                     </div>
                 </template>
 
@@ -162,14 +162,14 @@
                 <template #footer>
                     <div class="flex items-center justify-end space-x-4">
                         <UButton color="amber" label="บันทึก" type="submit" size="md" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
-                        <UButton color="gray" @click="modalAdd = false; closeModal()" label="ยกเลิก" type="button" size="md" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                        <UButton color="gray" @click="modalAdd = false;" label="ยกเลิก" type="button" size="md" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
             </UCard>
         </UForm>
     </UModal>
 
-    <UModal v-model="modalApprove" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}" @close="closeModal">
+    <UModal v-model="modalApprove" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
         <UForm :state="form">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
@@ -177,7 +177,7 @@
                         <h3 class="text-2xl text-center font-bold leading-6 text-gray-900 dark:text-white">
                             {{ (isView ? 'รายการแจ้งซ่อม' : 'อนุมัติรายการแจ้งซ่อม') }}
                         </h3>
-                        <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalApprove = false; closeModal()" />
+                        <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalApprove = false;" />
                     </div>
                 </template>
 
@@ -223,7 +223,7 @@
                         <UButton v-if="form.status === 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId.includes('ผู้ตรวจสอบการแจ้งซ่อม(ทส.)') && g.isInGroup === true) || form.status === 'รออนุมัติหน่วยงาน' && auth.user.userInGroups.some(g => g.userGroupId.includes('ผู้อนุมัติแจ้งซ่อมประจำหน่วยงาน') && g.isInGroup === true)" color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
                         <UButton v-else color="green" label="แจ้งซ่อมเสร็จ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="modalFinish = true" />
                         <UButton color="red" v-if="form.status !== 'ส่งซ่อม'"  label="ไม่อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(false)" />
-                        <UButton color="gray" @click="modalApprove = false; closeModal()" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                        <UButton color="gray" @click="modalApprove = false;" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
             </UCard>
@@ -320,7 +320,6 @@
 </template>
 
 <script setup>
-
     import moment from 'moment'
     import { number, object, string } from 'yup'
     moment.locale('th')
@@ -406,7 +405,7 @@
             })
         }
 
-        if(row.status == 'ส่งซ่อม' && auth.user.userInGroups.some(g => g.userGroupId.includes('ผู้แจ้งซ่อมเสร็จ'))) {
+        if(row.status == 'ส่งซ่อม' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้แจ้งซ่อมเสร็จ' && g.isInGroup == true)) {
             btn.push({
                 label: 'แจ้งซ่อมเสร็จ',
                 icon: 'i-heroicons-archive-box-20-solid',
@@ -454,6 +453,28 @@
     const modelDeleteConfirm = ref(false)
     const itemDelete = ref()
     const users = ref([])
+
+    const addItem = () => {
+
+          form.value = {
+            req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
+            req_date: date.value,//วันที่ขอ
+            req_by_fullname:"",
+            req_by_user_id:"",
+            department_id: "",
+            department_desc: "",
+
+            phone_req: "",
+            item_id: "",
+            fix_by: "",
+            item_type: "",
+            description:"",//รายละเอียด  
+            created_by:auth.username, //ผู้ทำรายการ
+            modified_by:""//ผู้แก้ไขรายการ
+        }
+        modalAdd.value = true
+      
+    }
    
 
 
