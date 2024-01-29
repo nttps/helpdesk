@@ -193,11 +193,6 @@
                             <h3 class="font-bold leading-6 text-xl">รายละเอียดคำร้อง</h3>
                             <UBadge size="lg" :label="form.status" :color="form.status == 'ปฏิเสธ' ? 'red' : 'emerald'" variant="subtle" />
                         </div>
-
-                        <div class="flex items-center space-x-4" v-if="!isView">
-                            <UButton color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
-                            <UButton color="red" label="ไม่อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(false)" />
-                        </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-8">
@@ -255,6 +250,14 @@
                         <div>{{ form.status1_reason || form.status2_reason }}</div>
                     </div>
                 </div>
+
+                <template #footer >
+                    <div class="flex items-center justify-end space-x-4" >
+                        <UButton color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
+                        <UButton color="red" label="ไม่อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(false)" />
+                        <UButton color="gray" @click="modalApprove = false;" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                    </div>
+                </template>
             </UCard>
         </UForm>
 
