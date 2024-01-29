@@ -32,7 +32,7 @@
         </UFormGroup>
 
         <UFormGroup label="หน่วยงาน" name="location_unit" size="xl">
-            <UInput v-model="form.department_id" placeholder="" :disabled="!notDisable" />
+            <UInput v-model="form.department_id" placeholder="" :disabled="true" />
         </UFormGroup>
         
         <UFormGroup label="ศูนย์เขต" name="location_unit" size="xl">
