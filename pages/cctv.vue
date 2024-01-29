@@ -28,7 +28,7 @@
                         @click="modalAlertApproveAll = true"
                     />
                 </div>
-                <UButton class="ml-auto" icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray"/>
+                <UButton class="ml-auto" icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray" @click="exportFile"/>
             </div>
             <UTable 
                 v-model="selected" 
@@ -679,6 +679,45 @@
         selected.value = []
 
 
+    }
+
+     const exportFile = async () => {
+
+        const config = useRuntimeConfig();
+
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({
+            "SearchText": textSearch.value,//ค้นหาใน department_desc ,description,phone_req,purpose_desc,item_id,item_name,req_by_fullname ,ค่าว่างค้นหาทั้งหมด  
+            "DateBegin": null,//วันที่แจ้งซ่อมเริ่ม
+            "DateEnd": null,//ถึงวันที่ซ่อม
+            "Status":statusSearch.value//รอตรวจสอบ(ทส.),รออนุมัติ(ผอ.ทส.) 
+        });
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
+
+        fetch(config.public.apiUrl + '/hd/request/ExportCCTVExcel', requestOptions)
+        .then( res => res.blob() )
+        .then( re => {
+            var file = URL.createObjectURL(re);
+
+            var a = document.createElement('a');
+            a.href = file;
+            a.download = "รายการคำขอ CCTV.xlsx";
+            document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+            a.click();    
+            a.remove();  //afterwards we remove the element again      
+        });
+
+      
+        
+        
     }
 
 </script>
