@@ -342,13 +342,21 @@
         count: 0,
         color: 'red'
     }, {
-        name : 'รายการคำขอยืม',
+        name : 'รายการที่กำลังยืม',
         count: 0,
         color: 'yellow'
     }, {
         name : 'รายการที่ค้าง',
         count: 0,
         color: 'yellow'
+    }, {
+        name : 'รายการที่คืนแล้ว',
+        count: 0,
+        color: 'green'
+    }, {
+        name : 'รายการที่ถูกปฎิเสธ',
+        count: 0,
+        color: 'gray'
     }])
     const statusActive = ref('รายการทั้งหมด')
 
