@@ -35,9 +35,6 @@
             <UInput v-model="form.department_id" placeholder="" :disabled="true" />
         </UFormGroup>
         
-        <UFormGroup label="ศูนย์เขต" name="location_unit" size="xl">
-            <UInput v-model="form.location_unit" placeholder="" :disabled="!notDisable" />
-        </UFormGroup>
         <UFormGroup label="อีเมล" name="emal_req" size="xl">
             <UInput v-model="form.emal_req" placeholder="" :disabled="!notDisable" />
         </UFormGroup>

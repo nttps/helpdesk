@@ -395,9 +395,6 @@
         key: 'department_id',
         label: 'หน่วยงาน'
     }, {
-        key: 'location_unit',
-        label: 'ศูนย์เขต'
-    }, {
         key: 'phone_req',
         label: 'โทรศัพท์'
     }, {
