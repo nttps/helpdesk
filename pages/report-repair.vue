@@ -102,7 +102,7 @@
                         </UPopover>
                     </UFormGroup>
                     <UFormGroup label="ผู้แจ้ง" name="req_by_user_id" size="md">
-                        <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" @input="searchUserId" required :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"/>
+                        <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" @input="searchUserId" required :disabled="(!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.req_by_user_id.length === 13)"/>
 
                         <div class="bg-white divide-y-2 rounded absolute z-10 border w-full" v-if="users.length">
                             <div class="py-1 px-2 text-gray-500 text-sm text-center">กรุณาเลือกรายชื่อผู้แจ้ง</div>
@@ -448,12 +448,12 @@
     const template =  {
         req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
         req_date: date.value,//วันที่ขอ
-        req_by_fullname:"",
-        req_by_user_id:"",
-        department_id: "",
+        req_by_user_id: auth.username.length === 13 ? auth.username: '',
+        req_by_fullname: auth.username.length === 13 ? auth.user.currentUserInfo.fullName : '',
+        phone_req:auth.user.currentUserInfo.tel,
+        emal_req: auth.username.length === 13 ? auth.user.currentUserInfo.email : '',
+        department_id:  auth.username.length === 13 ? auth.user.currentUserInfo.departmentID: '',
         department_desc: "",
-
-        phone_req: "",
         item_id: "",
         fix_by: "",
         item_type: "",
@@ -477,12 +477,12 @@
           form.value = {
             req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
             req_date: date.value,//วันที่ขอ
-            req_by_fullname:"",
-            req_by_user_id:"",
-            department_id: "",
+            req_by_user_id: auth.username.length === 13 ? auth.username: '',
+            req_by_fullname: auth.username.length === 13 ? auth.user.currentUserInfo.fullName : '',
+            phone_req:auth.user.currentUserInfo.tel,
+            emal_req: auth.username.length === 13 ? auth.user.currentUserInfo.email : '',
+             department_id:  auth.username.length === 13 ? auth.user.currentUserInfo.departmentID: '',
             department_desc: "",
-
-            phone_req: "",
             item_id: "",
             fix_by: "",
             item_type: "",
@@ -563,12 +563,12 @@
         form.value = {
             req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
             req_date: date.value,//วันที่ขอ
-            req_by_fullname:"",
-            req_by_user_id:"",
+            req_by_user_id: auth.username.length === 13 ? auth.username: '',
+            req_by_fullname: auth.username.length === 13 ? auth.user.currentUserInfo.fullName : '',
+            phone_req:auth.user.currentUserInfo.tel,
+            emal_req: auth.username.length === 13 ? auth.user.currentUserInfo.email : '',
             department_id: "",
             department_desc: "",
-
-            phone_req: "",
             item_id: "",
             fix_by: "",
             item_type: "",
@@ -681,9 +681,10 @@
         form.value = {
             req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
             req_date: date.value,//วันที่ขอ
-            req_by_fullname:"",
-            req_by_user_id:"",
-            phone_req: "",
+            req_by_user_id: auth.username.length === 13 ? auth.username: '',
+            req_by_fullname: auth.username.length === 13 ? auth.user.currentUserInfo.fullName : '',
+            phone_req:auth.user.currentUserInfo.tel,
+            emal_req: auth.username.length === 13 ? auth.user.currentUserInfo.email : '',
             item_id: "",
             fix_by: "",
             item_type: "",
