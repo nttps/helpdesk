@@ -32,7 +32,7 @@
 - ไม่สามารถเพิ่มวัตถุประสงค์การแจ้งซ่อมได้ (เพิ่มแล้วทับรายการเดิมที่มีอยู่) ([DH-48](https://ck-consulting.atlassian.net/browse/DH-48)) 
 - หน้าจัดการคลังอุปกรณ์ เมื่อเพิ่ม/แก้ ใส่ข้อมูลใน "รุ่น" แต่ข้อมูลไปโผลที่ "จำนวน" ด้วย ([DH-49](https://ck-consulting.atlassian.net/browse/DH-49)) 
 - แก้ไขคลังอุปกรณ์ ในส่วนของการรับประกัน เมื่อบันทึกแล้ว ข้อมูลไม่เปลี่ยนแปลง ([DH-50](https://ck-consulting.atlassian.net/browse/DH-50)) 
-- แก้ไขคำขอ CCTV ใส่กรณีแล้ว หายทุกครั้งที่บันทึก (เมื่อกลับไปดู) ([DH-52](https://ck-consulting.atlassian.net/browse/DH-52)) 
+- แก้ไขคำขอดู CCTV ใส่กรณีแล้ว หายทุกครั้งที่บันทึก (เมื่อกลับไปดู) ([DH-52](https://ck-consulting.atlassian.net/browse/DH-52)) 
 - กรณีใน CCTV ในหน้าฟอร์ม ไม่ตรงกับกรณีของ CCTV ในหน้าตั้งค่า ([DH-53](https://ck-consulting.atlassian.net/browse/DH-53)) 
 - แก้ไขรายการแจ้งซ่อมไม่ได้ บันทึกแล้วข้อมูลก็ยังเป็นข้อมูลเดิมอยู่ ([DH-55](https://ck-consulting.atlassian.net/browse/DH-55)) 
 - ลบรายการแจ้งซ่อมไม่ได้ ([DH-56](https://ck-consulting.atlassian.net/browse/DH-56))
@@ -40,7 +40,7 @@
 - แก้ไขข้อมูลรายการยืม-คืนพัสดุ เมื่อแก้เบอร์โทรศัพท์แล้วบันทึก ในหน้ารายการไม่แก้ตาม แต่เข้าไปดูข้อมูลข้างในก็แก้ตามแล้ว ([DH-59](https://ck-consulting.atlassian.net/browse/DH-59))
 - ยืม-คืนพัสดุ คืนไม่ได้ เมื่อกดคืน->กรอกจำนวนคืน แล้วกดปุ่มแจ้งคืนพัสดุ มันมีหน้าขึ้นมาให้กรอกเพิ่มอีกที ([DH-60](https://ck-consulting.atlassian.net/browse/DH-60))
 - ถ้าไม่อนุมัติการขอ CCTV แล้วกรอกเหตุผลแล้ว เวลาดูรายละเอียดจะไม่มีเหตุผลไม่ดู ([DH-61](https://ck-consulting.atlassian.net/browse/DH-61))
-- รายการคำขอ CCTV ไม่สามารถกำหนดวันที่ได้ ([DH-63](https://ck-consulting.atlassian.net/browse/DH-63))
+- รายการคำขอดู CCTV ไม่สามารถกำหนดวันที่ได้ ([DH-63](https://ck-consulting.atlassian.net/browse/DH-63))
 
 ## Version 1.0.0-alpha.1 (2023-11-17)
 

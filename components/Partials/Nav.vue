@@ -15,7 +15,7 @@
                     <li>
                         <NuxtLink to="/cctv" v-slot="{ isActive }">
                             <Icon name="icon-park-solid:surveillance-cameras-two" size="40" :class="isActive ? 'text-black' : ''"/>
-                            <div :class="isActive ? 'text-black' : ''">คำขอ CCTV</div>
+                            <div :class="isActive ? 'text-black' : ''">คำขอดู CCTV</div>
                         </NuxtLink>
                     </li>
                     <li>

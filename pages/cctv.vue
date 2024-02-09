@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PartialsTitle title="คำขอ CCTV" @add="modalAdd = true" />
+        <PartialsTitle title="คำขอดู CCTV" @add="modalAdd = true" />
         <div class="mt-8">
             <div class="search-bar flex justify-between mb-2">
                 <div>
@@ -149,7 +149,11 @@
                     </div>
                     <div>
                          <UFormGroup label="วัตถุประสงค์" class="mb-4" name="type" size="xl">
-                            <UInput v-model="form.purpose_desc" placeholder="" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
+                             <USelectMenu :options="objectiveSelect" searchable searchable-placeholder="ค้นหากรณี" value-attribute="description1" option-attribute="description1" v-model="form.purpose_desc" @update:model-value="updateObjective" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
+                            
+                        </UFormGroup>
+                        <UFormGroup label="วัตถุประสงค์อื่น ๆ" class="mb-4" name="type" size="xl" v-if="form.purpose_desc === 'วัตถุประสงค์อื่น ๆ'">
+                            <UInput v-model="form.purpose_desc_other" placeholder="กรอกวัตถุประสงค์" size="xl" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                         </UFormGroup>
                         <UFormGroup label="อาคาร" class="mb-4" name="type" size="xl">
                             <UInput v-model="form.building_id" placeholder="" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
@@ -382,6 +386,7 @@
     const itemDelete = ref()
     const textSearch = ref('')
     const caseSelect = ref([])
+    const objectiveSelect = ref([])
     const users = ref([])
 
     const columns = [{
@@ -499,8 +504,22 @@
 
     onMounted(() => {
         fetchCaseCCTV()
+        fetchObjectiveCCTV()
+
         countStatus()
     })
+
+    const fetchObjectiveCCTV = async () => {
+        const data = await getMasterType(`HD_CCTV_PURPOSE`, '')
+
+        objectiveSelect.value = data
+
+        objectiveSelect.value.push({
+            valueTXT: 'วัตถุประสงค์อื่น ๆ',
+            description1: 'วัตถุประสงค์อื่น ๆ'
+        })
+
+    }
     const fetchCaseCCTV = async () => {
         const data = await getMasterType(`HD_CCTV_CASE`, '')
 
@@ -533,7 +552,8 @@
         floor:"",//ชั้นที่
         description:"",//รายละเอียด  
         created_by: auth.username, //ผู้ทำรายการ
-        modified_by:""//ผู้แก้ไขรายการ
+        modified_by:"",//ผู้แก้ไขรายการ
+        purpose_desc_other: ""
     }
     const form = ref(templateEmpty)
 
@@ -642,8 +662,6 @@
         dataApprove.value.ReqID = id
         const data = await getApi(`/hd/request/GetDocSet?req_id=${id}`)
         form.value = data.requestHead
-
-
         if(!approve) {
             modalAdd.value = true; 
         }else {
@@ -663,9 +681,17 @@
         }else {
             form.value.case_desc = ''
         }
-       
-
     }
+
+    const updateObjective = (value) => {
+        if(form.value.purpose_type !== 'กรณีอื่น ๆ') {
+            form.value.purpose_desc = value
+        }else {
+            form.value.purpose_desc = ''
+        }
+    }
+
+    
     const selectUserName = (user) => {
         form.value.req_by_user_id = user.username
         form.value.req_by_fullname = user.fullName
@@ -775,7 +801,7 @@
 
             var a = document.createElement('a');
             a.href = file;
-            a.download = "รายการคำขอ CCTV.xlsx";
+            a.download = "รายการคำขอดู CCTV.xlsx";
             document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
             a.click();    
             a.remove();  //afterwards we remove the element again      

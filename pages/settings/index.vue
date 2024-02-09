@@ -6,7 +6,7 @@
             <div class="flex w-full justify-center space-x-10">
                 <NuxtLink to="/settings/cctv" class="p-6 text-center border rounded-xl w-1/6">
                     <Icon name="icon-park-solid:surveillance-cameras-two" size="80" color="gray" />
-                    <div class="mt-2">คำขอ CCTV</div>
+                    <div class="mt-2">คำขอดู CCTV</div>
                 </NuxtLink>
                 <NuxtLink to="/settings/report-repair" class="p-6 text-center border rounded-xl w-1/6">
                     <Icon name="ic:baseline-handyman" size="80" color="gray" />

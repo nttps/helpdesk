@@ -1,6 +1,6 @@
 <template>
    <div>
-        <PartialsTitle title="คำขอ CCTV" url-back="/settings/cctv" :text-button="`เพิ่ม${typeLabel}`" :title-breadcrum="typeLabel" @add="emit('add')" :priority="false" />
+        <PartialsTitle title="คำขอดู CCTV" url-back="/settings/cctv" :text-button="`เพิ่ม${typeLabel}`" :title-breadcrum="typeLabel" @add="emit('add')" :priority="false" />
         <div class="mt-8">
             <div class="search-bar flex justify-center items-center mb-2">
                 <div class="min-w-3xl w-96">
