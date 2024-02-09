@@ -97,7 +97,7 @@
                 <h3 class="font-bold leading-6 text-xl mb-4">รายละเอียดผู้ยื่นคำร้อง</h3>
                 <div class="grid grid-cols-2 gap-8 bg-zinc-300/80 p-8 rounded-xl mb-4 relative">
                     <UFormGroup label="ชื่อ-นามสกุล" name="type" size="xl">
-                        <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" @input="searchUserId" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')" />
+                        <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" @input="searchUserId" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ') || form.req_by_user_id.length === 13" />
 
                         <div class="bg-white divide-y-2 rounded absolute z-10" v-if="users.length">
 
@@ -105,7 +105,7 @@
                         </div>
                     </UFormGroup>
                     <UFormGroup label="เบอร์โทรศัพท์" name="phone_req" size="xl">
-                       <UInput v-model="form.phone_req" placeholder="" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
+                       <UInput v-model="form.phone_req" placeholder="" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ') || (form.req_by_user_id.length === 13 && form.phone_req !== '')"/>
                     </UFormGroup>
                 </div>
                 <h3 class="font-bold leading-6 text-xl mb-4">รายละเอียดคำร้อง</h3>
@@ -535,10 +535,10 @@
     const templateEmpty = {
         req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
         req_date: dateRequest.value,//วันที่ขอ
-        req_by_fullname:"",
-        req_by_user_id:"",//ผู้ขอ Current username
-        phone_req:"",//เบอร์โทรผู้ขอ
-        emal_req:"",//อีเมลผู้ขอ
+        req_by_user_id: auth.username.length === 13 ? auth.username: '',
+        req_by_fullname: auth.username.length === 13 ? auth.user.currentUserInfo.fullName : '',
+        phone_req:auth.user.currentUserInfo.tel,
+        emal_req: auth.username.length === 13 ? auth.user.currentUserInfo.email : '',
         howto_inform:"walkin",//วิธีการแจ้ง มี 2 ค่า (walkin , email)
         date_begin: dateTimeBegin.value,//วันที่เวลาที่ต้องดู (เริ่มต้น)
         date_end: dateTimeEnd.value,// ถึงวันที่ 
