@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="flex items-center justify-end space-x-2">
-                <div v-if="selected.length > 0">
+                <div>
                     <UButton
                         icon="i-heroicons-plus-20-solid"
                         size="sm"
@@ -25,7 +25,7 @@
                         label="อนุมัติ"
                         :trailing="false"
                         class="bg-green-600 hover:bg-green-700"
-                        @click="modalAlertApproveAll = true"
+                        @click="approveHandle"
                     />
                 </div>
                 <UButton class="ml-auto" icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray" @click="exportFile"/>
@@ -315,6 +315,22 @@
               <div class="flex justify-between">
                   <button type="button" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white" @click="approveAll">ยืนยัน</button>
                   <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalAlertApproveAll = false">ยกเลิก</button>
+              </div>
+          </template>
+        </UCard>
+    </UModal>
+
+    <UModal v-model="alertSelect">
+        <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+          <template #header>
+              <div class="text-center">เลือกข้อมูลก่อร</div>
+          </template>
+
+          <div class="font-bold text-xl text-center">กรุณาเลือกข้อมูลการยืนยันก่อน</div>
+
+          <template #footer>
+              <div class="flex justify-center">
+                  <button type="button" class="px-4 py-2 bg-green-600 text-base rounded-[5px] text-white" @click="alertSelect = false">ตกลง</button>
               </div>
           </template>
         </UCard>
@@ -722,6 +738,17 @@
     const refreshDataAll = () => {
         refresh()
         countStatus()
+    }
+
+    const alertSelect = ref(false)
+    const approveHandle = () => {
+
+
+        if(selected.value.length === 0) {
+            alertSelect.value = true
+            return
+        }
+        modalAlertApproveAll.value = true
     }
 
     const modalAlertApproveAll = ref(false)

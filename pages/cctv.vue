@@ -17,15 +17,16 @@
                 </div>
             </div>
             <div class="flex items-center justify-end space-x-2">
-                <div v-if="selected.length > 0">
-                    <UButton
+                <div>
+                     <UButton
                         icon="i-heroicons-plus-20-solid"
                         size="sm"
                         variant="solid"
+                        color="green"
                         label="อนุมัติ"
                         :trailing="false"
-                        class="bg-green-600 hover:bg-green-700"
-                        @click="modalAlertApproveAll = true"
+                        class="mr-2"
+                        @click="approveHandle"
                     />
                 </div>
                 <UButton class="ml-auto" icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray" @click="exportFile"/>
@@ -307,6 +308,24 @@
         </UCard>
     </UModal>
 
+    <UModal v-model="modalAlertNotApproveAll">
+        <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+          <template #header>
+              <div class="text-center">แจ้งเตือนการยืนยัน</div>
+          </template>
+
+          <div class="font-bold text-xl text-center">ต้องการไม่อนุมัติข้อมูลทั้งหมดใช่หรือไม่</div>
+
+          <template #footer>
+              <div class="flex justify-between">
+                  <button type="button" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white" @click="notApproveAll">ยืนยัน</button>
+                  <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalAlertNotApproveAll = false">ยกเลิก</button>
+              </div>
+          </template>
+        </UCard>
+    </UModal>
+
+
     <UModal v-model="modelDeleteConfirm">
         <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
           <template #header>
@@ -319,6 +338,22 @@
               <div class="flex justify-between">
                   <button type="button" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white" @click="deleteItem">ยืนยัน</button>
                   <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modelDeleteConfirm = false">ยกเลิก</button>
+              </div>
+          </template>
+        </UCard>
+    </UModal>
+
+    <UModal v-model="alertSelect">
+        <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+          <template #header>
+              <div class="text-center">เลือกข้อมูลก่อร</div>
+          </template>
+
+          <div class="font-bold text-xl text-center">กรุณาเลือกข้อมูลการยืนยันก่อน</div>
+
+          <template #footer>
+              <div class="flex justify-center">
+                  <button type="button" class="px-4 py-2 bg-green-600 text-base rounded-[5px] text-white" @click="alertSelect = false">ตกลง</button>
               </div>
           </template>
         </UCard>
@@ -340,6 +375,7 @@
     
     const modalApprove = ref(false)
     const modalConfirmApprove = ref(false)
+    const modalAlertNotApproveAll = ref(false)
 
     const isView = ref(false)
     
@@ -428,6 +464,25 @@
     const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
 
     const selected = ref([])
+
+    const alertSelect = ref(false)
+    const rejectHandle = () => {
+        if(selected.value.length === 0) {
+            alertSelect.value = true
+            return
+        }
+        modalAlertNotApproveAll.value = true
+    }
+     
+    const approveHandle = () => {
+
+
+        if(selected.value.length === 0) {
+            alertSelect.value = true
+            return
+        }
+        modalAlertApproveAll.value = true
+    }
 
 
     const dateTimeBegin = ref(new Date())
@@ -662,15 +717,26 @@
     const modalAlertApproveAll = ref(false)
 
     const approveAll = async () => {
-
-
-        
         const dataApproveed =  selected.value.filter(re => re.status != 'ปฏิเสธ' && re.status != 'ปฏิเสธจาก(ทส.)' && re.status != 'อนุมัติ').map(re => re.req_id).join(',')
         
         dataApprove.value.Action = 'อนุมัติ'
         dataApprove.value.ReqID = dataApproveed
 
         modalAlertApproveAll.value = false
+        const res = await postApi('/hd/request/ApproveDocument', dataApprove.value)
+
+        refresh()
+        countStatus()
+
+        selected.value = []
+    }
+     const notApproveAll = async () => {
+        const dataApproveed =  selected.value.filter(re => re.status != 'ปฏิเสธ' && re.status != 'ปฏิเสธจาก(ทส.)' && re.status != 'อนุมัติ').map(re => re.req_id).join(',')
+        
+        dataApprove.value.Action = 'ปฏิเสธ'
+        dataApprove.value.ReqID = dataApproveed
+
+        modalAlertNotApproveAll.value = false
         const res = await postApi('/hd/request/ApproveDocument', dataApprove.value)
 
         refresh()
