@@ -400,6 +400,10 @@
     const items = (row) => {
 
         let btn = [{
+            label: 'พิมพ์',
+            icon: 'i-heroicons-printer',
+            click: () => fetchPrintData(row.req_id)
+        },{
             label: 'รายละเอียดคำขอ',
             icon: 'i-heroicons-pencil-square-20-solid',
             click: () => fetchEditData(row.req_id)
@@ -650,6 +654,21 @@
         }
 
         isView.value = view
+    }
+
+    const dataPrint = ref('')
+
+    const fetchPrintData = async (id) => {
+
+        const data = await getApi(`/hd/Request/PrintDocument?req_id=${id}`)
+
+        dataPrint.value = data.printPreviewUrl
+
+        navigateTo(data.printPreviewUrl, {
+            external: true,
+            open: true
+        })
+
     }
 
    

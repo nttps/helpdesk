@@ -444,13 +444,13 @@
     const items = (row) => {
 
         let btn = [{
-                label: 'รายละเอียดคำขอ',
-                icon: 'i-heroicons-pencil-square-20-solid',
-                click: () => fetchEditData(row.req_id)
-            },{
                 label: 'พิมพ์',
                 icon: 'i-heroicons-printer',
                 click: () => fetchPrintData(row.req_id)
+            },{
+                label: 'รายละเอียดคำขอ',
+                icon: 'i-heroicons-pencil-square-20-solid',
+                click: () => fetchEditData(row.req_id)
             }]
 
 

@@ -416,13 +416,13 @@
     const items = (row) => {
 
         let btn = [{
-            label: 'รายละเอียดคำขอ',
-            icon: 'i-heroicons-pencil-square-20-solid',
-            click: () => fetchEditData(row.req_id)
-        },{
             label: 'พิมพ์',
             icon: 'i-heroicons-printer',
             click: () => fetchPrintData(row.req_id)
+        },{
+            label: 'รายละเอียดคำขอ',
+            icon: 'i-heroicons-pencil-square-20-solid',
+            click: () => fetchEditData(row.req_id)
         }]
 
         if(row.status == 'รออนุมัติ(ผอ.ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติการขอดู CCTV (ทส.)' && g.isInGroup === true) || row.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบการขอดู CCTV (ทส.)' && g.isInGroup === true)) {
