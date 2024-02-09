@@ -103,9 +103,6 @@
                     <UFormGroup label="รุ่น" name="model" size="xl">
                        <UInput v-model="form.model" placeholder="" />
                     </UFormGroup>
-                    <UFormGroup label="จำนวน" name="qty_bal" size="xl">
-                       <UInput v-model="form.qty_bal" placeholder="" required />
-                    </UFormGroup>
                   
                 </div>
                 <div class="grid grid-cols-3 gap-x-8 gap-y-4 mb-4 items-center">
@@ -210,9 +207,6 @@
         key: 'is_in_warranty',
         label: 'การรับประกัน',
         class: 'text-center'
-    }, {
-        key: 'qty_bal',
-        label: 'จำนวน'
     }, {
         key: 'status',
         label: 'สถานะ',
