@@ -471,9 +471,10 @@
     const form = ref({
         req_id: '',
         req_date: moment(new Date()).format('YYYY-MM-DD'),
-        req_by_user_id: '',
-        phone_req:'',
-        emal_req: '',
+        req_by_user_id: auth.username.length === 13 ? auth.username: '',
+        req_by_fullname: auth.username.length === 13 ? auth.user.currentUserInfo.fullName : '',
+        phone_req:auth.user.currentUserInfo.tel,
+        emal_req: auth.username.length === 13 ? auth.user.currentUserInfo.email : '',
         date_begin: startDate.value,
         date_end: endDate.value,
         purpose_id:"",//รหัสวัตถุประสงค์
@@ -484,7 +485,7 @@
         created_by:auth.username, //ผู้ทำรายการ
         modified_by: "",
         status: "",
-        department_id: "",
+        department_id: auth.username.length === 13 ? auth.user.currentUserInfo.departmentID : '',
         items: [{
             item_id: '',
             qty: '',
@@ -540,9 +541,10 @@
         form.value = {
             req_id: '',
             req_date: moment(new Date()).format('YYYY-MM-DD'),
-            req_by_user_id: '',
-            phone_req:'',
-            emal_req: '',
+            req_by_user_id: auth.username.length === 13 ? auth.username: '',
+            req_by_fullname: auth.username.length === 13 ? auth.user.currentUserInfo.fullName : '',
+            phone_req:auth.user.currentUserInfo.tel,
+            emal_req: auth.username.length === 13 ? auth.user.currentUserInfo.email : '',
             date_begin: startDate.value,
             date_end: endDate.value,
             purpose_id:"",//รหัสวัตถุประสงค์
@@ -552,7 +554,7 @@
             description:"",//รายละเอียด  
             created_by:auth.username, //ผู้ทำรายการ
             modified_by: "",
-            department_id: "",
+            department_id:  auth.user.currentUserInfo.departmentID,
             items: [{
                 item_id: '',
                 qty: '',
