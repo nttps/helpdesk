@@ -95,14 +95,14 @@
                 <div class="grid grid-cols-3 gap-x-8 gap-y-4 mb-8">
                     <UFormGroup label="วันที่" name="start_date" size="md">
                         <UPopover :popper="{ placement: 'bottom-start' }">
-                            <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDate" />
+                            <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDate" :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')" />
                             <template #panel="{ close }">
                                 <FormDatePicker v-model="form.req_date" @close="close" />
                             </template>
                         </UPopover>
                     </UFormGroup>
                     <UFormGroup label="ผู้แจ้ง" name="req_by_user_id" size="md">
-                        <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" @input="searchUserId" required />
+                        <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" @input="searchUserId" required :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"/>
 
                         <div class="bg-white divide-y-2 rounded absolute z-10 border w-full" v-if="users.length">
                             <div class="py-1 px-2 text-gray-500 text-sm text-center">กรุณาเลือกรายชื่อผู้แจ้ง</div>
@@ -113,7 +113,7 @@
                        <UInput v-model="form.department_id" placeholder="" required disabled />
                     </UFormGroup>
                     <UFormGroup label="เบอร์โทรศัพท์" name="telephone" size="md">
-                       <UInput v-model="form.phone_req" placeholder="" required/>
+                       <UInput v-model="form.phone_req" placeholder="" required :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"/>
                     </UFormGroup>
                 </div>
 
@@ -129,6 +129,7 @@
                             searchable
                             searchable-placeholder="ค้นหาประเภทอุปกรณ์"
                             required
+                            :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"
                         />
                     </UFormGroup>
                     <UFormGroup label="อุปกรณ์" name="item_id" size="md">
@@ -141,6 +142,7 @@
                             searchable
                             searchable-placeholder="ค้นหาอุปกรณ์"
                             required
+                            :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"
                         > 
                             <template #label>
                                 <template v-if="form.item_id">
@@ -156,10 +158,10 @@
                     </UFormGroup>
                 </div>
                 <UFormGroup label="อาการเสีย/ปัญหา" name="dCenter" size="md">
-                     <UTextarea :rows="4" v-model="form.description" required />
+                     <UTextarea :rows="4" v-model="form.description" required :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"/>
                 </UFormGroup>
 
-                <template #footer>
+                <template #footer v-if="form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)'">
                     <div class="flex items-center justify-end space-x-4">
                         <UButton color="amber" label="บันทึก" type="submit" size="md" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                         <UButton color="gray" @click="modalAdd = false;" label="ยกเลิก" type="button" size="md" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>

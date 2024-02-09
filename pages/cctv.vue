@@ -96,7 +96,7 @@
                 <h3 class="font-bold leading-6 text-xl mb-4">รายละเอียดผู้ยื่นคำร้อง</h3>
                 <div class="grid grid-cols-2 gap-8 bg-zinc-300/80 p-8 rounded-xl mb-4 relative">
                     <UFormGroup label="ชื่อ-นามสกุล" name="type" size="xl">
-                        <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" @input="searchUserId" />
+                        <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" @input="searchUserId" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')" />
 
                         <div class="bg-white divide-y-2 rounded absolute z-10" v-if="users.length">
 
@@ -104,7 +104,7 @@
                         </div>
                     </UFormGroup>
                     <UFormGroup label="เบอร์โทรศัพท์" name="phone_req" size="xl">
-                       <UInput v-model="form.phone_req" placeholder="" />
+                       <UInput v-model="form.phone_req" placeholder="" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                     </UFormGroup>
                 </div>
                 <h3 class="font-bold leading-6 text-xl mb-4">รายละเอียดคำร้อง</h3>
@@ -113,23 +113,23 @@
                         <div class="grid grid-cols-2 mb-4">
                             <UFormGroup label="วันที่ยื่นคำร้อง" name="type" size="xl">
                                 <UPopover :popper="{ placement: 'bottom-start' }">
-                                    <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDateRequest" />
+                                    <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDateRequest" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                                     <template #panel="{ close }">
                                         <FormDatePicker v-model="form.req_date" @close="close" />
                                     </template>
                                 </UPopover>
                             </UFormGroup>
                             <UFormGroup label="ความสำคัญ" name="type" size="xl">
-                                <USelect v-model="form.urgent_level" :options="['ด่วนมาก' , 'ด่วน' , 'ปานกลาง' , 'ไม่ด่วน']" required />
+                                <USelect v-model="form.urgent_level" :options="['ด่วนมาก' , 'ด่วน' , 'ปานกลาง' , 'ไม่ด่วน']" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                             </UFormGroup>
                         </div>
                         <UFormGroup label="สถานที่" class="mb-4" name="type" size="xl">
-                            <UTextarea v-model="form.location" :rows="4" name="input" placeholder="กรอกรายละเอียดสถานที่ ..." />
+                            <UTextarea v-model="form.location" :rows="4" name="input" placeholder="กรอกรายละเอียดสถานที่ ..." :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                         </UFormGroup>
                         <div class="grid grid-cols-2 mb-4">
                             <UFormGroup label="ตั้งแต่วันที่" class="mb-4" name="type" size="xl">
                                 <UPopover :popper="{ placement: 'bottom-start' }">
-                                    <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDateTimeBegin" />
+                                    <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDateTimeBegin" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                                     <template #panel="{ close }">
                                         <FormDatePicker v-model="form.date_begin" :date-time="true" @close="close" />
                                     </template>
@@ -148,24 +148,24 @@
                     </div>
                     <div>
                          <UFormGroup label="วัตถุประสงค์" class="mb-4" name="type" size="xl">
-                            <UInput v-model="form.purpose_desc" placeholder="" required />
+                            <UInput v-model="form.purpose_desc" placeholder="" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                         </UFormGroup>
                         <UFormGroup label="อาคาร" class="mb-4" name="type" size="xl">
-                            <UInput v-model="form.building_id" placeholder="" />
+                            <UInput v-model="form.building_id" placeholder="" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                         </UFormGroup>
                         <UFormGroup label="ชั้น" class="mb-4" name="type" size="xl">
-                            <UInput v-model="form.floor" placeholder="" />
+                            <UInput v-model="form.floor" placeholder="" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                         </UFormGroup>
                         <UFormGroup label="กรณี" name="type" size="xl">
-                            <USelectMenu :options="caseSelect" searchable searchable-placeholder="ค้นหากรณี" value-attribute="description1" option-attribute="description1" v-model="form.case_desc" @update:model-value="updateCase" required/>
+                            <USelectMenu :options="caseSelect" searchable searchable-placeholder="ค้นหากรณี" value-attribute="description1" option-attribute="description1" v-model="form.case_desc" @update:model-value="updateCase" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                         </UFormGroup>
                            
-                        <UFormGroup label="กรณีอื่น ๆ" name="type" size="xl" v-if="form.case_type === 'กรณีอื่น ๆ'">
-                            <UInput v-model="form.case_desc" placeholder="กรอกกรณี" size="xl" required/>
+                        <UFormGroup label="กรณีอื่น ๆ" name="type" size="xl" v-if="form.case_desc === 'กรณีอื่น ๆ'">
+                            <UInput v-model="form.case_desc" placeholder="กรอกกรณี" size="xl" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                         </UFormGroup>
                     </div>
                 </div>
-                <template #footer>
+                <template #footer v-if="form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ'">
                     <div class="flex items-center justify-end">
                         <UButton color="amber" label="บันทึก" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                         <UButton color="gray" @click="modalAdd = false;form = templateEmpty" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>

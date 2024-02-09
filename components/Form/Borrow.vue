@@ -122,7 +122,7 @@
 
     const props = defineProps(['form', 'create'])
 
-    const notDisable = (props.create !== undefined)
+    const notDisable = (props.create !== undefined && !(props.form?.status !== undefined && props.form?.status === 'ส่งมอบใช้งาน' || props.form?.status === 'ปฏิเสธจาก(ทส.)'|| props.form?.status === 'คืน' ))
 
     const labelStartDate = computed(() => moment(props.form.date_begin).format('DD/MM/YYYY'))
     const labelEndDate = computed(() => moment(props.form.date_end).format('DD/MM/YYYY'))
