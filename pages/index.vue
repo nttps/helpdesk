@@ -446,7 +446,7 @@
                     }
                 })
             }
-            if(row.status == 'ส่งมอบใช้งาน' || row.status == 'รายการคงค้าง') {
+            if(auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)) {
                 btn.push( {
                     label: 'คืนพัสดุ',
                     icon: 'i-heroicons-archive-box-20-solid',
