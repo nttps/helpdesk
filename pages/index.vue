@@ -276,6 +276,22 @@
         </UCard>
     </UModal>
 
+    <UModal v-model="modalPrint">
+        <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+          <template #header>
+              <div class="text-center">Print รายละเอียด</div>
+          </template>
+
+          <div class="font-bold text-xl text-center">คุณต้องการยืนยันที่จะลบข้อมูลนี้ใช่หรือไม่</div>
+
+          <template #footer>
+              <div class="flex justify-between">
+                  <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalPrint = false">ยกเลิก</button>
+              </div>
+          </template>
+        </UCard>
+    </UModal>
+
     <UModal v-model="modalAlertApproveAll">
         <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
           <template #header>
@@ -342,6 +358,7 @@
 
     const modalAdd = ref(false)
     const alertSelect = ref(false)
+    const modalPrint = ref(false)
     const modalApprove = ref(false)
     const modalReturn = ref(false)
     const modalConfirmApprove = ref(false)
@@ -430,7 +447,12 @@
                 label: 'รายละเอียดคำขอ',
                 icon: 'i-heroicons-pencil-square-20-solid',
                 click: () => fetchEditData(row.req_id)
+            },{
+                label: 'พิมพ์',
+                icon: 'i-heroicons-printer',
+                click: () => fetchPrintData(row.req_id)
             }]
+
 
             if(row.status == 'รออนุมัติหน่วยงาน' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติยืมพัสดุประจำหน่วยงาน' && g.isInGroup === true) || row.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)) {
                 btn.push({
@@ -676,8 +698,21 @@
 
         item.return_qty = value > max ? max : value
     }
+    
 
+    const dataPrint = ref('')
+    const fetchPrintData = async (id) => {
 
+        const data = await getApi(`/hd/Request/PrintDocument?req_id=${id}`)
+
+        dataPrint.value = data.printPreviewUrl
+
+        navigateTo(data.printPreviewUrl, {
+            external: true,
+            open: true
+        })
+
+    }
     const fetchEditData = async (id, approve = false, isReturn = false) => {
 
         dataApprove.value.ReqID = id
