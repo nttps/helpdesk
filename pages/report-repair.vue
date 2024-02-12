@@ -115,8 +115,33 @@
                     <UFormGroup label="เบอร์โทรศัพท์" name="telephone" size="md">
                        <UInput v-model="form.phone_req" placeholder="" required :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"/>
                     </UFormGroup>
+                    <UFormGroup label="ช่องทางติดต่อ" name="telephone" size="md">
+                       <USelectMenu 
+                            v-model="form.contact" 
+                            :options="contactType" 
+                            value-attribute="description1" 
+                            option-attribute="description1" 
+                            placeholder="เลือกช่องทางติดต่อ" 
+                            searchable
+                            searchable-placeholder="ค้นหาช่องทางติดต่อ"
+                            required
+                            :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"
+                        />
+                    </UFormGroup>
                 </div>
 
+                 
+                <UFormGroup label="ขอรับบริการด้าน" size="xl" class="mb-8">
+                    <div class="pl-4 my-2">
+                        <UCheckbox color="primary" 
+                            v-model="service.is_select" 
+                            :label="service.description1" 
+                            class="mb-2" 
+                            :ui="{container: 'flex items-center h-6', base: 'h-5 w-5 dark:checked:bg-current dark:checked:border-transparent dark:indeterminate:bg-current dark:indeterminate:border-transparent disabled:opacity-50 disabled:cursor-not-allowed focus:ring-0 focus:ring-transparent focus:ring-offset-transparent'}"
+                            v-for="(service, index) in form.services"
+                        />
+                    </div>
+                </UFormGroup>
                 <div class="grid grid-cols-3 gap-8 mb-8">
                     
                     <UFormGroup label="ประเภทอุปกรณ์" name="item_type" size="md">
@@ -353,7 +378,7 @@
 
     const modalFinish = ref(false)
 
-
+    const servicesType = ref([])
     const textSearch = ref('')
    
 
@@ -463,7 +488,9 @@
         item_type: "",
         description:"",//รายละเอียด  
         created_by:auth.username, //ผู้ทำรายการ
-        modified_by:""//ผู้แก้ไขรายการ
+        modified_by:"",//ผู้แก้ไขรายการ
+        services: [],
+        contact: ''
     }
     const form = ref(template)
 
@@ -492,7 +519,10 @@
             item_type: "",
             description:"",//รายละเอียด  
             created_by:auth.username, //ผู้ทำรายการ
-            modified_by:""//ผู้แก้ไขรายการ
+            modified_by:"", //ผู้แก้ไขรายการ
+            services: servicesType.value,
+            contact: ''
+
         }
         modalAdd.value = true
       
@@ -578,7 +608,9 @@
             item_type: "",
             description:"",//รายละเอียด  
             created_by:auth.username, //ผู้ทำรายการ
-            modified_by:""//ผู้แก้ไขรายการ
+            modified_by:"",//ผู้แก้ไขรายการ
+            services: [],
+            contact: ''
         }
     }
     const coditionStatus = (status) => {
@@ -636,6 +668,9 @@
     onMounted(() => {
         fetchTypeItems()
         countStatus()
+        fetchTypeService()
+        fetchTypeContact()
+
     })
 
     const isView = ref(false)
@@ -646,6 +681,14 @@
 
         const data = await getApi(`/hd/request/GetDocSet?req_id=${id}`)
         form.value = data.requestHead
+        form.value.services = data.requestService.map(service => {
+            return {
+                valueTXT: service.service_type,
+                is_select: service.is_select,
+                description1: servicesType.value.find(s => s.valueTXT === service.service_type).description1
+            }
+        })
+
 
         if(!approve) {
             modalAdd.value = true; 
@@ -672,8 +715,17 @@
     }
 
    
+    const contactType = ref([])
+   
     const fetchTypeItems = async () => {
         itemsType.value = await getMasterType(`HD_ITEMTYPE`, '')
+    }
+
+    const fetchTypeService = async () => {
+        servicesType.value = await getMasterType(`HD_SERVICE_TYPE`, '')
+    }
+    const fetchTypeContact = async () => {
+        contactType.value = await getMasterType(`HD_CONTACT`, '')
     }
   
 
@@ -714,8 +766,17 @@
     }
 
     const submit = async () => {
+
+
+       
         const res = await postApi('/hd/request/SaveRepair', {
-            RequestHead: form.value
+            RequestHead: form.value,
+            RequestService: form.value.services.map(service => {
+                return {
+                    is_select: service.is_select || false,
+                    service_type: service.valueTXT
+                }
+            })
         })
 
         if(res.outputAction.result === 'ok') {
