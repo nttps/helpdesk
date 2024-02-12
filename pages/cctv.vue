@@ -153,7 +153,7 @@
                             
                         </UFormGroup>
                         <UFormGroup label="วัตถุประสงค์อื่น ๆ" class="mb-4" name="type" size="xl" v-if="form.purpose_desc === 'วัตถุประสงค์อื่น ๆ'">
-                            <UInput v-model="form.purpose_desc_other" placeholder="กรอกวัตถุประสงค์" size="xl" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
+                            <UInput v-model="form.purpose_other" placeholder="กรอกวัตถุประสงค์" size="xl" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                         </UFormGroup>
                         <UFormGroup label="อาคาร" class="mb-4" name="type" size="xl">
                             <UInput v-model="form.building_id" placeholder="" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
@@ -166,7 +166,7 @@
                         </UFormGroup>
                            
                         <UFormGroup label="กรณีอื่น ๆ" name="type" size="xl" v-if="form.case_desc === 'กรณีอื่น ๆ'">
-                            <UInput v-model="form.case_desc" placeholder="กรอกกรณี" size="xl" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
+                            <UInput v-model="form.case_desc_other" placeholder="กรอกกรณี" size="xl" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                         </UFormGroup>
                     </div>
                 </div>
@@ -235,7 +235,7 @@
                                 </UFormGroup>
                             </div>
                             <UFormGroup label="กรณี" name="type" size="xl">
-                                <div class="text-zinc-700">{{ form.case_type === 'กรณีอื่น ๆ' ? form.case_desc : form.case_type }}</div>
+                                <div class="text-zinc-700">{{ form.case_desc === 'กรณีอื่น ๆ' ? form.case_desc_other : form.case_desc }}</div>
                             </UFormGroup>
                         </div>
                     </div>
@@ -549,15 +549,15 @@
         urgent_level:"",//ระดับความสำคัญ (ด่วนมาก , ด่วน , ปานกลาง , ไม่ด่วน )
         purpose_id:"",//รหัสวัตถุประสงค์
         purpose_desc:"",//คำบรรยายวัตถุประสงค์
-        case_type: "",
         case_desc:"",//ใช้ในกรณี
+        case_desc_other: "",
         location:"",//สถานที่ใช้งาน 
         building_id:"",//รหัสตึก
         floor:"",//ชั้นที่
         description:"",//รายละเอียด  
         created_by: auth.username, //ผู้ทำรายการ
         modified_by:"",//ผู้แก้ไขรายการ
-        purpose_desc_other: ""
+        purpose_other: ""
     }
     const form = ref(templateEmpty)
 
