@@ -182,13 +182,20 @@
 
                     </UFormGroup>
                 </div>
-                <UFormGroup label="อาการเสีย/ปัญหา" name="dCenter" size="md">
+                <UFormGroup label="อาการเสีย/ปัญหา" name="dCenter" size="md" class="mb-4">
                      <UTextarea :rows="4" v-model="form.description" required :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"/>
+                </UFormGroup>
+
+                <UFormGroup label="ผู้ปรับปรุงข้อมูลล่าสุด" name="dCenter" size="md" class="mb-4">
+                    <UInput v-model="form.modified_by" disabled/>
+                </UFormGroup>
+                 <UFormGroup label="วันที่ปรับปรุงล่าสุด" name="dCenter" size="md">
+                    <UInput v-model="form.modified_date" disabled/>
                 </UFormGroup>
 
                 <template #footer v-if="form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)'">
                     <div class="flex items-center justify-end space-x-4">
-                        <UButton color="amber" label="บันทึก" type="submit" size="md" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                        <UButton color="amber" label="บันทึกคำขอ" type="submit" size="md" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                         <UButton color="gray" @click="modalAdd = false;" label="ยกเลิก" type="button" size="md" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
@@ -488,7 +495,7 @@
         item_type: "",
         description:"",//รายละเอียด  
         created_by:auth.username, //ผู้ทำรายการ
-        modified_by:"",//ผู้แก้ไขรายการ
+        modified_by:auth.username,//ผู้แก้ไขรายการ
         services: [],
         contact: ''
     }
@@ -519,7 +526,7 @@
             item_type: "",
             description:"",//รายละเอียด  
             created_by:auth.username, //ผู้ทำรายการ
-            modified_by:"", //ผู้แก้ไขรายการ
+            modified_by:auth.username, //ผู้แก้ไขรายการ
             services: servicesType.value,
             contact: ''
 
@@ -608,7 +615,7 @@
             item_type: "",
             description:"",//รายละเอียด  
             created_by:auth.username, //ผู้ทำรายการ
-            modified_by:"",//ผู้แก้ไขรายการ
+            modified_by:auth.username,//ผู้แก้ไขรายการ
             services: [],
             contact: ''
         }
@@ -679,8 +686,12 @@
         dataFinish.value.ReqID = id
 
 
+        
+
         const data = await getApi(`/hd/request/GetDocSet?req_id=${id}`)
         form.value = data.requestHead
+
+        
         form.value.services = data.requestService.map(service => {
             return {
                 valueTXT: service.service_type,
@@ -761,13 +772,13 @@
             item_type: "",
             description:"",//รายละเอียด  
             created_by:auth.username, //ผู้ทำรายการ
-            modified_by:""//ผู้แก้ไขรายการ
+            modified_by:auth.username//ผู้แก้ไขรายการ
         }
     }
 
     const submit = async () => {
 
-
+        form.value.modified_by = auth.username
        
         const res = await postApi('/hd/request/SaveRepair', {
             RequestHead: form.value,
