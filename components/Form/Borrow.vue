@@ -48,7 +48,7 @@
         </UFormGroup>
     </div>
 
-    <div class="text-lg font-bold mb-2"> อุปกรณ์ที่ต้องการยืม {{ form.status }}</div>
+    <div class="text-lg font-bold mb-2"> ประเภทและหมวดหมู่ที่ต้องการยืม</div>
     <div class="p-8 pt-4 mb-2 border rounded-lg grid grid-cols-2 gap-2 relative" v-for="item, index in form.items">
         <div class="absolute right-0 p-2" v-if="form.items.length > 1 && form.status == '' || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)'">
             <UButton color="red" :padded="false" icon="i-heroicons-x-mark-20-solid" size="xl" @click="deleteItem(index)" v-if="notDisable" />
@@ -67,38 +67,96 @@
                 :disabled="!notDisable"
             />
         </UFormGroup>
-        <UFormGroup label="อุปกรณ์" name="inventory" size="xl">
+        <UFormGroup label="หมวดหมู่" name="inventory" size="xl">
             <USelectMenu 
-                v-model="item.item_id" 
+                v-model="item.item_cate" 
                 :options="item.inventory" 
-                value-attribute="item_id" 
-                option-attribute="item_name" 
-                placeholder="เลือกอุปกรณ์" 
+                value-attribute="item_cate" 
+                option-attribute="item_cate" 
+                placeholder="เลือกหมวดหมู่" 
                 searchable
-                searchable-placeholder="ค้นหาอุปกรณ์"
+                searchable-placeholder="ค้นหาหมวดหมู่"
                 :disabled="!notDisable"
             > 
                 <template #label>
-                    <template v-if="item.item_id">
-                        {{ itemSelect(item.inventory, item.item_id)?.item_name ?? item.item_name}}
+                    <template v-if="item.item_cate">
+                        {{ itemSelect(item.inventory, item.item_cate)?.item_cate ?? item.item_cate}}
                     </template>
                     <template v-else>
-                        <span class="text-gray-500 dark:text-gray-400 truncate">เลือกอุปกรณ์</span>
+                        <span class="text-gray-500 dark:text-gray-400 truncate">เลือกหมวดหมู่</span>
                     </template>
                 </template>
             </USelectMenu>
         </UFormGroup>
         
         <UFormGroup label="จำนวน" name="qty" size="xl">
-            <UInput v-model="item.qty" placeholder="กรอกจำนวน" :disabled="!notDisable" />
+            <UInput v-model="item.qty" placeholder="กรอกจำนวน" required :disabled="!notDisable" />
         </UFormGroup>
 
-        
+        <div v-if="form?.status && form.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)">
+            <UFormGroup label="เลือกอุปกรณ์ / ระบุ Serial No. ที่ให้ยืม" name="qty" size="xl">
+                <UButton color="blue" label="เลือกอุปกรณ์" size="xl" @click="modalItemSelect(item.item_type, item.item_cate)" v-if="!notDisable" />
+            </UFormGroup>
+        </div>
     </div>
 
-    <div class="p-8 border rounded-lg text-center cursor-pointer" @click="$emit('addItem')" v-if="notDisable">
+    <div class="p-8 border rounded-lg text-center cursor-pointer" @click="emit('addItem')" v-if="notDisable">
         <Icon name="material-symbols:add-rounded" size="60" />
     </div>
+
+
+    <div v-if="form?.status">
+        <div class="text-lg font-bold mt-2"> อุปกรณ์ที่ให้ยืม <span class=" text-red-500 font-bold text-base">(สำหรับแอดมินทส. ตรวจสอบ) </span> </div>
+        <div class="px-2 mb-2 rounded-lg">
+            
+            <div v-for="(items, index) in groupBy(form.borrowItems, 'item_cate')" class="mb-2">
+
+                <div class="text-lg font-bold mb-2">
+                    - {{ index }}  <span class="font-bold">รวม</span> {{ items.length }} จำนวน
+                </div>
+                <UTable 
+                    :rows="items"
+                    :columns="[{
+                        key: 'serial_number',
+                        label: 'Serial No.'
+                    }, {
+                        key: 'item_name',
+                        label: 'ชื่ออุปกรณ์'
+                    }, {
+                        key: 'qty',
+                        label: 'จำนวน'
+                    }, {
+                        key: 'actions',
+                        label: ''
+                    }]"
+                    :empty-state="{ label: 'ผู้เข้าร่วม' }"
+                    :loading-state="{ label: 'กำลังโหลด...' }"
+                    :ui="{
+                        base: 'border'
+                    }"
+                >
+                    <template #qty-data="{ index }">
+                        1
+                    </template>
+                    <template #actions-data="{ row }">
+                        <div class="flex items-center space-x-4" v-if="notDisable">
+                            <div>
+                                <UButton label="ลบ" color="red" @click="selectItemBorrow(row)"/>
+                            </div>
+                        </div>
+                        <div v-else></div>
+                    </template>
+                </UTable>
+                
+            </div>
+            <div v-if="form?.status === 'รออนุมัติหน่วยงาน'" ></div>
+        </div>
+
+
+       
+       
+    </div>
+  
 
     <div class="mt-4">
         <div class="text-red-600">หมายเหตุ : กรุณาแจ้งล่วงหน้าไม่น้อยกว่า 7 วัน เพื่อความเหมาะสมในการจัดเตรียมเครื่องคอมพิวเตอร์และอุปกรณ์</div>
@@ -113,6 +171,34 @@
         </div>
     </div>
               
+    <UModal v-model="modalItem">
+        <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+            <template #header>
+                <div class="text-center">เลือก Serial Number</div>
+            </template>
+
+            <UFormGroup label="อุปกรณ์" name="inventory" size="xl">
+
+                <div class="pl-4 my-2">
+                    <UCheckbox color="primary" 
+                        :model-value="form.borrowItems.some(bItem => bItem.item_id == item.item_id)"
+                        :label="`${item.item_type} - ${item.item_cate} - ${item.serial_number} - ${item.item_name}`" 
+                        class="mb-2" 
+                        @update:model-value="selectItemBorrow(item)"
+                        :ui="{container: 'flex items-center h-6', base: 'h-5 w-5 dark:checked:bg-current dark:checked:border-transparent dark:indeterminate:bg-current dark:indeterminate:border-transparent disabled:opacity-50 disabled:cursor-not-allowed focus:ring-0 focus:ring-transparent focus:ring-offset-transparent'}"
+                        v-for="(item, index) in serialItems"
+                    />
+                </div>
+            </UFormGroup>
+
+            <template #footer>
+                <div class="flex justify-center">
+                    <button type="button" class="px-4 py-2 bg-green-600 text-base rounded-[5px] text-white" @click="modalItem = false">ตกลง</button>
+                </div>
+            </template>
+        </UCard>
+        
+    </UModal>
 </template>
 
 <script setup>
@@ -120,7 +206,8 @@
     import moment from 'moment'
     moment.locale('th')
 
-    const props = defineProps(['form', 'create'])
+    const props = defineProps(['form', 'create', 'auth'])
+    const emit = defineEmits(['addItem'])
 
     const notDisable = (props.create !== undefined && !(props.form?.status !== undefined && props.form?.status === 'ส่งมอบใช้งาน' || props.form?.status === 'ปฏิเสธจาก(ทส.)'|| props.form?.status === 'คืน' ))
 
@@ -160,7 +247,14 @@
     })
 
     const selectItem = async (value, item) => {
-        item.inventory = await getListItems('', '', value)
+        const data = await getListItems('', '', value)
+
+
+        item.inventory = data.filter((value, index, self) =>
+            index === self.findIndex((t) => (
+                t.item_cate === value.item_cate
+            ))
+        )
     }
     const fetchTypeItems = async (item) => {
         itemsType.value = await getMasterType(`HD_ITEMTYPE`, '')
@@ -169,6 +263,44 @@
     const deleteItem = (index) => {
         props.form.items.splice(index, 1)
     }
+
+    const serialItems = ref([])
+    const modalItem = ref()
+    const modalItemSelect = async (type, cate) => {
+        modalItem.value = true
+
+        const data = await getListItems('', '', type, cate)
+
+        serialItems.value = data.filter(i => i.status === 'ว่าง' )
+
+    }
+
+    const selectItemBorrow = async (item) => {
+
+        const index = props.form.borrowItems.findIndex(i => i.item_id == item.item_id)
+
+        if(index === -1) {
+            props.form.borrowItems.push(item) 
+            
+        }else {
+            props.form.borrowItems.splice(index, 1)
+        }
+       
+    }
+     
+
+    
+
+    const groupBy = (items, key) => items.reduce(
+        (result, item) => ({
+            ...result,
+            [item[key]]: [
+            ...(result[item[key]] || []),
+            item,
+            ],
+        }), 
+        {},
+    );
 </script>
 
 <style lang="scss" scoped>

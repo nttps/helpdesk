@@ -593,6 +593,7 @@
                 "SearchText": textSearch.value,//ค้นหาใน department_desc ,description,phone_req,purpose_desc,item_id,item_name,req_by_fullname ,ค่าว่างค้นหาทั้งหมด  
                 "DateBegin": null,//วันที่แจ้งซ่อมเริ่ม
                 "DateEnd": null,//ถึงวันที่ซ่อม
+                "Username":  auth.username,
                 "Status": status//รอตรวจสอบ(ทส.),รออนุมัติ(ทส.) 
             })
             s.count = data.length
@@ -648,6 +649,7 @@
                 "SearchText": textSearch.value,//ค้นหาใน department_desc ,description,phone_req,purpose_desc,item_id,item_name,req_by_fullname ,ค่าว่างค้นหาทั้งหมด  
                 "DateBegin": null,//วันที่แจ้งซ่อมเริ่ม
                 "DateEnd": null,//ถึงวันที่ซ่อม
+                "Username":  auth.username,
                 "Status":statusSearch.value//รอตรวจสอบ(ทส.),รออนุมัติ(ทส.) 
             })
             if(textSearch.value !== '' && page.value > 1) {
@@ -658,7 +660,7 @@
                 data: data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
             }
         }, {
-            watch: [page, pageCount, textSearch, statusSearch]
+            watch: [page, pageCount, textSearch, statusSearch, auth]
         }
     )
 

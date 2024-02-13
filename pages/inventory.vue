@@ -97,6 +97,19 @@
                             searchable-placeholder="ค้นหาประเภทอุปกรณ์"
                         />
                     </UFormGroup>
+                    <UFormGroup label="หมวดหมู่" name="item_type" size="xl" >
+                        <USelectMenu 
+                            :options="itemsCate" 
+                            placeholder="เลือกหมวดหมู่" 
+                            size="xl"
+                            v-model="form.item_cate"
+                            value-attribute="description1" 
+                            option-attribute="description1" 
+                            searchable
+                            searchable-placeholder="ค้นหาประเภทอุปกรณ์"
+                        />
+                    </UFormGroup>
+                   
                     <UFormGroup label="ยีห้อ" name="brand" size="xl">
                        <UInput v-model="form.brand" placeholder="" />
                     </UFormGroup>
@@ -192,6 +205,9 @@
         key: 'item_type',
         label: 'ประเภท'
     }, {
+        key: 'item_cate',
+        label: 'หมวดหมู่'
+    }, {
         key: 'brand',
         label: 'ยีห้อ'
     }, {
@@ -224,10 +240,13 @@
     const search = ref('')
    
     const itemsType = ref()
+    const itemsCate = ref()
 
 
     onMounted(() => {
         getItemType()
+        getItemCate()
+
     })
     
 
@@ -235,6 +254,12 @@
         const res = await getMasterType('HD_ITEMTYPE', '', '')
 
         itemsType.value = res
+    }
+
+    const getItemCate = async () => {
+        const res = await getMasterType('HD_ITEMCATE', '', '')
+
+        itemsCate.value = res
     }
 
     const { data: lists, pending, refresh } = await useAsyncData(
@@ -259,6 +284,7 @@
         item_ref:"",//รหัสอ้างอิง ใช้แทนรหัสพัสดุ
         item_name:"",//ชื่อพัสดุ
         item_type:"",// ประเภท ส่งค่าจาก dropdown  ที่มากจาก masterTypeID =HD_ITEMTYPE
+        item_cate: "",
         brand:"",//ยี่ห้อพัสดุ
         model:"",//รุ่น
         serial_number:"",

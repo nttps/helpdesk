@@ -113,7 +113,7 @@
                 
                 <FormBorrow :form="form" @addItem="addItem" create/>
 
-                <template #footer v-if="form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)' || form.status == undefined">
+                <template #footer v-if="!form.status || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)'">
                     <div class="flex items-center justify-end space-x-4">
                         <UButton color="amber" label="บันทึก" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                         <UButton color="gray" @click="modalAdd = false; resetForm()" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
@@ -145,9 +145,13 @@
                         <h3 class="font-bold leading-6 text-xl mb-2 ">เหตุผลการปฏิเสธ</h3>
                         <div>{{ form.status1_reason || form.status2_reason }}</div>
                     </div>
-                    <FormBorrow :form="form" />
+                    <FormBorrow :form="form" :auth="auth">
+                        
+                    </FormBorrow>
 
                     
+                    
+
                 </div>
                 
              
@@ -207,29 +211,29 @@
                 
                 <div class="text-lg font-bold mb-2"> อุปกรณ์ที่ต้องการคืน </div>
                 <UCheckbox v-model="dataReturn.returnAll" name="notifications" label="คืนทั้งหมด" :ui="{label:'text-base font-bold', wrapper: 'items-center'}" />
-                <div class="p-8 pt-4 mb-2 border items-center rounded-lg grid grid-cols-4 gap-2 relative" v-for="item in form.items" v-if="!dataReturn.returnAll">
-                    <UFormGroup label="ประเภทอุปกรณ์" name="item_type" size="xl">
-                        {{ item.item_type }}
-                    </UFormGroup>
-                    <UFormGroup label="อุปกรณ์" name="inventory" size="xl">
-                        {{ item.item_name }}
-                    </UFormGroup>
+                <div class="p-8 pt-4 mb-2 border rounded-lg flex space-2 relative" v-for="(cate, index) in groupBy(form.borrowItems, 'item_cate')" v-if="!dataReturn.returnAll">
+                    <div class="w-[100px] font-bold"> {{ index }}</div>
 
-                    <UFormGroup label="ที่ยืม" name="qty" size="xl">
-                        {{ item.qty }}
-                    </UFormGroup>
-                    <UFormGroup label="คืนแล้ว" name="qty" size="xl">
-                        {{ item.qty_return }}
-                    </UFormGroup>
+                    <div class="min-w-max w-full ">
+                        <div  v-for="item in cate" class="grid grid-cols-4 gap-2 items-center mb-2 border-b border-black pb-2">
+                            <UFormGroup label="อุปกรณ์" name="inventory" size="xl">
+                                {{ item.item_name }}
+                            </UFormGroup>
 
-                    <UFormGroup label="จำนวนที่ต้องการคืน" name="qty" size="xl" v-if="item.qty_remain > 0">
-                        <UInput v-model="item.return_qty" @update:model-value="e => checkMaxReturn(e, item.item_id, item.qty)" placeholder="กรอกจำนวนที่ต้องการคืน" required/>
-                    </UFormGroup>
-                    <div  class="text-xl font-bold absolute right-2 top-2" :class="{ 'text-red-600': item.qty_remain > 0, 'text-green-500': item.qty_remain === 0 }">
-                        {{ item.qty_remain > 0 ? 'ยังคืนไม่ครบ' : 'คืนครบแล้ว' }}
+                            <div  class="text-xl font-bold " :class="{ 'text-red-600': item.qty_return === 0, 'text-green-500': item.qty_return}">
+                                {{ item.qty_return ? 'คืนแล้ว' : 'ยังไม่คืน' }}
+                            </div>
+                            <UButton :color="item.qty_return ? 'red' : 'green'" :label="item.qty_return ? 'ยกเลิกคืนอุปกรณ์นี้' : 'คืนอุปกรณ์นี้'" size="sm" @click="checkMaxReturn((item.qty_return ? 0 : 1), item.item_id)" />
+
+                                
+                            
+                        </div>
                     </div>
+                   
                     
                 </div>
+
+                <div class="text-red-600 font-bold">หมายเหตุ : เมื่อกดคืนอุปกรณ์เรียบร้อยแล้ว กรุณาอย่าลืมกดปุ่มแจ้งคืนพัสดุเพื่อยืนยันการคืนทุกครั้ง</div>
 
                 <template #footer>
                     <div class="flex items-center justify-end space-x-4">
@@ -420,11 +424,12 @@
         key: 'req_date',
         label: 'ว/ด/ป'
     }, {
-        key: 'item_name',
-        label: 'อุปกรณ์'
-    }, {
         key: 'req_by_user_id',
         label: 'ผู้ยืม'
+    },{
+        
+        key: 'count_item',
+        label: 'จำนวนอุปกรณ์ที่ยืม'
     }, {
         key: 'department_id',
         label: 'หน่วยงาน'
@@ -438,7 +443,16 @@
         key: 'actions'
     }]
 
-  
+    const groupBy = (items, key) => items.reduce(
+        (result, item) => ({
+            ...result,
+            [item[key]]: [
+            ...(result[item[key]] || []),
+            item,
+            ],
+        }), 
+        {},
+    );
 
 
     const items = (row) => {
@@ -509,12 +523,13 @@
         status: "",
         department_id: auth.username.length === 13 ? auth.user.currentUserInfo.departmentID : '',
         items: [{
-            item_id: '',
+            item_cate: '',
             qty: '',
             item_type: '',
             inventory: []
 
-        }]
+        }],
+        borrowItems: []
     })
 
     const rejectHandle = () => {
@@ -555,7 +570,9 @@
         form.value.items.push({ 
             item_id: '',
             qty: '',
-            item_type: ''
+            item_type: '',
+            item_cate: '',
+
         })
     }
 
@@ -581,9 +598,11 @@
                 item_id: '',
                 qty: '',
                 item_type: '',
+                item_cate: '',
                 inventory: []
 
-            }]
+            }],
+            borrowItems: []
         }
     }
 
@@ -603,6 +622,7 @@
                 "SearchText": textSearch.value,//ค้นหาใน department_desc ,description,phone_req,purpose_desc,item_id,item_name,req_by_fullname ,ค่าว่างค้นหาทั้งหมด  
                 "DateBegin": null,//วันที่แจ้งซ่อมเริ่ม
                 "DateEnd": null,//ถึงวันที่ซ่อม
+                "Username":  auth.username,
                 "Status": status//รอตรวจสอบ(ทส.),รออนุมัติ(ทส.) 
             })
             s.count = data.length
@@ -643,6 +663,7 @@
                 "SearchText": textSearch.value,//ค้นหาใน department_desc ,description,phone_req,purpose_desc,item_id,item_name,req_by_fullname ,ค่าว่างค้นหาทั้งหมด  
                 "DateBegin": null,//วันที่แจ้งซ่อมเริ่ม
                 "DateEnd": null,//ถึงวันที่ซ่อม
+                "Username":  auth.username,
                 "Status":statusSearch.value//รอตรวจสอบ(ทส.),รออนุมัติ(ทส.) 
             })
             if(textSearch.value !== ''  && page.value > 1 ) {
@@ -653,7 +674,7 @@
                 data: data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
             }
         }, {
-            watch: [page, pageCount, textSearch, statusSearch]
+            watch: [page, pageCount, textSearch, statusSearch, auth]
         }
     )
   
@@ -671,15 +692,24 @@
 
     const submitRequest = async () => {
 
-        console.log(form.value.items);
         const res = await postApi('/hd/request/SaveBorrow', {
             RequestHead: form.value,
-            RequestItem: form.value.items.map(item => {
+            RequestItemType: form.value.items.map(item => {
+
                 return {
-                    item_id: item.item_id,
-                    qty: parseInt(item.qty)
+                    item_type: item.item_type, //MasterType (HD_ITEMTYPE)
+                    item_cate: item.item_cate,//MasterType (HD_ITEMCATE)
+                    qty: parseInt(item.qty),
+                    brand:"",
                 }
-            })
+            }),
+            RequestItem:  form.value.borrowItems.map(item => {
+                return {
+                    item_id: item.item_id, //MasterType (HD_ITEMTYPE)
+                    serial_number: item.serial_number,//MasterType (HD_ITEMCATE)
+                    qty: 1,
+                }
+            }),
         })
 
         
@@ -692,11 +722,13 @@
     }
     
 
-    const checkMaxReturn = (value, id, max) => {
-        const item = form.value.items.find(item => item.item_id === id)
+    const checkMaxReturn = (value, id) => {
+        const item = form.value.borrowItems.find(item => item.item_id === id)
+        console.log(item);
 
+        item.qty_return = value
+        item.return_pending = true
 
-        item.return_qty = value > max ? max : value
     }
     
 
@@ -719,7 +751,9 @@
         const data = await getApi(`/hd/request/GetDocSet?req_id=${id}`)
 
         form.value = data.requestHead
-        form.value.items = data.requestItem
+        form.value.items = data.requestItemType
+        form.value.borrowItems = data.requestItem
+
 
         form.value.location_unit = data.requestHead.location_unit ||  data.requestHead.department_id 
 
@@ -744,6 +778,11 @@
     }
 
     const submitApprove = async () => {
+
+        if(form.value.status === 'รอตรวจสอบ(ทส.)') {
+            submitRequest()
+        }
+
         const res = await postApi('/hd/request/ApproveDocument', dataApprove.value)
 
         modalConfirmApprove.value = false
@@ -754,10 +793,11 @@
 
     const submitReturn = async () => {
 
-        const returnItems = form.value.items.map(item => {
+        const returnItems = form.value.borrowItems.filter(item => item.qty_return > 0).map(item => {
             return {
                 item_id: item.item_id,
-                qty_return: item.return_qty,
+                serial_number: item.serial_number,
+                qty_return: item.qty_return,
             }
         })
         dataReturn.value.items = returnItems
