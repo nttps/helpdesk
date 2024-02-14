@@ -111,7 +111,7 @@
                 </template>
 
                 
-                <FormBorrow :form="form" @addItem="addItem" create/>
+                <FormBorrow :form="form" @addItem="addItem" :auth="auth" create/>
 
                 <template #footer v-if="!form.status || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)'">
                     <div class="flex items-center justify-end space-x-4">
@@ -145,9 +145,7 @@
                         <h3 class="font-bold leading-6 text-xl mb-2 ">เหตุผลการปฏิเสธ</h3>
                         <div>{{ form.status1_reason || form.status2_reason }}</div>
                     </div>
-                    <FormBorrow :form="form" :auth="auth">
-                        
-                    </FormBorrow>
+                    <FormBorrow :form="form" :auth="auth" />
 
                     
                     
@@ -482,7 +480,7 @@
                     }
                 })
             }
-            if(auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)) {
+            if((row.status == 'ส่งมอบใช้งาน' || row.status == 'รายการคงค้าง') && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)) {
                 btn.push( {
                     label: 'คืนพัสดุ',
                     icon: 'i-heroicons-archive-box-20-solid',

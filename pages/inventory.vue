@@ -34,8 +34,11 @@
                     </div>
                 </template>
                 <template #status-data="{ row }">
-                    <div class="text-center">{{ row.status }}</div>
+                    <div class="text-center">
+                        <UBadge size="xs" :label="row.status" :color="row.status === 'ว่าง' ? 'emerald' : 'red'" variant="solid" />
+                    </div>
                 </template>
+                
                 <template #id-data="{ row, index }">
                     <div class="text-center">{{  index + 1 }}</div>
                 </template>
@@ -267,7 +270,7 @@
         async () => {
             const data = await getListItems(search.value, '')
 
-             if( search.value !== ''  && page.value > 1) {
+            if( search.value !== ''  && page.value > 1) {
                 page.value = 1
             }
             return {

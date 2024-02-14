@@ -94,8 +94,8 @@
         </UFormGroup>
 
         <div v-if="form?.status && form.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)">
-            <UFormGroup label="เลือกอุปกรณ์ / ระบุ Serial No. ที่ให้ยืม" name="qty" size="xl">
-                <UButton color="blue" label="เลือกอุปกรณ์" size="xl" @click="modalItemSelect(item.item_type, item.item_cate)" v-if="!notDisable" />
+            <UFormGroup label="เลือกอุปกรณ์ / ระบุ Serial No. ที่ให้ยืม" name="qty" size="xl" v-if="!notDisable">
+                <UButton color="blue" label="เลือกอุปกรณ์" size="xl" @click="modalItemSelect(item.item_type, item.item_cate)"  />
             </UFormGroup>
         </div>
     </div>
@@ -105,7 +105,7 @@
     </div>
 
 
-    <div v-if="form?.status">
+    <div v-if="form?.status && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)">
         <div class="text-lg font-bold mt-2"> อุปกรณ์ที่ให้ยืม <span class=" text-red-500 font-bold text-base">(สำหรับแอดมินทส. ตรวจสอบ) </span> </div>
         <div class="px-2 mb-2 rounded-lg">
             
@@ -139,7 +139,7 @@
                         1
                     </template>
                     <template #actions-data="{ row }">
-                        <div class="flex items-center space-x-4" v-if="notDisable">
+                        <div class="flex items-center space-x-4" v-if="!notDisable">
                             <div>
                                 <UButton label="ลบ" color="red" @click="selectItemBorrow(row)"/>
                             </div>
@@ -171,7 +171,7 @@
         </div>
     </div>
               
-    <UModal v-model="modalItem">
+    <UModal v-model="modalItem"  :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
         <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
             <template #header>
                 <div class="text-center">เลือก Serial Number</div>
@@ -179,14 +179,21 @@
 
             <UFormGroup label="อุปกรณ์" name="inventory" size="xl">
 
-                <div class="pl-4 my-2">
+                <div class="p-4 my-2 border">
                     <UCheckbox color="primary" 
                         :model-value="form.borrowItems.some(bItem => bItem.item_id == item.item_id)"
-                        :label="`${item.item_type} - ${item.item_cate} - ${item.serial_number} - ${item.item_name}`" 
+                        :label="`${item.item_cate} - ${item.serial_number} - ${item.item_name}`" 
                         class="mb-2" 
                         @update:model-value="selectItemBorrow(item)"
                         :ui="{container: 'flex items-center h-6', base: 'h-5 w-5 dark:checked:bg-current dark:checked:border-transparent dark:indeterminate:bg-current dark:indeterminate:border-transparent disabled:opacity-50 disabled:cursor-not-allowed focus:ring-0 focus:ring-transparent focus:ring-offset-transparent'}"
                         v-for="(item, index) in serialItems"
+                    />
+                </div>
+                <div class="flex flex-wrap justify-end items-center px-3 pt-3">
+                    <UPagination 
+                    v-model="page" 
+                    :page-count="pageCount" 
+                    :total="serialTotal" 
                     />
                 </div>
             </UFormGroup>
@@ -209,7 +216,7 @@
     const props = defineProps(['form', 'create', 'auth'])
     const emit = defineEmits(['addItem'])
 
-    const notDisable = (props.create !== undefined && !(props.form?.status !== undefined && props.form?.status === 'ส่งมอบใช้งาน' || props.form?.status === 'ปฏิเสธจาก(ทส.)'|| props.form?.status === 'คืน' ))
+    const notDisable = (props.create !== undefined && !(props.form?.status !== undefined && props.form?.status === 'ส่งมอบใช้งาน' && props.form?.status === 'ปฏิเสธจาก(ทส.)'&& props.form?.status === 'คืน' ))
 
     const labelStartDate = computed(() => moment(props.form.date_begin).format('DD/MM/YYYY'))
     const labelEndDate = computed(() => moment(props.form.date_end).format('DD/MM/YYYY'))
@@ -260,20 +267,36 @@
         itemsType.value = await getMasterType(`HD_ITEMTYPE`, '')
     }
 
+
     const deleteItem = (index) => {
         props.form.items.splice(index, 1)
     }
 
     const serialItems = ref([])
+    const serialTotal = ref(0)
     const modalItem = ref()
+
+    const page = ref(1)
+    const pageCount = ref(20)
+
+    const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
+    const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
+
     const modalItemSelect = async (type, cate) => {
         modalItem.value = true
 
         const data = await getListItems('', '', type, cate)
 
-        serialItems.value = data.filter(i => i.status === 'ว่าง' )
+        if(page.value > 1) {
+            page.value = 1
+        }
+        serialTotal.value  = data.length,
+        serialItems.value = data.filter(i => i.status === 'ว่าง' ).slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
 
     }
+    const pageTotal = computed(() => serialTotal.value)
+
+   
 
     const selectItemBorrow = async (item) => {
 
