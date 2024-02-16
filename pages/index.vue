@@ -111,7 +111,7 @@
                 </template>
 
                 
-                <FormBorrow :form="form" @addItem="addItem" :auth="auth" create/>
+                <FormBorrow :form="form" @addItem="addItem" :auth="auth" :disabled="false"/>
 
                 <template #footer v-if="!form.status || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)'">
                     <div class="flex items-center justify-end space-x-4">

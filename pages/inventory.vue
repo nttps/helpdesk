@@ -132,6 +132,8 @@
                     <UFormGroup label="ยังอยู่ในช่วงรับประกัน" name="is_in_warranty" class="flex space-x-4 items-center" size="xl">
                         <UToggle color="primary" v-model="form.is_in_warranty" :model-value="form.is_in_warranty" />
 
+                        
+
                         <UFormGroup label="" name="warranty_expiration_date" v-if="form.is_in_warranty">
                             <UPopover :popper="{ placement: 'bottom-start' }" >
                                 <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" size="md" :label="labelDateExpire" />

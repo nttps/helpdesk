@@ -2,7 +2,7 @@
     <div class="flex mb-4">
         <UFormGroup label="วันที่ยืม" name="start_date" size="xl" class="w-1/3">
             <UPopover :popper="{ placement: 'bottom-start' }">
-                <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelStartDate" :disabled="!notDisable" />
+                <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelStartDate" :disabled="notDisable" />
                 <template #panel="{ close }">
                     <FormDatePicker v-model="form.date_begin" @close="close" />
                 </template>
@@ -10,20 +10,20 @@
         </UFormGroup>
         <UFormGroup label="วันที่คืน" name="end_date" size="xl" class="w-1/3">
             <UPopover :popper="{ placement: 'bottom-start' }">
-                <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelEndDate" :disabled="!notDisable" />
+                <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelEndDate" :disabled="notDisable" />
                 <template #panel="{ close }">
                     <FormDatePicker v-model="form.date_end" @close="close" />
                 </template>
             </UPopover>
         </UFormGroup>
         <UFormGroup label="อุปกรณ์ครบ" name="location_unit" size="xl">
-            <UToggle v-model="form.itemApprove" :disabled="!notDisable" size="2xl" />
+            <UToggle v-model="form.itemApprove" :disabled="notDisable" size="2xl" />
         </UFormGroup>
     </div>
 
     <div class="grid grid-cols-5 gap-8 mb-4">
         <UFormGroup label="ผู้ยืม" name="req_by_user_id" size="xl">
-            <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" required @input="searchUserId" :disabled="!otDisable || form.req_by_user_id.length === 13"/>
+            <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" required @input="searchUserId" :disabled="notDisable || form.req_by_user_id.length === 13"/>
 
             <div class="bg-white divide-y-2 rounded absolute z-10 border" v-if="users.length">
 
@@ -36,15 +36,15 @@
         </UFormGroup>
         
         <UFormGroup label="อีเมล" name="emal_req" size="xl">
-            <UInput v-model="form.emal_req" placeholder="" :disabled="!notDisable || (form.req_by_user_id.length === 13 && form.emal_req !== '')" />
+            <UInput v-model="form.emal_req" placeholder="" :disabled="notDisable || (form.req_by_user_id.length === 13 && form.emal_req !== '')" />
         </UFormGroup>
         <UFormGroup label="เบอร์โทรศัพท์" name="phone_req" size="xl">
-            <UInput v-model="form.phone_req" placeholder="" :disabled="!notDisable || (form.req_by_user_id.length === 13 && form.phone_req !== '')" />
+            <UInput v-model="form.phone_req" placeholder="" :disabled="notDisable || (form.req_by_user_id.length === 13 && form.phone_req !== '')" />
         </UFormGroup>
     </div>
     <div class="mb-4"> 
         <UFormGroup label="วัตถุประสงค์" name="telephone" size="xl">
-            <UTextarea :rows="5" placeholder="" v-model="form.purpose_desc" :disabled="!notDisable" />
+            <UTextarea :rows="5" placeholder="" v-model="form.purpose_desc" :disabled="notDisable" />
         </UFormGroup>
     </div>
 
@@ -64,7 +64,7 @@
                 @update:model-value="selectItem($event, item)"
                 searchable
                 searchable-placeholder="ค้นหาประเภทอุปกรณ์"
-                :disabled="!notDisable"
+                :disabled="notDisable"
             />
         </UFormGroup>
         <UFormGroup label="หมวดหมู่" name="inventory" size="xl">
@@ -76,7 +76,7 @@
                 placeholder="เลือกหมวดหมู่" 
                 searchable
                 searchable-placeholder="ค้นหาหมวดหมู่"
-                :disabled="!notDisable"
+                :disabled="notDisable"
             > 
                 <template #label>
                     <template v-if="item.item_cate">
@@ -90,11 +90,11 @@
         </UFormGroup>
         
         <UFormGroup label="จำนวน" name="qty" size="xl">
-            <UInput v-model="item.qty" placeholder="กรอกจำนวน" required :disabled="!notDisable" />
+            <UInput v-model="item.qty" placeholder="กรอกจำนวน" required :disabled="notDisable" />
         </UFormGroup>
 
         <div v-if="form?.status && form.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)">
-            <UFormGroup label="เลือกอุปกรณ์ / ระบุ Serial No. ที่ให้ยืม" name="qty" size="xl" v-if="!notDisable">
+            <UFormGroup label="เลือกอุปกรณ์ / ระบุ Serial No. ที่ให้ยืม" name="qty" size="xl">
                 <UButton color="blue" label="เลือกอุปกรณ์" size="xl" @click="modalItemSelect(item.item_type, item.item_cate)"  />
             </UFormGroup>
         </div>
@@ -222,6 +222,8 @@
     const emit = defineEmits(['addItem'])
 
     const notDisable = props.disabled && (props.form.status === 'รออนุมัติหน่วยงาน' || props.form.status === 'รอตรวจสอบ(ทส.)')
+
+    console.log(notDisable);
 
     const labelStartDate = computed(() => moment(props.form.date_begin).format('DD/MM/YYYY'))
     const labelEndDate = computed(() => moment(props.form.date_end).format('DD/MM/YYYY'))
