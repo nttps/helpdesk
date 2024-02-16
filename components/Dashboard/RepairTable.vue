@@ -58,11 +58,11 @@
 
 <script setup>
 
-    const props = defineProps(['selectedRows'])
+    const props = defineProps(['selectedRows', 'columns', 'rows', 'updateSelected', 'pending'])
 
-columns
-rows
-pending
-updateSelected
+
+
+
+
 
 </script>
