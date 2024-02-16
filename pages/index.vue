@@ -52,7 +52,7 @@
             <div>
                 <UTabs :items="tabItems" class="w-full">
                     <template #repair="{ item }">
-                        <DashboardRepairTable />
+                        <!-- <DashboardRepairTable /> -->
                     </template>
 
                     <template #borrow="{ item }">
