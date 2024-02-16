@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PartialsTitle title="อุปกรณ์" url-back="/settings/inventory" :text-button="`เพิ่มประเภท`" title-breadcrum="ประเภท" @add="addNew" :priority="false" />
+        <PartialsTitle title="อุปกรณ์" url-back="/settings/inventory" :text-button="`เพิ่มหมวดหมู่`" title-breadcrum="หมวดหมู่" @add="addNew" :priority="false" />
         <div class="mt-8">
             <div class="search-bar flex justify-center items-center mb-2">
                 <div class="min-w-3xl w-96">
@@ -54,13 +54,13 @@
                 <template #header>
                     <div class="flex items-center justify-between">
                         <h3 class="text-xl text-center font-bold leading-6 text-gray-900 dark:text-white">
-                            เพิ่มประเภท
+                            เพิ่มหมวดหมู่
                         </h3>
                         <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalAdd = false" />
                     </div>
                 </template>
 
-                <UFormGroup label="ประเภท" name="description1" size="xl">
+                <UFormGroup label="หมวดหมู่" name="description1" size="xl">
                     <UInput v-model="form.description1" placeholder="" />
                 </UFormGroup>
                 
@@ -128,7 +128,7 @@
 
     
    
-    const { data: types, pending, refresh } = await useAsyncData('types', () => getMasterType(`HD_ITEMTYPE`, search.value)
+    const { data: types, pending, refresh } = await useAsyncData('types', () => getMasterType(`HD_ITEMCATE`, search.value)
         , {
             default: () => [],
             watch: [page, search, pageCount]
@@ -138,23 +138,23 @@
     const modalAdd = ref(false)
 
     const form = ref({
-        MasterTypeID: "HD_ITEMTYPE",
-        valueTXT: `HD_ITEMTYPE_${Math.random().toString(16).slice(2)}`,
+        MasterTypeID: "HD_ITEMCATE",
+        valueTXT: `HD_ITEMCATE_${Math.random().toString(16).slice(2)}`,
         description1: "", 
         description2: ""
     })
 
     const addNew = () => {
         form.value ={
-            masterTypeID:"HD_ITEMTYPE",
-            valueTXT: `HD_ITEMTYPE_${Math.random().toString(16).slice(2)}`,
+            masterTypeID:"HD_ITEMCATE",
+            valueTXT: `HD_ITEMCATE_${Math.random().toString(16).slice(2)}`,
             description1:"",
         }
         modalAdd.value = true
     }
 
     const schema = object({
-        description1: string().required('กรอกรายประเภทอุุปกรณ์'),
+        description1: string().required('กรอกรายหมวดหมู่อุุปกรณ์'),
     })
 
     const auth = useAuthStore();
@@ -167,7 +167,7 @@
   
     const deleteItem = async () => {
         const res = await deleteMasterType({
-            MasterTypeID:"HD_ITEMTYPE",
+            MasterTypeID:"HD_ITEMCATE",
             Value: itemDelete.value,
             DeletedBy:auth.username
         })
@@ -180,7 +180,7 @@
 
     const fetchEditData = async (value) => {
         const data = await postApi(`/MasterType/GetValue`, {
-            MasterTypeID:"HD_ITEMTYPE",
+            MasterTypeID:"HD_ITEMCATE",
             Value: value
 
         })
@@ -191,8 +191,8 @@
     const resetForm = () => {
        
         form.value ={
-            masterTypeID:"HD_ITEMTYPE",
-            valueTXT: `HD_ITEMTYPE_${Math.random().toString(16).slice(2)}`,
+            masterTypeID:"HD_ITEMCATE",
+            valueTXT: `HD_ITEMCATE_${Math.random().toString(16).slice(2)}`,
             description1:"",
         }
 

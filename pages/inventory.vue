@@ -4,7 +4,7 @@
         <div class="mt-8">
             <div class="search-bar flex justify-between mb-2">
                 <div class="w-96">
-                    <UInput placeholder="ค้นหา" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
+                    <UInput placeholder="ค้นหาจากชื่ออุปกรณ์" v-model="search" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
                 </div>
                 <div>
                     <UButton
@@ -34,8 +34,11 @@
                     </div>
                 </template>
                 <template #status-data="{ row }">
-                    <div class="text-center">{{ row.status }}</div>
+                    <div class="text-center">
+                        <UBadge size="xs" :label="row.status" :color="row.status === 'ว่าง' ? 'emerald' : 'red'" variant="solid" />
+                    </div>
                 </template>
+                
                 <template #id-data="{ row, index }">
                     <div class="text-center">{{  index + 1 }}</div>
                 </template>
@@ -97,14 +100,24 @@
                             searchable-placeholder="ค้นหาประเภทอุปกรณ์"
                         />
                     </UFormGroup>
+                    <UFormGroup label="หมวดหมู่" name="item_type" size="xl" >
+                        <USelectMenu 
+                            :options="itemsCate" 
+                            placeholder="เลือกหมวดหมู่" 
+                            size="xl"
+                            v-model="form.item_cate"
+                            value-attribute="description1" 
+                            option-attribute="description1" 
+                            searchable
+                            searchable-placeholder="ค้นหาประเภทอุปกรณ์"
+                        />
+                    </UFormGroup>
+                   
                     <UFormGroup label="ยีห้อ" name="brand" size="xl">
                        <UInput v-model="form.brand" placeholder="" />
                     </UFormGroup>
                     <UFormGroup label="รุ่น" name="model" size="xl">
                        <UInput v-model="form.model" placeholder="" />
-                    </UFormGroup>
-                    <UFormGroup label="จำนวน" name="qty_bal" size="xl">
-                       <UInput v-model="form.qty_bal" placeholder="" required />
                     </UFormGroup>
                   
                 </div>
@@ -118,6 +131,8 @@
 
                     <UFormGroup label="ยังอยู่ในช่วงรับประกัน" name="is_in_warranty" class="flex space-x-4 items-center" size="xl">
                         <UToggle color="primary" v-model="form.is_in_warranty" :model-value="form.is_in_warranty" />
+
+                        
 
                         <UFormGroup label="" name="warranty_expiration_date" v-if="form.is_in_warranty">
                             <UPopover :popper="{ placement: 'bottom-start' }" >
@@ -175,6 +190,12 @@
     moment.locale('th')
     const modalAdd = ref(false)
 
+    definePageMeta({
+        middleware: ["auth"]
+    })
+    const auth = useAuthStore();
+
+
     const modelDeleteConfirm = ref(false)
    
 
@@ -188,6 +209,9 @@
     }, {
         key: 'item_type',
         label: 'ประเภท'
+    }, {
+        key: 'item_cate',
+        label: 'หมวดหมู่'
     }, {
         key: 'brand',
         label: 'ยีห้อ'
@@ -205,9 +229,6 @@
         label: 'การรับประกัน',
         class: 'text-center'
     }, {
-        key: 'qty_bal',
-        label: 'จำนวน'
-    }, {
         key: 'status',
         label: 'สถานะ',
         class: 'text-center'
@@ -224,10 +245,13 @@
     const search = ref('')
    
     const itemsType = ref()
+    const itemsCate = ref()
 
 
     onMounted(() => {
         getItemType()
+        getItemCate()
+
     })
     
 
@@ -237,11 +261,20 @@
         itemsType.value = res
     }
 
+    const getItemCate = async () => {
+        const res = await getMasterType('HD_ITEMCATE', '', '')
+
+        itemsCate.value = res
+    }
+
     const { data: lists, pending, refresh } = await useAsyncData(
         'lists',
         async () => {
             const data = await getListItems(search.value, '')
 
+            if( search.value !== ''  && page.value > 1) {
+                page.value = 1
+            }
             return {
                 total: data.length,
                 data: data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
@@ -256,6 +289,7 @@
         item_ref:"",//รหัสอ้างอิง ใช้แทนรหัสพัสดุ
         item_name:"",//ชื่อพัสดุ
         item_type:"",// ประเภท ส่งค่าจาก dropdown  ที่มากจาก masterTypeID =HD_ITEMTYPE
+        item_cate: "",
         brand:"",//ยี่ห้อพัสดุ
         model:"",//รุ่น
         serial_number:"",
@@ -264,7 +298,7 @@
         remark:"",  
         contact:"",//เบอร์ติดต่อ
         contract:"",//เลขที่สัญญา 
-        created_by:"tammon.y",//current user login 
+        created_by:auth.username,//current user login 
         modified_by:"",//current user login กรณีที่ต้องการแก้ไข
         qty_bal: "",
         is_active: true
@@ -284,14 +318,14 @@
     const labelDateExpire = computed(() => form.value.warranty_expiration_date ? moment(form.value.warranty_expiration_date).format('DD/MM/YYYY') : 'หมดประกันวันที่')
 
     const fetchEditData = async (id) => {
-        const data = await getApi(`/api/hd/Items/GetDocSet?item_id=${id}`)
+        const data = await getApi(`/hd/Items/GetDocSet?item_id=${id}`)
         form.value = data.itemInfo
 
         modalAdd.value = true
     }
 
     const submit = async () => {
-        const res = await postApi('/api/hd/Items/Save', form.value)
+        const res = await postApi('/hd/Items/Save', form.value)
 
         if(res.outputAction.result === 'ok') {
             refresh()
@@ -305,9 +339,9 @@
 
 
     const deleteItem = async () => {
-        const res = await deleteApi('/api/hd/Items/DeleteDoc', {
+        const res = await deleteApi('/hd/Items/DeleteDoc', {
             ItemID: itemDelete.value,//รหัสสินค้า
-            DeletedBy:"tammon.y"//current user login
+            DeletedBy:auth.username//current user login
         })
 
         modelDeleteConfirm.value = false

@@ -12,6 +12,8 @@ services:
       - "${NUXT_PORT:-3000}"
     environment:
       - HOST=0.0.0.0
+      - PORT=${NUXT_PORT:-3000}
       - NODE_ENV=${NODE_ENV}
       - NUXT_PUBLIC_API_URL=${NUXT_PUBLIC_API_URL}
+      - NUXT_PUBLIC_AUTH_URL=${NUXT_PUBLIC_AUTH_URL}
       - NUXT_PUBLIC_VERSION=${NUXT_PUBLIC_VERSION}

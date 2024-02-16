@@ -8,6 +8,11 @@
                     <Icon name="i-ri-ticket-fill" size="80" color="gray" />
                     <div class="mt-2">ประเภทอุปกรณ์</div>
                 </NuxtLink>
+                <NuxtLink to="/settings/inventory/cate" class="p-6 text-center border rounded-xl w-1/6">
+                    <Icon name="i-ri-ticket-fill" size="80" color="gray" />
+                    <div class="mt-2">หมวดหมู่</div>
+                </NuxtLink>
+               
             </div>
         </div>
        
@@ -15,6 +20,9 @@
 </template>
 
 <script setup>
+    definePageMeta({
+        middleware: ["auth"]
+    })
 
 </script>
 

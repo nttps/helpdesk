@@ -1,5 +1,5 @@
 <template>
-    <SettingsCCTV type="case" @add="modalAdd = true" >
+    <SettingsCCTV type="case" @add="modalAdd = true"  v-model="search">
 
             <UTable 
                 v-model="selected" 
@@ -90,6 +90,10 @@
 <script setup>
 
     import { object, string } from 'yup'
+    definePageMeta({
+        middleware: ["auth"]
+    })
+    const auth = useAuthStore();
 
 
     const columns = [{
@@ -117,8 +121,11 @@
     const { data: lists, pending, refresh } = await useAsyncData(
         'lists',
         async () => {
-            const data = await getMasterType(`HD_CCTV_CASE`, '')
+            const data = await getMasterType(`HD_CCTV_CASE`, search.value)
 
+            if(search.value !== ''  && page.value > 1 ) {
+                page.value = 1
+            }
             return {
                 total: data.length,
                 data: data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
@@ -131,13 +138,13 @@
     const modalAdd = ref(false)
     const form = ref({
         MasterTypeID: "HD_CCTV_CASE",
-        ValueTXT: `CCTV_CASE_${(lists.value.total+1)}`,//value
+        ValueTXT: `CCTV_CASE_${Math.random().toString(16).slice(2)}`,//value
         description1: "", //คำบรรยาย 1
         description2: ""//คำบรรยาย 2
     })
 
     const fetchEditData = async (value) => {
-        const data = await postApi(`/api/MasterType/GetValue`, {
+        const data = await postApi(`/MasterType/GetValue`, {
             MasterTypeID:"HD_CCTV_CASE",
             Value: value
 
@@ -150,7 +157,7 @@
     const closeModal = () => {
         form.value = {
             MasterTypeID: "HD_CCTV_CASE",
-            ValueTXT: `CCTV_CASE_${(lists.value.total+1)}`,//value
+            ValueTXT: `CCTV_CASE_${Math.random().toString(16).slice(2)}`,//value
             description1: "", //คำบรรยาย 1
             description2: ""//คำบรรยาย 2
         }
@@ -169,7 +176,7 @@
 
             form.value = {
                 MasterTypeID: "HD_CCTV_CASE",
-                ValueTXT: `CCTV_CASE_${(lists.value.total+1)}`,//value
+                ValueTXT: `CCTV_CASE_${Math.random().toString(16).slice(2)}`,//value
                 description1: "", //คำบรรยาย 1
                 description2: ""//คำบรรยาย 2
             }
@@ -181,7 +188,7 @@
         const res = await deleteMasterType({
             MasterTypeID:"HD_CCTV_CASE",//HD_CCTV_CASE , HD_CCTV_PURPOSE ,  HD_ITEMCATE , HD_ITEMTYPE ,HD_REPAIR_PURPOSE
             Value: itemDelete.value,//ค่าที่ต้องการลบ
-            DeletedBy:"tammon.y"//current user login
+            DeletedBy: auth.username//current user login
         })
 
         modelDeleteConfirm.value = false

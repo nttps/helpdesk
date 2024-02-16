@@ -17,7 +17,7 @@ export const getMasterType = async (type, search) => {
 
     try {
         const response = await fetch(
-            `${config.public.apiUrl}/api/MasterType/ListData`,
+            `${config.public.apiUrl}/MasterType/ListData`,
             requestOptions
         );
         return await response.json();
@@ -26,10 +26,12 @@ export const getMasterType = async (type, search) => {
     }
 };
 
-export const getListItems = async (search, status, type = '') => {
+export const getListItems = async (search, status, type = '', cate = '') => {
     var raw = JSON.stringify({
         SearchText: search, //ค้นหาใน cate_name ,description ,ค่าว่างค้นหาทั้งหมด
         Type: type, //ประเภท ส่งค่าจาก dropdown  ที่มากจาก masterTypeID =HD_ITEMTYPE
+        Cate: cate, //ประเภท ส่งค่าจาก dropdown  ที่มากจาก masterTypeID =HD_ITEMTYPE
+
         Status: status, //ว่าง , ไม่ว่าง , ส่งซ่อม ,ใช้งานไม่ได้ ค่าว่างแสดงทั้งหมด ใส่ได้หลายค่าคั่นด้วย ","
     });
 
@@ -41,7 +43,7 @@ export const getListItems = async (search, status, type = '') => {
 
     try {
         const response = await fetch(
-            `${config.public.apiUrl}/api/hd/Items/ListData`,
+            `${config.public.apiUrl}/hd/Items/ListData`,
             requestOptions
         );
         return await response.json();
@@ -67,7 +69,7 @@ export const getListCCTV = async (search, dataBegin, dateEnd, status) => {
 
     try {
         const response = await fetch(
-            `${config.public.apiUrl}/api/hd/request/ListCCTV`,
+            `${config.public.apiUrl}/hd/request/ListCCTV`,
             requestOptions
         );
         return await response.json();
@@ -88,7 +90,7 @@ export const addMasterType = async (data) => {
 
     try {
         const response = await fetch(
-            `${config.public.apiUrl}/api/MasterType/Add`,
+            `${config.public.apiUrl}/MasterType/Add`,
             requestOptions
         );
         return await response.json();
@@ -109,7 +111,7 @@ export const deleteMasterType = async (data) => {
 
     try {
         const response = await fetch(
-            `${config.public.apiUrl}/api/MasterType/Delete`,
+            `${config.public.apiUrl}/MasterType/Delete`,
             requestOptions
         );
         return await response.json();
@@ -131,7 +133,7 @@ export const searchUserApi = async (search) => {
 
     try {
         const response = await fetch(
-            `${config.public.apiUrl}/api/Person/ListUserInfo`,
+            `${config.public.apiUrl}/Person/ListUserInfo`,
             requestOptions
         );
         return await response.json();
@@ -204,7 +206,7 @@ export const deleteRequestApi = async (id) => {
 
     try {
         const response = await fetch(
-            `${config.public.apiUrl}/api/hd/request/DeleteDoc`,
+            `${config.public.apiUrl}/hd/request/DeleteDoc`,
             requestOptions
         );
         return await response.json();
