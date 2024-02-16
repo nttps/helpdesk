@@ -23,7 +23,7 @@
 
     <div class="grid grid-cols-5 gap-8 mb-4">
         <UFormGroup label="ผู้ยืม" name="req_by_user_id" size="xl">
-            <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" required @input="searchUserId" :disabled="!notDisable || form.req_by_user_id.length === 13"/>
+            <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" required @input="searchUserId" :disabled="!otDisable || form.req_by_user_id.length === 13"/>
 
             <div class="bg-white divide-y-2 rounded absolute z-10 border" v-if="users.length">
 
@@ -50,7 +50,7 @@
 
     <div class="text-lg font-bold mb-2"> ประเภทและหมวดหมู่ที่ต้องการยืม</div>
     <div class="p-8 pt-4 mb-2 border rounded-lg grid grid-cols-2 gap-2 relative" v-for="item, index in form.items">
-        <div class="absolute right-0 p-2" v-if="form.items.length > 1 && form.status == '' || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)'">
+        <div class="absolute right-0 p-2" v-if="form.items.length > 1 ">
             <UButton color="red" :padded="false" icon="i-heroicons-x-mark-20-solid" size="xl" @click="deleteItem(index)" v-if="notDisable" />
         </div>
         <UFormGroup label="ประเภทอุปกรณ์" name="item_type" size="xl">
@@ -139,7 +139,7 @@
                         1
                     </template>
                     <template #actions-data="{ row }">
-                        <div class="flex items-center space-x-4" v-if="!notDisable">
+                        <div class="flex items-center space-x-4" v-if="form.status === 'รอตรวจสอบ(ทส.)'">
                             <div>
                                 <UButton label="ลบ" color="red" @click="selectItemBorrow(row)"/>
                             </div>
@@ -188,14 +188,19 @@
                         :ui="{container: 'flex items-center h-6', base: 'h-5 w-5 dark:checked:bg-current dark:checked:border-transparent dark:indeterminate:bg-current dark:indeterminate:border-transparent disabled:opacity-50 disabled:cursor-not-allowed focus:ring-0 focus:ring-transparent focus:ring-offset-transparent'}"
                         v-for="(item, index) in serialItems"
                     />
+
+                    <div v-if="serialItems.length === 0" class="text-red-500"> ไม่มีอุปกรณ์ที่ว่าง หรือยังไม่มีอุปกรณ์ ในหมวดหมู่ของอุปกรณ์นี้</div>
                 </div>
-                <div class="flex flex-wrap justify-end items-center px-3 pt-3">
+               
+                
+                <div class="flex flex-wrap justify-end items-center px-3 pt-3" v-if="serialItems.length > 0">
                     <UPagination 
                     v-model="page" 
                     :page-count="pageCount" 
                     :total="serialTotal" 
                     />
                 </div>
+               
             </UFormGroup>
 
             <template #footer>
@@ -213,10 +218,10 @@
     import moment from 'moment'
     moment.locale('th')
 
-    const props = defineProps(['form', 'create', 'auth'])
+    const props = defineProps(['form', 'disabled', 'auth'])
     const emit = defineEmits(['addItem'])
 
-    const notDisable = (props.create !== undefined && !(props.form?.status !== undefined && props.form?.status === 'ส่งมอบใช้งาน' && props.form?.status === 'ปฏิเสธจาก(ทส.)'&& props.form?.status === 'คืน' ))
+    const notDisable = props.disabled && (props.form.status === 'รออนุมัติหน่วยงาน' || props.form.status === 'รอตรวจสอบ(ทส.)')
 
     const labelStartDate = computed(() => moment(props.form.date_begin).format('DD/MM/YYYY'))
     const labelEndDate = computed(() => moment(props.form.date_end).format('DD/MM/YYYY'))
@@ -291,7 +296,7 @@
             page.value = 1
         }
         serialTotal.value  = data.length,
-        serialItems.value = data.filter(i => i.status === 'ว่าง' ).slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
+        serialItems.value = data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
 
     }
     const pageTotal = computed(() => serialTotal.value)
