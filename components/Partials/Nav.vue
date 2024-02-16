@@ -9,6 +9,12 @@
                     <li>
                         <NuxtLink to="/" v-slot="{ isActive }">
                             <Icon name="i-ri-ticket-fill" size="40" :class="isActive ? 'text-black' : ''" />
+                            <div :class="isActive ? 'text-black' : ''">แดชบอร์ด</div>
+                        </NuxtLink>
+                    </li>
+                    <li>
+                        <NuxtLink to="/borrow" v-slot="{ isActive }">
+                            <Icon name="i-ri-ticket-fill" size="40" :class="isActive ? 'text-black' : ''" />
                             <div :class="isActive ? 'text-black' : ''">ยืม-คืนพัสดุ</div>
                         </NuxtLink>
                     </li>
