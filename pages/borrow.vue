@@ -809,7 +809,7 @@
     }
 
     const approveAll = async () => {
-        const dataApproveed =  selectedRows.value.filter(re => re.status != 'ปฏิเสธ' && re.status != 'ปฏิเสธจาก(ทส.)' && re.status != 'อนุมัติ').map(re => re.req_id).join(',')
+        const dataApproveed =  selectedRows.value.filter(re => re.status != 'ปฏิเสธ' && re.status != 'ปฏิเสธจาก(ทส.)' && re.status != 'อนุมัติ' && re.status != 'รอตรวจสอบ(ทส.)').map(re => re.req_id).join(',')
         
         dataApprove.value.Action = 'อนุมัติ'
         dataApprove.value.ReqID = dataApproveed
