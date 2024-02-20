@@ -218,17 +218,17 @@
                                 {{ item.item_name }}
                             </UFormGroup>
 
-                            <div  class="text-xl font-bold " :class="{ 'text-red-600': item.qty_return === 0, 'text-green-500': item.qty_return}">
-                                {{ item.qty_return ? 'คืนแล้ว' : 'ยังไม่คืน' }}
+                            <div  class="text-xl font-bold ">
+                                <div :class="{ 'text-red-600': item.qty_return === 0, 'text-green-500': item.qty_return}">{{ item.qty_return ? 'คืนแล้ว' : 'ยังไม่คืน' }}</div>
+                                <div class="text-sm">เวลาคืน {{ moment(item.date_end).format('DD/MM/YYYY') }}</div>
                             </div>
+                            
                             <UButton :color="item.qty_return ? 'red' : 'green'" :label="item.qty_return ? 'ยกเลิกคืนอุปกรณ์นี้' : 'คืนอุปกรณ์นี้'" size="sm" @click="checkMaxReturn((item.qty_return ? 0 : 1), item.item_id)" />
 
-                                
-                            
+                          
+                            <UButton label="ยื่นเวลายืม" v-if="!item.qty_return" size="sm" @click="setDateBorrow(item)" />
                         </div>
                     </div>
-                   
-                    
                 </div>
 
                 <div class="text-red-600 font-bold">หมายเหตุ : เมื่อกดคืนอุปกรณ์เรียบร้อยแล้ว กรุณาอย่าลืมกดปุ่มแจ้งคืนพัสดุเพื่อยืนยันการคืนทุกครั้ง</div>
@@ -252,8 +252,32 @@
                     <div class="font-bold text-xl text-center">ต้องการทำรายการคืนใช่หรือไม่</div>
                     <template #footer>
                         <div class="flex justify-between">
-                            <button type="submit" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white" @click="submitReturn">ตกลง</button>
+                            <button type="submit" class="px-4 py-2 bg-green-600 text-base rounded-[5px] text-white" @click="submitReturn">ตกลง</button>
                             <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalConfirmReturn = false">ยกเลิก</button>
+                        </div>
+                    </template>
+                </UCard>
+            </UForm>
+        </UModal>
+        <UModal v-model="modalSetDate">
+            <UForm :state="setDateReturn">
+                <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+                    <template #header>
+                        <div class="text-center">ยื่นเวลายืม-คืน อุปกรณ์นี้</div>
+                    </template>
+
+                    <label for="">กำหนดเวลาคืน</label>
+                    <UPopover :popper="{ placement: 'bottom-start' }">
+                        <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDateBorrow" />
+                        <template #panel="{ close }">
+                            <FormDatePicker v-model="setDateReturn.End" @close="close" />
+                        </template>
+                    </UPopover>
+
+                    <template #footer>
+                        <div class="flex justify-between">
+                            <button type="submit" class="px-4 py-2 bg-green-600 text-base rounded-[5px] text-white" @click="submitSetDateReturn">ตกลง</button>
+                            <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalSetDate = false">ยกเลิก</button>
                         </div>
                     </template>
                 </UCard>
@@ -875,12 +899,43 @@
             a.click();    
             a.remove();  //afterwards we remove the element again      
         });
-
-      
-        
-        
     }
+
+    const modalSetDate = ref(false)
     
+
+    const setDateReturn = ref({
+        ReqID: "",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
+        LineNum: "",//Line number set null หรือ 0 เพื่อเปลี่ยนวันที่ทุกรายการ
+        Begin: moment(form.value.date_begin).format('YYYY-MM-DD'),//วันที่ขอยืม (เริ่มต้น)
+        End: form.value.date_end// ถึงวันที่ 
+    })
+
+    const labelDateBorrow = computed(() => moment(setDateReturn.value.End).format('DD/MM/YYYY'))
+
+  
+
+    const stateItemSet = ref()
+    const setDateBorrow = (item) => {
+        setDateReturn.value.ReqID = item.req_id;
+        setDateReturn.value.LineNum = item.line_num;
+        setDateReturn.value.End = item.date_end;
+
+        stateItemSet.value = item
+        
+
+        modalSetDate.value = true
+    }
+
+    const submitSetDateReturn = async () => {
+        setDateReturn.value.End = moment(setDateReturn.value.End).format('YYYY-MM-DD');
+
+        stateItemSet.value.date_end = setDateReturn.value.End
+
+        const res = await postApi('/hd/request/SetBorrowReqDate', setDateReturn.value)
+
+        modalSetDate.value = false
+    }
 </script>
 
 <style lang="scss" scoped>
