@@ -511,7 +511,7 @@
                     click: () => fetchEditData(row.req_id, false, true)
                 })
             }
-            if((row.status == 'ส่งมอบใช้งาน' || row.status == 'รายการคงค้าง')) {
+            if((row.status == 'ส่งมอบใช้งาน' || row.status == 'รายการคงค้าง') && !(auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true))) {
                 btn.push( {
                     label: 'ขยายเวลายืม-คืน',
                     icon: 'i-heroicons-archive-box-20-solid',
