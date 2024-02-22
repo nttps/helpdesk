@@ -223,7 +223,7 @@
                                 <div class="text-sm">เวลาคืน {{ moment(item.date_end).format('DD/MM/YYYY') }}</div>
                             </div>
                             
-                            <UButton :color="item.qty_return ? 'red' : 'green'" :label="item.qty_return ? 'ยกเลิกคืนอุปกรณ์นี้' : 'คืนอุปกรณ์นี้'" size="sm" @click="checkMaxReturn((item.qty_return ? 0 : 1), item.item_id)" />
+                            <UButton :color="item.qty_return ? 'red' : 'green'" :label="item.qty_return ? 'ยกเลิกคืนอุปกรณ์นี้' : 'คืนอุปกรณ์นี้'" size="sm" @click="checkMaxReturn((item.qty_return ? 0 : 1), item.item_id)" v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)"/>
 
                           
                             <UButton label="ยื่นเวลายืม" v-if="!item.qty_return" size="sm" @click="setDateBorrow(item)" />
@@ -231,9 +231,9 @@
                     </div>
                 </div>
 
-                <div class="text-red-600 font-bold">หมายเหตุ : เมื่อกดคืนอุปกรณ์เรียบร้อยแล้ว กรุณาอย่าลืมกดปุ่มแจ้งคืนพัสดุเพื่อยืนยันการคืนทุกครั้ง</div>
+                <div class="text-red-600 font-bold" v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)">หมายเหตุ : เมื่อกดคืนอุปกรณ์เรียบร้อยแล้ว กรุณาอย่าลืมกดปุ่มแจ้งคืนพัสดุเพื่อยืนยันการคืนทุกครั้ง</div>
 
-                <template #footer>
+                <template #footer v-if="!(auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true))">
                     <div class="flex items-center justify-end space-x-4">
                         <UButton color="green" label="แจ้งคืนพัสดุ" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" />
                         <UButton color="gray" @click="modalReturn = false; resetForm()" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
@@ -507,6 +507,13 @@
             if((row.status == 'ส่งมอบใช้งาน' || row.status == 'รายการคงค้าง') && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)) {
                 btn.push( {
                     label: 'คืนพัสดุ',
+                    icon: 'i-heroicons-archive-box-20-solid',
+                    click: () => fetchEditData(row.req_id, false, true)
+                })
+            }
+            if((row.status == 'ส่งมอบใช้งาน' || row.status == 'รายการคงค้าง')) {
+                btn.push( {
+                    label: 'ขยายเวลายืม-คืน',
                     icon: 'i-heroicons-archive-box-20-solid',
                     click: () => fetchEditData(row.req_id, false, true)
                 })
