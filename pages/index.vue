@@ -301,7 +301,10 @@
     }))
     const borrowStackOptions = ref({
         chart: {
-            type: 'column'
+            type: 'column',
+            style: {
+                fontSize:'20px'
+            }
         },
 
         title: {
@@ -337,10 +340,13 @@
 
     const borrowOptions = ref({
         chart: {
-          plotBackgroundColor: null,
-          plotBorderWidth: null,
-          plotShadow: false,
-          type: 'pie',
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie',
+            style: {
+                fontSize:'20px'
+            }
         },
         title: {
           text: ''
@@ -384,7 +390,10 @@
 
     const repairStackOptions = ref({
         chart: {
-            type: 'column'
+            type: 'column',
+            style: {
+                fontSize:'20px'
+            }
         },
 
         title: {
@@ -423,6 +432,9 @@
           plotBorderWidth: null,
           plotShadow: false,
           type: 'pie',
+          style: {
+                fontSize:'20px'
+            }
         },
         title: {
           text: ''
@@ -466,7 +478,10 @@
 
     const cctvStackOptions = ref({
         chart: {
-            type: 'column'
+            type: 'column',
+            style: {
+                fontSize:'20px'
+            }
         },
 
         title: {
@@ -505,6 +520,9 @@
           plotBorderWidth: null,
           plotShadow: false,
           type: 'pie',
+          style: {
+                fontSize:'20px'
+            }
         },
         title: {
           text: ''
