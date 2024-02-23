@@ -206,15 +206,15 @@
                 <template #header>
                     <div class="flex items-center justify-between">
                         <h3 class="text-2xl text-center font-bold leading-6 text-gray-900 dark:text-white">
-                            แจ้งคืนพัสดุ
+                            {{ modalTitle }}
                         </h3>
                         <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalReturn = false" />
                     </div>
                 </template>
 
                 
-                <div class="text-lg font-bold mb-2"> อุปกรณ์ที่ต้องการคืน </div>
-                <UCheckbox v-model="dataReturn.returnAll" name="notifications" label="คืนทั้งหมด" :ui="{label:'text-base font-bold', wrapper: 'items-center'}" />
+                <div class="text-lg font-bold mb-2"> อุปกรณ์ที่ต้องการทำรายการ </div>
+                <UCheckbox v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)" v-model="dataReturn.returnAll" name="notifications" label="คืนทั้งหมด" :ui="{label:'text-base font-bold', wrapper: 'items-center'}" />
                 <div class="p-8 pt-4 mb-2 border rounded-lg flex space-2 relative" v-for="(cate, index) in groupBy(form.borrowItems, 'item_cate')" v-if="!dataReturn.returnAll">
                     <div class="w-[100px] font-bold"> {{ index }}</div>
 
@@ -521,7 +521,7 @@
                 btn.push( {
                     label: 'ขยายเวลายืม-คืน',
                     icon: 'i-heroicons-archive-box-20-solid',
-                    click: () => fetchEditData(row.req_id, false, true)
+                    click: () => fetchEditData(row.req_id, false, false, true)
                 })
             }
             
@@ -780,7 +780,9 @@
         })
 
     }
-    const fetchEditData = async (id, approve = false, isReturn = false) => {
+
+    const modalTitle = ref('แจ้งคืนพัสดุ')
+    const fetchEditData = async (id, approve = false, isReturn = false, isSetDate = false) => {
 
         dataApprove.value.ReqID = id
         const data = await getApi(`/hd/request/GetDocSet?req_id=${id}`)
@@ -806,6 +808,10 @@
         }else if(isReturn) {
             dataReturn.value.ReqID = id
             modalReturn.value = true
+        }else if(isSetDate) {
+            dataReturn.value.ReqID = id
+            modalReturn.value = true
+            modalTitle.value = 'ขยายเวลายืม-คืน'
         }else {
             modalAdd.value = true; 
         }
