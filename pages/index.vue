@@ -304,9 +304,9 @@
             type: 'column',
             style: {
                 fontSize:'20px'
-            }
+            },
+            height: 500
         },
-
         title: {
             text: '',
         },
@@ -346,7 +346,8 @@
             type: 'pie',
             style: {
                 fontSize:'20px'
-            }
+            },
+            height: 450
         },
         title: {
           text: ''
@@ -393,7 +394,8 @@
             type: 'column',
             style: {
                 fontSize:'20px'
-            }
+            },
+            height: 500
         },
 
         title: {
@@ -416,7 +418,6 @@
             format: '<b>{key}</b><br/>{series.name}: {y}<br/>' +
                 'Total: {point.stackTotal}'
         },
-
         plotOptions: {
             column: {
                 stacking: 'normal'
@@ -428,14 +429,16 @@
 
     const repairOptions = ref({
         chart: {
-          plotBackgroundColor: null,
-          plotBorderWidth: null,
-          plotShadow: false,
-          type: 'pie',
-          style: {
-                fontSize:'20px'
-            }
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie',
+            style: {
+                    fontSize:'20px'
+                },
+            height: 450
         },
+        
         title: {
           text: ''
         },
@@ -481,7 +484,8 @@
             type: 'column',
             style: {
                 fontSize:'20px'
-            }
+            },
+            height: 500
         },
 
         title: {
@@ -516,13 +520,14 @@
    
     const cctvOptions = ref({
         chart: {
-          plotBackgroundColor: null,
-          plotBorderWidth: null,
-          plotShadow: false,
-          type: 'pie',
-          style: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie',
+            style: {
                 fontSize:'20px'
-            }
+            },
+            height: 500
         },
         title: {
           text: ''
@@ -552,7 +557,6 @@
             borderColor: '#CCC',
             borderWidth: 1,
             backgroundColor: '#fff',
-            x: -30
         },
         series: [{
             name: 'จำนวน',
