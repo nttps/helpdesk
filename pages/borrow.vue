@@ -61,6 +61,12 @@
                 <template #req_by_user_id-data="{ row }">
                     <div>{{ row.req_by_fullname ? row.req_by_fullname : row.req_by_user_id }}</div>
                 </template>
+
+                  <template #status-data="{ row }">
+                    <div class="font-bold text-black">{{ row.status }}</div>
+                    <div class="text-xs text-red-600" v-if="row.latest_status_date">เมื่อ {{ moment(row.latest_status_date).format('DD/MM/YYYY เวลา HH:mm') }}</div>
+
+                </template>
                 
 
                 <template #req_date-data="{ row }">
@@ -444,7 +450,7 @@
         sortable: false
     }, {
         key: 'req_date',
-        label: 'ว/ด/ป'
+        label: 'วันที่ส่งคำขอ'
     }, {
         key: 'req_by_user_id',
         label: 'ผู้ยืม'
