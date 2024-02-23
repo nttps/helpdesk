@@ -449,9 +449,11 @@
         key: 'req_by_user_id',
         label: 'ผู้ยืม'
     },{
-        
         key: 'count_item',
-        label: 'จำนวนอุปกรณ์ที่ยืม'
+        label: 'จำนวนอุปกรณ์ที่ขอยืม'
+    },{
+        key: 'count_item_actual',
+        label: 'จำนวนอุปกรณ์ที่ให้ยืม'
     }, {
         key: 'department_id',
         label: 'หน่วยงาน'
