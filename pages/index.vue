@@ -8,38 +8,36 @@
             <div class="text-2xl font-bold mt-8 underline">
                 สถิติ
             </div>
-            <div class="lg:grid grid-cols-2 gap-2">
-                <div class=" border rounded border-black p-2">
-                    <div class="text-xl font-bold mb-2">แจ้งปัญหา</div>
-                    <div class="lg:grid grid-cols-2">
-                        <div>
-                            <highcharts :options="repairStackOptions" ></highcharts>
-                        </div>
-                        <div>
-                            <highcharts :options="repairOptions" v-if="repairPieOption.length > 0"></highcharts>
-                        </div>
+            <div class=" border rounded border-black p-2 mb-4">
+                <div class="text-xl font-bold mb-2">แจ้งปัญหา</div>
+                <div class="lg:grid grid-cols-2">
+                    <div>
+                        <highcharts :options="repairStackOptions" ></highcharts>
+                    </div>
+                    <div>
+                        <highcharts :options="repairOptions" v-if="repairPieOption.length > 0"></highcharts>
                     </div>
                 </div>
-                <div class="border rounded border-black p-2">
-                    <div class="text-xl font-bold mb-2">ยืม-คืน</div>
-                    <div class="lg:grid grid-cols-2">
-                        <div>
-                            <highcharts :options="borrowStackOptions" ></highcharts>
-                        </div>
-                        <div>
-                            <highcharts :options="borrowOptions" v-if="borrowPieOption.length > 0"></highcharts>
-                        </div>
+            </div>
+            <div class="border rounded border-black p-2 mb-4">
+                <div class="text-xl font-bold mb-2">ยืม-คืน</div>
+                <div class="lg:grid grid-cols-2">
+                    <div>
+                        <highcharts :options="borrowStackOptions" ></highcharts>
+                    </div>
+                    <div>
+                        <highcharts :options="borrowOptions" v-if="borrowPieOption.length > 0"></highcharts>
                     </div>
                 </div>
-                <div class="border rounded border-black p-2">
-                    <div class="text-xl font-bold mb-2">CCTV</div>
-                    <div class="lg:grid grid-cols-2">
-                        <div>
-                            <highcharts :options="cctvStackOptions" ></highcharts>
-                        </div>
-                        <div>
-                            <highcharts :options="cctvOptions" v-if="cctvPieOption.length > 0"></highcharts>
-                        </div>
+            </div>
+            <div class="border rounded border-black p-2 mb-4">
+                <div class="text-xl font-bold mb-2">CCTV</div>
+                <div class="lg:grid grid-cols-2">
+                    <div>
+                        <highcharts :options="cctvStackOptions" ></highcharts>
+                    </div>
+                    <div>
+                        <highcharts :options="cctvOptions" v-if="cctvPieOption.length > 0"></highcharts>
                     </div>
                 </div>
             </div>
@@ -357,13 +355,15 @@
             cursor: 'pointer',
             dataLabels: {
               enabled: true,
-              format: '<b>{point.name}: {point.percentage:.1f} % </b>'
+              format: '<b>{point.name}: {point.percentage:.1f} % </b>',
+              distance: -30
             }
           }
         },
         legend: {
           floating: true,
           borderColor: '#CCC',
+          backgroundColor: '#fff',
           borderWidth: 1,
         },
         series: [{
@@ -431,6 +431,7 @@
             cursor: 'pointer',
             dataLabels: {
               enabled: true,
+              distance: -30,
               format: '<b>{point.name}: {point.percentage:.1f} % </b>'
             }
           }
@@ -439,6 +440,7 @@
           floating: true,
           borderColor: '#CCC',
           borderWidth: 1,
+          backgroundColor: '#fff',
         },
         series: [{
             name: 'จำนวน',
@@ -505,7 +507,8 @@
             cursor: 'pointer',
             dataLabels: {
               enabled: true,
-              format: '<b>{point.name}: {point.percentage:.1f} % </b>'
+              format: '<b>{point.name}: {point.percentage:.1f} % </b>',
+              distance: -30
             }
           }
         },
@@ -513,6 +516,7 @@
           floating: true,
           borderColor: '#CCC',
           borderWidth: 1,
+          backgroundColor: '#fff',
         },
         series: [{
             name: 'จำนวน',
@@ -524,7 +528,6 @@
         }] 
     })
     const auth = useAuthStore()
-
 
     const tabItems = [{
         label: 'แจ้งปัญหา',
