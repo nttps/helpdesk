@@ -236,10 +236,9 @@
                         </div>
                     </div>
                 </div>
+                <div class="text-red-600 font-bold" v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติยืมพัสดุประจำหน่วยงาน' && g.isInGroup === true) || auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)">หมายเหตุ : เมื่อกดคืนอุปกรณ์เรียบร้อยแล้ว กรุณาอย่าลืมกดปุ่มแจ้งคืนพัสดุเพื่อยืนยันการคืนทุกครั้ง</div>
 
-                <div class="text-red-600 font-bold" v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)">หมายเหตุ : เมื่อกดคืนอุปกรณ์เรียบร้อยแล้ว กรุณาอย่าลืมกดปุ่มแจ้งคืนพัสดุเพื่อยืนยันการคืนทุกครั้ง</div>
-
-                <template #footer v-if="!(auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true))">
+                <template #footer v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)">
                     <div class="flex items-center justify-end space-x-4">
                         <UButton color="green" label="แจ้งคืนพัสดุ" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" />
                         <UButton color="gray" @click="modalReturn = false; resetForm()" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
