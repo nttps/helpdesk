@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PartialsTitle title="แจ้งซ่อม" @add="addItem" />
+        <PartialsTitle title="แจ้งปัญหา" @add="addItem" />
         <div class="mt-8">
             <div class="search-bar flex justify-between mb-2">
                 <div>

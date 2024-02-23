@@ -27,7 +27,7 @@
                     <li>
                         <NuxtLink to="/report-repair" v-slot="{ isActive }">
                             <Icon name="ic:baseline-handyman" size="40" :class="isActive ? 'text-black' : ''"/>
-                            <div :class="isActive ? 'text-black' : ''">แจ้งซ่อม</div>
+                            <div :class="isActive ? 'text-black' : ''">แจ้งปัญหา</div>
                         </NuxtLink>
                     </li>
                     <li>
