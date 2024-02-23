@@ -42,6 +42,11 @@
                 <template #id-data="{ row, index }">
                     <div>{{ pageFrom + index }}</div>
                 </template>
+
+                <template #item_name-data="{ row }">
+                    <div>{{ row.item_type == 'อื่น ๆ' ? row.item_id : row.item_name }}</div>
+                </template>
+
                 <template #req_date-data="{ row }">
                     <div>{{ moment(row.req_date).format('DD/MM/YYYY') }}</div>
                 </template>
