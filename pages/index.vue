@@ -361,10 +361,16 @@
           }
         },
         legend: {
-          floating: true,
-          borderColor: '#CCC',
-          backgroundColor: '#fff',
-          borderWidth: 1,
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            itemMarginTop: 10,
+            itemMarginBottom: 10,
+            floating: true,
+            borderColor: '#CCC',
+            borderWidth: 1,
+            backgroundColor: '#fff',
+            x: -30
         },
         series: [{
             name: 'จำนวน',
@@ -437,10 +443,16 @@
           }
         },
         legend: {
-          floating: true,
-          borderColor: '#CCC',
-          borderWidth: 1,
-          backgroundColor: '#fff',
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            itemMarginTop: 10,
+            itemMarginBottom: 10,
+            floating: true,
+            borderColor: '#CCC',
+            borderWidth: 1,
+            backgroundColor: '#fff',
+            x: -30
         },
         series: [{
             name: 'จำนวน',
@@ -513,10 +525,16 @@
           }
         },
         legend: {
-          floating: true,
-          borderColor: '#CCC',
-          borderWidth: 1,
-          backgroundColor: '#fff',
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            itemMarginTop: 10,
+            itemMarginBottom: 10,
+            floating: true,
+            borderColor: '#CCC',
+            borderWidth: 1,
+            backgroundColor: '#fff',
+            x: -30
         },
         series: [{
             name: 'จำนวน',
