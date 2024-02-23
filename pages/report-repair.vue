@@ -158,7 +158,7 @@
                             :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.item_type == 'อื่น ๆ'"
                         />
 
-                        <UCheckbox label="อื่น ๆ" v-model="form.item_checkbox" @update:model-value="value => value ? form.item_type = 'อื่น ๆ' : form.item_type = null" />
+                        <UCheckbox label="อื่น ๆ" :model-value="form.item_type == 'อื่น ๆ' ? true: false"  @update:model-value="value => updateItemOther(value)" />
                     </UFormGroup>
                     <UFormGroup label="อุปกรณ์" name="item_id" size="md">
                         <USelectMenu 
@@ -183,7 +183,7 @@
                             </template>
                         
                         </USelectMenu>
-                        <UInput v-else v-model="form.item_other" placeholder="กรอกชื่ออุปกรณ์" />
+                        <UInput v-else v-model="form.item_id" placeholder="กรอกชื่ออุปกรณ์" />
 
                     </UFormGroup>
                 </div>
@@ -493,6 +493,7 @@
         department_id:  auth.username.length === 13 ? auth.user.currentUserInfo.departmentID: '',
         department_desc: "",
         item_id: "",
+        item_name: "",
         fix_by: "",
         item_type: "",
         description:"",//รายละเอียด  
@@ -524,14 +525,13 @@
             department_id:  auth.username.length === 13 ? auth.user.currentUserInfo.departmentID: '',
             department_desc: "",
             item_id: "",
-            item_other: null,
-            item_checkbox: false,
+             item_name: "",
             fix_by: "",
             item_type: "",
             description:"",//รายละเอียด  
             created_by:auth.username, //ผู้ทำรายการ
             modified_by:auth.username, //ผู้แก้ไขรายการ
-            services: servicesType.value,
+            services: [],
             contact: ''
 
         }
@@ -747,6 +747,9 @@
         contactType.value = await getMasterType(`HD_CONTACT`, '')
     }
   
+    const updateItemOther = (value) => {
+        value ? form.value.item_type = 'อื่น ๆ' : form.value.item_type = null; form.value.item_id = ''
+    }
 
     const selectUserName = (user) => {
         form.value.req_by_user_id = user.username
