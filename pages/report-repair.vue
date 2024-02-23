@@ -154,8 +154,11 @@
                             searchable
                             searchable-placeholder="ค้นหาประเภทอุปกรณ์"
                             required
-                            :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"
+                            class="mb-2"
+                            :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.item_type == 'อื่น ๆ'"
                         />
+
+                        <UCheckbox label="อื่น ๆ" v-model="form.item_checkbox" @update:model-value="value => value ? form.item_type = 'อื่น ๆ' : form.item_type = null" />
                     </UFormGroup>
                     <UFormGroup label="อุปกรณ์" name="item_id" size="md">
                         <USelectMenu 
@@ -168,6 +171,7 @@
                             searchable-placeholder="ค้นหาอุปกรณ์"
                             required
                             :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"
+                            v-if="form.item_type != 'อื่น ๆ'"
                         > 
                             <template #label>
                                 <template v-if="form.item_id">
@@ -179,6 +183,7 @@
                             </template>
                         
                         </USelectMenu>
+                        <UInput v-else v-model="form.item_other" placeholder="กรอกชื่ออุปกรณ์" />
 
                     </UFormGroup>
                 </div>
@@ -417,9 +422,6 @@
         key: 'result_report',
         label: 'ผลการแก้ไข'
     }, {
-        key: 'urgent_level',
-        label: 'ความสำคัญ'
-    }, {
         key: 'status',
         label: 'สถานะ'
     }, {
@@ -519,9 +521,11 @@
             req_by_fullname: auth.username.length === 13 ? auth.user.currentUserInfo.fullName : '',
             phone_req:auth.user.currentUserInfo.tel,
             emal_req: auth.username.length === 13 ? auth.user.currentUserInfo.email : '',
-             department_id:  auth.username.length === 13 ? auth.user.currentUserInfo.departmentID: '',
+            department_id:  auth.username.length === 13 ? auth.user.currentUserInfo.departmentID: '',
             department_desc: "",
             item_id: "",
+            item_other: null,
+            item_checkbox: false,
             fix_by: "",
             item_type: "",
             description:"",//รายละเอียด  
@@ -614,6 +618,8 @@
             item_id: "",
             fix_by: "",
             item_type: "",
+            item_checkbox: false,
+            item_other: null,
             description:"",//รายละเอียด  
             created_by:auth.username, //ผู้ทำรายการ
             modified_by:auth.username,//ผู้แก้ไขรายการ
