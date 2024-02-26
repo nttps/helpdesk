@@ -1,11 +1,14 @@
 <template>
     <div class="overflow-y-auto overflow-x-hidden">
-        <div>
-            <USelectMenu v-model="searchYear" :options="['2567']" />
+        <div class="flex justify-end items-center">
+
+            <label for="" class="text-xl mr-2">ปี</label>
+            <USelectMenu v-model="searchYear" :options="['2567']" size="xl" />
+            
         </div>
 
         <div>
-            <div class="text-2xl font-bold mt-8 underline">
+            <div class="text-2xl font-bold underline">
                 สถิติ
             </div>
             <div class=" border rounded border-black p-2 mb-4">
