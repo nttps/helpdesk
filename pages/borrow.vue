@@ -151,7 +151,7 @@
                         <h3 class="font-bold leading-6 text-xl mb-2 ">เหตุผลการปฏิเสธ</h3>
                         <div>{{ form.status1_reason || form.status2_reason }}</div>
                     </div>
-                    <FormBorrow :form="form" :auth="auth" />
+                    <FormBorrow :form="form" :auth="auth" @addItem="addItem" />
 
                     
                     
@@ -603,12 +603,13 @@
     })
     const addItem = () => {
         form.value.items.push({ 
-            item_id: '',
+            item_cate: '',
             qty: '',
             item_type: '',
-            item_cate: '',
 
         })
+
+        console.log(form.value.items);
     }
 
     const resetForm = () => {
