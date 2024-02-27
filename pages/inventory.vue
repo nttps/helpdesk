@@ -13,7 +13,7 @@
                         variant="solid"
                         label="อุปกรณ์"
                         :trailing="false"
-                        @click="modalAdd = true"
+                        @click="addItem"
                     />
                 </div>
             </div>
@@ -300,11 +300,34 @@
         contract:"",//เลขที่สัญญา 
         created_by:auth.username,//current user login 
         modified_by:"",//current user login กรณีที่ต้องการแก้ไข
-        qty_bal: "",
+        qty_bal: "1",
         is_active: true
     }
 
     const form = ref(empty)
+
+    const addItem = () => {
+        form.value = {
+            item_id:"",//กรณีเพิ่มใหม่ให้ปล่อยว่างถ้า แก้ไขให้ใส่ค่าพัสดุที่ต้องการ update
+            item_ref:"",//รหัสอ้างอิง ใช้แทนรหัสพัสดุ
+            item_name:"",//ชื่อพัสดุ
+            item_type:"",// ประเภท ส่งค่าจาก dropdown  ที่มากจาก masterTypeID =HD_ITEMTYPE
+            item_cate: "",
+            brand:"",//ยี่ห้อพัสดุ
+            model:"",//รุ่น
+            serial_number:"",
+            is_in_warranty: false,
+            warranty_expiration_date: null,
+            remark:"",  
+            contact:"",//เบอร์ติดต่อ
+            contract:"",//เลขที่สัญญา 
+            created_by:auth.username,//current user login 
+            modified_by:"",//current user login กรณีที่ต้องการแก้ไข
+            qty_bal: "1",
+            is_active: true
+        }
+        modalAdd.value = true
+    }
 
       
     const schema = object({
@@ -312,7 +335,6 @@
             is: (is_in_warranty) =>  is_in_warranty === true,
             then: (schema) => schema.required('ระบุวันที่หมดประกัน'),
         }),
-        qty_bal: number().typeError("กรอกจำนวนเป็นตัวเลข").required('กรอกจำนวน')
     })
 
     const labelDateExpire = computed(() => form.value.warranty_expiration_date ? moment(form.value.warranty_expiration_date).format('DD/MM/YYYY') : 'หมดประกันวันที่')
@@ -325,12 +347,13 @@
     }
 
     const submit = async () => {
+
+    console.log('test');
         const res = await postApi('/hd/Items/Save', form.value)
 
         if(res.outputAction.result === 'ok') {
             refresh()
         }
-        form.value = empty
         modalAdd.value = false
     }
 
