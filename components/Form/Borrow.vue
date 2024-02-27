@@ -93,14 +93,15 @@
             <UInput v-model="item.qty" placeholder="กรอกจำนวน" required :disabled="notDisable" />
         </UFormGroup>
 
-        <div v-if="form?.status && form.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)">
-            <UFormGroup label="เลือกอุปกรณ์ / ระบุ Serial No. ที่ให้ยืม" name="qty" size="xl">
+        <div v-if="form?.status && form.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)" class=" self-center">
+            <UFormGroup label="เลือกอุปกรณ์ / ระบุ Serial No. ที่ให้ยืม" name="qty" size="xl" v-if="item.item_type && item.item_cate && item.qty">
                 <UButton color="blue" label="เลือกอุปกรณ์" size="xl" @click="modalItemSelect(item.item_type, item.item_cate)"  />
             </UFormGroup>
+            <div v-else class="text-sm text-red-600">ระบุ ประเภทอุปกรณ์ หมวดหมู่ และจำนวน</div>
         </div>
     </div>
 
-    <div class="p-8 border rounded-lg text-center cursor-pointer" @click="emit('addItem')" v-if="notDisable">
+    <div class="p-8 border rounded-lg text-center cursor-pointer" @click="emit('addItem')" v-if="form.status === '' || form.status === 'รออนุมัติหน่วยงาน' || form.status === 'รอตรวจสอบ(ทส.)'">
         <Icon name="material-symbols:add-rounded" size="60" />
     </div>
 
