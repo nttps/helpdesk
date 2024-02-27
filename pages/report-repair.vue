@@ -565,11 +565,15 @@
     }, {
         name : 'ส่งซ่อม',
         count: 0,
-        color: 'red'
+        color: 'lime'
     }, {
         name : 'ซ่อมเสร็จ',
         count: 0,
         color: 'green'
+    }, {
+        name : 'ไม่อนุมัติ',
+        count: 0,
+        color: 'red'
     }])
     const statusActive = ref('รายการทั้งหมด')
 
@@ -645,6 +649,9 @@
                 break;
             case 'รออนุมัติ':
                 statusSearch = 'รออนุมัติหน่วยงาน,รอตรวจสอบ(ทส.)'
+                break;
+            case 'ไม่อนุมัติ':
+                statusSearch = 'ปฏิเสธจากหน่วยงาน,ปฏิเสธการส่งซ่อม'
                 break;
             case 'ส่งซ่อม':
                 statusSearch = 'ส่งซ่อม'
