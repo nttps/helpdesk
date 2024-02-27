@@ -5,7 +5,7 @@ import 'v-calendar/dist/style.css'
 
 const props = defineProps({
   modelValue: {
-    type: Date,
+    type: String,
     default: null
   },
   dateTime: {

@@ -47,6 +47,11 @@
                     <div>{{ row.req_by_fullname ? row.req_by_fullname : row.req_by_user_id }}</div>
                 </template>
 
+                <template #status-data="{ row }">
+                    <div class="font-bold text-black">{{ row.status }}</div>
+                    <div class="text-xs text-red-600" v-if="row.latest_status_date">เมื่อ {{ moment(row.latest_status_date).format('DD/MM/YYYY เวลา HH:mm') }}</div>
+
+                </template>
                 <template #req_date-data="{ row }">
                     <div>{{ moment(row.req_date).format('DD/MM/YYYY') }}</div>
                 </template>
@@ -181,7 +186,7 @@
     </UModal>
 
     <UModal v-model="modalApprove" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
-        <UForm :state="form" @submit="submitRequest">
+        <UForm :state="form" >
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
                     <div class="flex items-center justify-between">
@@ -394,7 +399,7 @@
         label: 'ลำดับที่'
     }, {
         key: 'req_date',
-        label: 'ว/ด/ป'
+        label: 'วันที่ส่งคำขอ'
     }, {
         key: 'req_by_user_id',
         label: 'ผู้ส่งคำขอ'

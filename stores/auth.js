@@ -8,7 +8,7 @@ export const useAuthStore = defineStore("auth-helpdesk", {
     getters: {
         isLoggedIn: (state) => !!state.user,
         isAdmin: (state) =>
-            state.user.userInGroups.some(
+            !!state.user.userInGroups.some(
                 (p) => p.userGroupId.includes("ADMIN") && p.isInGroup == true
             ),
         username: (state) => state.user?.currentUser || "",

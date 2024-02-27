@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PartialsTitle title="แจ้งซ่อม" @add="addItem" />
+        <PartialsTitle title="แจ้งปัญหา" @add="addItem" />
         <div class="mt-8">
             <div class="search-bar flex justify-between mb-2">
                 <div>
@@ -42,11 +42,21 @@
                 <template #id-data="{ row, index }">
                     <div>{{ pageFrom + index }}</div>
                 </template>
+
+                <template #item_name-data="{ row }">
+                    <div>{{ row.item_type == 'อื่น ๆ' ? row.item_id : row.item_name }}</div>
+                </template>
+
                 <template #req_date-data="{ row }">
                     <div>{{ moment(row.req_date).format('DD/MM/YYYY') }}</div>
                 </template>
                 <template #req_by_user_id-data="{ row }">
                     <div>{{ row.req_by_fullname ? row.req_by_fullname : row.req_by_user_id }}</div>
+                </template>
+
+                <template #status-data="{ row }">
+                    <div class="font-bold text-black">{{ row.status }}</div>
+                    <div class="text-xs text-red-600" v-if="row.latest_status_date">เมื่อ {{ moment(row.latest_status_date).format('DD/MM/YYYY เวลา HH:mm') }}</div>
                 </template>
 
                 <template #actions-data="{ row }">
@@ -154,8 +164,11 @@
                             searchable
                             searchable-placeholder="ค้นหาประเภทอุปกรณ์"
                             required
-                            :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"
+                            class="mb-2"
+                            :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.item_type == 'อื่น ๆ'"
                         />
+
+                        <UCheckbox label="อื่น ๆ" :model-value="form.item_type == 'อื่น ๆ' ? true: false"  @update:model-value="value => updateItemOther(value)" />
                     </UFormGroup>
                     <UFormGroup label="อุปกรณ์" name="item_id" size="md">
                         <USelectMenu 
@@ -168,6 +181,7 @@
                             searchable-placeholder="ค้นหาอุปกรณ์"
                             required
                             :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"
+                            v-if="form.item_type != 'อื่น ๆ'"
                         > 
                             <template #label>
                                 <template v-if="form.item_id">
@@ -179,6 +193,7 @@
                             </template>
                         
                         </USelectMenu>
+                        <UInput v-else v-model="form.item_id" placeholder="กรอกชื่ออุปกรณ์" />
 
                     </UFormGroup>
                 </div>
@@ -394,7 +409,7 @@
         label: 'ลำดับที่'
     }, {
         key: 'req_date',
-        label: 'ว/ด/ป'
+        label: 'วันที่ส่งคำขอ'
     }, {
         key: 'item_name',
         label: 'อุปกรณ์'
@@ -416,9 +431,6 @@
     }, {
         key: 'result_report',
         label: 'ผลการแก้ไข'
-    }, {
-        key: 'urgent_level',
-        label: 'ความสำคัญ'
     }, {
         key: 'status',
         label: 'สถานะ'
@@ -491,6 +503,7 @@
         department_id:  auth.username.length === 13 ? auth.user.currentUserInfo.departmentID: '',
         department_desc: "",
         item_id: "",
+        item_name: "",
         fix_by: "",
         item_type: "",
         description:"",//รายละเอียด  
@@ -519,15 +532,16 @@
             req_by_fullname: auth.username.length === 13 ? auth.user.currentUserInfo.fullName : '',
             phone_req:auth.user.currentUserInfo.tel,
             emal_req: auth.username.length === 13 ? auth.user.currentUserInfo.email : '',
-             department_id:  auth.username.length === 13 ? auth.user.currentUserInfo.departmentID: '',
+            department_id:  auth.username.length === 13 ? auth.user.currentUserInfo.departmentID: '',
             department_desc: "",
             item_id: "",
+             item_name: "",
             fix_by: "",
             item_type: "",
             description:"",//รายละเอียด  
             created_by:auth.username, //ผู้ทำรายการ
             modified_by:auth.username, //ผู้แก้ไขรายการ
-            services: servicesType.value,
+            services: [],
             contact: ''
 
         }
@@ -614,6 +628,8 @@
             item_id: "",
             fix_by: "",
             item_type: "",
+            item_checkbox: false,
+            item_other: null,
             description:"",//รายละเอียด  
             created_by:auth.username, //ผู้ทำรายการ
             modified_by:auth.username,//ผู้แก้ไขรายการ
@@ -741,6 +757,9 @@
         contactType.value = await getMasterType(`HD_CONTACT`, '')
     }
   
+    const updateItemOther = (value) => {
+        value ? form.value.item_type = 'อื่น ๆ' : form.value.item_type = null; form.value.item_id = ''
+    }
 
     const selectUserName = (user) => {
         form.value.req_by_user_id = user.username
@@ -811,7 +830,7 @@
         refreshDataAll()
     }
 
-     const submitApprove = async () => {
+    const submitApprove = async () => {
         const res = await postApi('/hd/request/ApproveDocument', dataApprove.value)
         console.log(res);
 

@@ -61,6 +61,12 @@
                 <template #req_by_user_id-data="{ row }">
                     <div>{{ row.req_by_fullname ? row.req_by_fullname : row.req_by_user_id }}</div>
                 </template>
+
+                  <template #status-data="{ row }">
+                    <div class="font-bold text-black">{{ row.status }}</div>
+                    <div class="text-xs text-red-600" v-if="row.latest_status_date">เมื่อ {{ moment(row.latest_status_date).format('DD/MM/YYYY เวลา HH:mm') }}</div>
+
+                </template>
                 
 
                 <template #req_date-data="{ row }">
@@ -200,15 +206,15 @@
                 <template #header>
                     <div class="flex items-center justify-between">
                         <h3 class="text-2xl text-center font-bold leading-6 text-gray-900 dark:text-white">
-                            แจ้งคืนพัสดุ
+                            {{ modalTitle }}
                         </h3>
                         <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalReturn = false" />
                     </div>
                 </template>
 
                 
-                <div class="text-lg font-bold mb-2"> อุปกรณ์ที่ต้องการคืน </div>
-                <UCheckbox v-model="dataReturn.returnAll" name="notifications" label="คืนทั้งหมด" :ui="{label:'text-base font-bold', wrapper: 'items-center'}" />
+                <div class="text-lg font-bold mb-2"> อุปกรณ์ที่ต้องการทำรายการ </div>
+                <UCheckbox v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)" v-model="dataReturn.returnAll" name="notifications" label="คืนทั้งหมด" :ui="{label:'text-base font-bold', wrapper: 'items-center'}" />
                 <div class="p-8 pt-4 mb-2 border rounded-lg flex space-2 relative" v-for="(cate, index) in groupBy(form.borrowItems, 'item_cate')" v-if="!dataReturn.returnAll">
                     <div class="w-[100px] font-bold"> {{ index }}</div>
 
@@ -218,22 +224,21 @@
                                 {{ item.item_name }}
                             </UFormGroup>
 
-                            <div  class="text-xl font-bold " :class="{ 'text-red-600': item.qty_return === 0, 'text-green-500': item.qty_return}">
-                                {{ item.qty_return ? 'คืนแล้ว' : 'ยังไม่คืน' }}
+                            <div  class="text-xl font-bold ">
+                                <div :class="{ 'text-red-600': item.qty_return === 0, 'text-green-500': item.qty_return}">{{ item.qty_return ? 'คืนแล้ว' : 'ยังไม่คืน' }}</div>
+                                <div class="text-sm">เวลาคืน {{ moment(item.date_end).format('DD/MM/YYYY') }}</div>
                             </div>
-                            <UButton :color="item.qty_return ? 'red' : 'green'" :label="item.qty_return ? 'ยกเลิกคืนอุปกรณ์นี้' : 'คืนอุปกรณ์นี้'" size="sm" @click="checkMaxReturn((item.qty_return ? 0 : 1), item.item_id)" />
-
-                                
                             
+                            <UButton :color="item.qty_return ? 'red' : 'green'" :label="item.qty_return ? 'ยกเลิกคืนอุปกรณ์นี้' : 'คืนอุปกรณ์นี้'" size="sm" @click="checkMaxReturn((item.qty_return ? 0 : 1), item.item_id)" v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)"/>
+
+                          
+                            <UButton label="ยื่นเวลายืม" v-if="!item.qty_return" size="sm" @click="setDateBorrow(item)" />
                         </div>
                     </div>
-                   
-                    
                 </div>
+                <div class="text-red-600 font-bold" v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติยืมพัสดุประจำหน่วยงาน' && g.isInGroup === true) || auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)">หมายเหตุ : เมื่อกดคืนอุปกรณ์เรียบร้อยแล้ว กรุณาอย่าลืมกดปุ่มแจ้งคืนพัสดุเพื่อยืนยันการคืนทุกครั้ง</div>
 
-                <div class="text-red-600 font-bold">หมายเหตุ : เมื่อกดคืนอุปกรณ์เรียบร้อยแล้ว กรุณาอย่าลืมกดปุ่มแจ้งคืนพัสดุเพื่อยืนยันการคืนทุกครั้ง</div>
-
-                <template #footer>
+                <template #footer v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)">
                     <div class="flex items-center justify-end space-x-4">
                         <UButton color="green" label="แจ้งคืนพัสดุ" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" />
                         <UButton color="gray" @click="modalReturn = false; resetForm()" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
@@ -241,7 +246,6 @@
                 </template>
             </UCard>
         </UForm>
-
         <UModal v-model="modalConfirmReturn" prevent-close>
             <UForm :state="dataApprove" @submit="submitApprove">
                 <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
@@ -252,8 +256,32 @@
                     <div class="font-bold text-xl text-center">ต้องการทำรายการคืนใช่หรือไม่</div>
                     <template #footer>
                         <div class="flex justify-between">
-                            <button type="submit" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white" @click="submitReturn">ตกลง</button>
+                            <button type="submit" class="px-4 py-2 bg-green-600 text-base rounded-[5px] text-white" @click="submitReturn">ตกลง</button>
                             <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalConfirmReturn = false">ยกเลิก</button>
+                        </div>
+                    </template>
+                </UCard>
+            </UForm>
+        </UModal>
+        <UModal v-model="modalSetDate">
+            <UForm :state="setDateReturn">
+                <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+                    <template #header>
+                        <div class="text-center">ยื่นเวลายืม-คืน อุปกรณ์นี้</div>
+                    </template>
+
+                    <label for="">กำหนดเวลาคืน</label>
+                    <UPopover :popper="{ placement: 'bottom-start' }">
+                        <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDateBorrow" />
+                        <template #panel="{ close }">
+                            <FormDatePicker v-model="setDateReturn.End" @close="close" />
+                        </template>
+                    </UPopover>
+
+                    <template #footer>
+                        <div class="flex justify-between">
+                            <button type="submit" class="px-4 py-2 bg-green-600 text-base rounded-[5px] text-white" @click="submitSetDateReturn">ตกลง</button>
+                            <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalSetDate = false">ยกเลิก</button>
                         </div>
                     </template>
                 </UCard>
@@ -420,14 +448,16 @@
         sortable: false
     }, {
         key: 'req_date',
-        label: 'ว/ด/ป'
+        label: 'วันที่ส่งคำขอ'
     }, {
         key: 'req_by_user_id',
         label: 'ผู้ยืม'
     },{
-        
         key: 'count_item',
-        label: 'จำนวนอุปกรณ์ที่ยืม'
+        label: 'จำนวนอุปกรณ์ที่ขอยืม'
+    },{
+        key: 'count_item_actual',
+        label: 'จำนวนอุปกรณ์ที่ให้ยืม'
     }, {
         key: 'department_id',
         label: 'หน่วยงาน'
@@ -485,6 +515,13 @@
                     label: 'คืนพัสดุ',
                     icon: 'i-heroicons-archive-box-20-solid',
                     click: () => fetchEditData(row.req_id, false, true)
+                })
+            }
+            if((row.status == 'ส่งมอบใช้งาน' || row.status == 'รายการคงค้าง') && !(auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true))) {
+                btn.push( {
+                    label: 'ขยายเวลายืม-คืน',
+                    icon: 'i-heroicons-archive-box-20-solid',
+                    click: () => fetchEditData(row.req_id, false, false, true)
                 })
             }
             
@@ -743,7 +780,9 @@
         })
 
     }
-    const fetchEditData = async (id, approve = false, isReturn = false) => {
+
+    const modalTitle = ref('แจ้งคืนพัสดุ')
+    const fetchEditData = async (id, approve = false, isReturn = false, isSetDate = false) => {
 
         dataApprove.value.ReqID = id
         const data = await getApi(`/hd/request/GetDocSet?req_id=${id}`)
@@ -769,6 +808,10 @@
         }else if(isReturn) {
             dataReturn.value.ReqID = id
             modalReturn.value = true
+        }else if(isSetDate) {
+            dataReturn.value.ReqID = id
+            modalReturn.value = true
+            modalTitle.value = 'ขยายเวลายืม-คืน'
         }else {
             modalAdd.value = true; 
         }
@@ -809,7 +852,7 @@
     }
 
     const approveAll = async () => {
-        const dataApproveed =  selectedRows.value.filter(re => re.status != 'ปฏิเสธ' && re.status != 'ปฏิเสธจาก(ทส.)' && re.status != 'อนุมัติ').map(re => re.req_id).join(',')
+        const dataApproveed =  selectedRows.value.filter(re => re.status != 'ปฏิเสธ' && re.status != 'ปฏิเสธจาก(ทส.)' && re.status != 'อนุมัติ' && re.status != 'รอตรวจสอบ(ทส.)').map(re => re.req_id).join(',')
         
         dataApprove.value.Action = 'อนุมัติ'
         dataApprove.value.ReqID = dataApproveed
@@ -875,12 +918,43 @@
             a.click();    
             a.remove();  //afterwards we remove the element again      
         });
-
-      
-        
-        
     }
+
+    const modalSetDate = ref(false)
     
+
+    const setDateReturn = ref({
+        ReqID: "",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
+        LineNum: "",//Line number set null หรือ 0 เพื่อเปลี่ยนวันที่ทุกรายการ
+        Begin: moment(form.value.date_begin).format('YYYY-MM-DD'),//วันที่ขอยืม (เริ่มต้น)
+        End: form.value.date_end// ถึงวันที่ 
+    })
+
+    const labelDateBorrow = computed(() => moment(setDateReturn.value.End).format('DD/MM/YYYY'))
+
+  
+
+    const stateItemSet = ref()
+    const setDateBorrow = (item) => {
+        setDateReturn.value.ReqID = item.req_id;
+        setDateReturn.value.LineNum = item.line_num;
+        setDateReturn.value.End = item.date_end;
+
+        stateItemSet.value = item
+        
+
+        modalSetDate.value = true
+    }
+
+    const submitSetDateReturn = async () => {
+        setDateReturn.value.End = moment(setDateReturn.value.End).format('YYYY-MM-DD');
+
+        stateItemSet.value.date_end = setDateReturn.value.End
+
+        const res = await postApi('/hd/request/SetBorrowReqDate', setDateReturn.value)
+
+        modalSetDate.value = false
+    }
 </script>
 
 <style lang="scss" scoped>
