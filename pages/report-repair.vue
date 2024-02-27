@@ -571,7 +571,7 @@
         count: 0,
         color: 'green'
     }, {
-        name : 'ไม่อนุมัติ',
+        name : 'ถูกปฎิเสธ (ไม่อนุมัติ)',
         count: 0,
         color: 'red'
     }])
