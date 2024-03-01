@@ -776,8 +776,6 @@
 
     const checkMaxReturn = (value, id) => {
         const item = form.value.borrowItems.find(item => item.item_id === id)
-        console.log(item);
-
         item.qty_return = value
         item.return_pending = true
 
@@ -851,7 +849,7 @@
 
     const submitReturn = async () => {
 
-        const returnItems = form.value.borrowItems.filter(item => item.qty_return > 0).map(item => {
+        const returnItems = form.value.borrowItems.map(item => {
             return {
                 item_id: item.item_id,
                 serial_number: item.serial_number,
