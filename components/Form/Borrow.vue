@@ -299,7 +299,7 @@
             page.value = 1
         }
         serialTotal.value  = data.length,
-        serialItems.value = data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
+        serialItems.value = data.filter(i => i.status === 'ว่าง' ).slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
 
     }
     const pageTotal = computed(() => serialTotal.value)
