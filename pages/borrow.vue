@@ -64,8 +64,14 @@
 
                   <template #status-data="{ row }">
                     <div class="font-bold text-black">{{ row.status }}</div>
-                    <div class="text-xs text-red-600" v-if="row.latest_status_date">เมื่อ {{ moment(row.latest_status_date).format('DD/MM/YYYY เวลา HH:mm') }}</div>
+                    <div class="text-red-600 font-bold" v-if="row.status == 'ปฏิเสธจากหน่วยงาน' || row.status == 'ปฏิเสธจาก(ทส.)'">
+                        <div>เหตุผลการไม่อนุมัติ</div>  
 
+                        <div>{{ row.status2_reason || row.status1_reason }}</div>
+                    </div>
+
+                    <div class="text-xs text-red-600" v-if="row.latest_status_date">เมื่อ {{ moment(row.latest_status_date).format('DD/MM/YYYY เวลา HH:mm') }}</div>
+                    
                 </template>
                 
 
@@ -116,8 +122,18 @@
                     </div>
                 </template>
 
+                <div class="relative">
+                    <div class="absolute right-2 top-0">
+                        <UBadge size="lg" :label="form.status" :color="form.status == 'ปฏิเสธจากหน่วยงาน' || form.status == 'ปฏิเสธจาก(ทส.)' ? 'red' : 'emerald'" variant="subtle" />
+                    </div>
+
+                    <div v-if="form.status === 'ปฏิเสธจากหน่วยงาน' || form.status == 'ปฏิเสธจาก(ทส.)'" class="text-red-600 mb-2">
+                        <h3 class="font-bold leading-6 text-xl mb-2 ">เหตุผลการปฏิเสธ</h3>
+                        <div>{{ form.status2_reason || form.status1_reason }}</div>
+                    </div>
                 
-                <FormBorrow :form="form" @addItem="addItem" :auth="auth" :disabled="false"/>
+                    <FormBorrow :form="form" @addItem="addItem" :auth="auth" :disabled="false"/>
+                </div>
 
                 <template #footer v-if="!form.status || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)'">
                     <div class="flex items-center justify-end space-x-4">

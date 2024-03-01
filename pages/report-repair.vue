@@ -56,6 +56,11 @@
 
                 <template #status-data="{ row }">
                     <div class="font-bold text-black">{{ row.status }}</div>
+                    <div class="text-red-600 font-bold" v-if="row.status == 'ปฏิเสธจากหน่วยงาน' || row.status == 'ปฏิเสธจาก(ทส.)'">
+                        <div>เหตุผลการไม่อนุมัติ</div>  
+
+                        <div>{{ row.status2_reason || row.status1_reason }}</div>
+                    </div>
                     <div class="text-xs text-red-600" v-if="row.latest_status_date">เมื่อ {{ moment(row.latest_status_date).format('DD/MM/YYYY เวลา HH:mm') }}</div>
                 </template>
 
@@ -102,111 +107,123 @@
                     </div>
                 </template>
 
-                <div class="grid grid-cols-3 gap-x-8 gap-y-4 mb-8">
-                    <UFormGroup label="วันที่" name="start_date" size="md">
-                        <UPopover :popper="{ placement: 'bottom-start' }">
-                            <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDate" :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')" />
-                            <template #panel="{ close }">
-                                <FormDatePicker v-model="form.req_date" @close="close" />
-                            </template>
-                        </UPopover>
-                    </UFormGroup>
-                    <UFormGroup label="ผู้แจ้ง" name="req_by_user_id" size="md">
-                        <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" @input="searchUserId" required :disabled="(!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.req_by_user_id.length === 13)"/>
+                <div class="relative">
+                    <div class="absolute right-2 top-0">
+                        <UBadge size="lg" :label="form.status" :color="form.status == 'ปฏิเสธจากหน่วยงาน' || form.status == 'ปฏิเสธจาก(ทส.)' ? 'red' : 'emerald'" variant="subtle" />
+                    </div>
 
-                        <div class="bg-white divide-y-2 rounded absolute z-10 border w-full" v-if="users.length">
-                            <div class="py-1 px-2 text-gray-500 text-sm text-center">กรุณาเลือกรายชื่อผู้แจ้ง</div>
-                            <div v-for="user in users" class="cursor-pointer hover:bg-slate-300 p-2 " @click="selectUserName(user)">{{ user.fullName }} - {{ user.username }}</div>
+                    <div v-if="form.status === 'ปฏิเสธจากหน่วยงาน' || form.status == 'ปฏิเสธจาก(ทส.)'" class="text-red-600">
+                        <h3 class="font-bold leading-6 text-xl mb-2 ">เหตุผลการปฏิเสธ</h3>
+                        <div>{{ form.status2_reason || form.status1_reason }}</div>
+                    </div>
+
+
+                    <div class="grid grid-cols-3 gap-x-8 gap-y-4 mb-8 pt-4">
+                        <UFormGroup label="วันที่" name="start_date" size="md">
+                            <UPopover :popper="{ placement: 'bottom-start' }">
+                                <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDate" :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')" />
+                                <template #panel="{ close }">
+                                    <FormDatePicker v-model="form.req_date" @close="close" />
+                                </template>
+                            </UPopover>
+                        </UFormGroup>
+                        <UFormGroup label="ผู้แจ้ง" name="req_by_user_id" size="md">
+                            <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" @input="searchUserId" required :disabled="(!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.req_by_user_id.length === 13)"/>
+
+                            <div class="bg-white divide-y-2 rounded absolute z-10 border w-full" v-if="users.length">
+                                <div class="py-1 px-2 text-gray-500 text-sm text-center">กรุณาเลือกรายชื่อผู้แจ้ง</div>
+                                <div v-for="user in users" class="cursor-pointer hover:bg-slate-300 p-2 " @click="selectUserName(user)">{{ user.fullName }} - {{ user.username }}</div>
+                            </div>
+                        </UFormGroup>
+                        <UFormGroup label="หน่วยงาน" name="department_id" size="md">
+                        <UInput v-model="form.department_id" placeholder="" required disabled />
+                        </UFormGroup>
+                        <UFormGroup label="เบอร์โทรศัพท์" name="telephone" size="md">
+                        <UInput v-model="form.phone_req" placeholder="" required :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"/>
+                        </UFormGroup>
+                        <UFormGroup label="ช่องทางติดต่อ" name="telephone" size="md">
+                        <USelectMenu 
+                                v-model="form.contact" 
+                                :options="contactType" 
+                                value-attribute="description1" 
+                                option-attribute="description1" 
+                                placeholder="เลือกช่องทางติดต่อ" 
+                                searchable
+                                searchable-placeholder="ค้นหาช่องทางติดต่อ"
+                                required
+                                :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"
+                            />
+                        </UFormGroup>
+                    </div>
+
+                    
+                    <UFormGroup label="ขอรับบริการด้าน" size="xl" class="mb-8">
+                        <div class="pl-4 my-2">
+                            <UCheckbox color="primary" 
+                                v-model="service.is_select" 
+                                :label="service.description1" 
+                                class="mb-2" 
+                                :ui="{container: 'flex items-center h-6', base: 'h-5 w-5 dark:checked:bg-current dark:checked:border-transparent dark:indeterminate:bg-current dark:indeterminate:border-transparent disabled:opacity-50 disabled:cursor-not-allowed focus:ring-0 focus:ring-transparent focus:ring-offset-transparent'}"
+                                v-for="(service, index) in form.services"
+                            />
                         </div>
                     </UFormGroup>
-                    <UFormGroup label="หน่วยงาน" name="department_id" size="md">
-                       <UInput v-model="form.department_id" placeholder="" required disabled />
-                    </UFormGroup>
-                    <UFormGroup label="เบอร์โทรศัพท์" name="telephone" size="md">
-                       <UInput v-model="form.phone_req" placeholder="" required :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"/>
-                    </UFormGroup>
-                    <UFormGroup label="ช่องทางติดต่อ" name="telephone" size="md">
-                       <USelectMenu 
-                            v-model="form.contact" 
-                            :options="contactType" 
-                            value-attribute="description1" 
-                            option-attribute="description1" 
-                            placeholder="เลือกช่องทางติดต่อ" 
-                            searchable
-                            searchable-placeholder="ค้นหาช่องทางติดต่อ"
-                            required
-                            :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"
-                        />
-                    </UFormGroup>
-                </div>
-
-                 
-                <UFormGroup label="ขอรับบริการด้าน" size="xl" class="mb-8">
-                    <div class="pl-4 my-2">
-                        <UCheckbox color="primary" 
-                            v-model="service.is_select" 
-                            :label="service.description1" 
-                            class="mb-2" 
-                            :ui="{container: 'flex items-center h-6', base: 'h-5 w-5 dark:checked:bg-current dark:checked:border-transparent dark:indeterminate:bg-current dark:indeterminate:border-transparent disabled:opacity-50 disabled:cursor-not-allowed focus:ring-0 focus:ring-transparent focus:ring-offset-transparent'}"
-                            v-for="(service, index) in form.services"
-                        />
-                    </div>
-                </UFormGroup>
-                <div class="grid grid-cols-3 gap-8 mb-8">
-                    
-                    <UFormGroup label="ประเภทอุปกรณ์" name="item_type" size="md">
-                        <USelectMenu 
-                            v-model="form.item_type" 
-                            :options="itemsType" 
-                            value-attribute="description1" 
-                            option-attribute="description1" 
-                            placeholder="เลือกประเภทอุปกรณ์" 
-                            searchable
-                            searchable-placeholder="ค้นหาประเภทอุปกรณ์"
-                            required
-                            class="mb-2"
-                            :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.item_type == 'อื่น ๆ'"
-                        />
-
-                        <UCheckbox label="อื่น ๆ" :model-value="form.item_type == 'อื่น ๆ' ? true: false"  @update:model-value="value => updateItemOther(value)" />
-                    </UFormGroup>
-                    <UFormGroup label="อุปกรณ์" name="item_id" size="md">
-                        <USelectMenu 
-                            v-model="form.item_id" 
-                            :options="inventoryitems" 
-                            value-attribute="item_id" 
-                            option-attribute="item_name" 
-                            placeholder="เลือกอุปกรณ์" 
-                            searchable
-                            searchable-placeholder="ค้นหาอุปกรณ์"
-                            required
-                            :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"
-                            v-if="form.item_type != 'อื่น ๆ'"
-                        > 
-                            <template #label>
-                                <template v-if="form.item_id">
-                                    {{ itemSelect?.item_name ?? form.item_name}}
-                                </template>
-                                <template v-else>
-                                    <span class="text-gray-500 dark:text-gray-400 truncate">เลือกอุปกรณ์</span>
-                                </template>
-                            </template>
+                    <div class="grid grid-cols-3 gap-8 mb-8">
                         
-                        </USelectMenu>
-                        <UInput v-else v-model="form.item_id" placeholder="กรอกชื่ออุปกรณ์" />
+                        <UFormGroup label="ประเภทอุปกรณ์" name="item_type" size="md">
+                            <USelectMenu 
+                                v-model="form.item_type" 
+                                :options="itemsType" 
+                                value-attribute="description1" 
+                                option-attribute="description1" 
+                                placeholder="เลือกประเภทอุปกรณ์" 
+                                searchable
+                                searchable-placeholder="ค้นหาประเภทอุปกรณ์"
+                                required
+                                class="mb-2"
+                                :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.item_type == 'อื่น ๆ'"
+                            />
 
+                            <UCheckbox label="อื่น ๆ" :model-value="form.item_type == 'อื่น ๆ' ? true: false"  @update:model-value="value => updateItemOther(value)" />
+                        </UFormGroup>
+                        <UFormGroup label="อุปกรณ์" name="item_id" size="md">
+                            <USelectMenu 
+                                v-model="form.item_id" 
+                                :options="inventoryitems" 
+                                value-attribute="item_id" 
+                                option-attribute="item_name" 
+                                placeholder="เลือกอุปกรณ์" 
+                                searchable
+                                searchable-placeholder="ค้นหาอุปกรณ์"
+                                required
+                                :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"
+                                v-if="form.item_type != 'อื่น ๆ'"
+                            > 
+                                <template #label>
+                                    <template v-if="form.item_id">
+                                        {{ itemSelect?.item_name ?? form.item_name}}
+                                    </template>
+                                    <template v-else>
+                                        <span class="text-gray-500 dark:text-gray-400 truncate">เลือกอุปกรณ์</span>
+                                    </template>
+                                </template>
+                            
+                            </USelectMenu>
+                            <UInput v-else v-model="form.item_id" placeholder="กรอกชื่ออุปกรณ์" />
+
+                        </UFormGroup>
+                    </div>
+                    <UFormGroup label="อาการเสีย/ปัญหา" name="dCenter" size="md" class="mb-4">
+                        <UTextarea :rows="4" v-model="form.description" required :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"/>
+                    </UFormGroup>
+
+                    <UFormGroup label="ผู้ปรับปรุงข้อมูลล่าสุด" name="dCenter" size="md" class="mb-4">
+                        <UInput v-model="form.modified_by" disabled/>
+                    </UFormGroup>
+                    <UFormGroup label="วันที่ปรับปรุงล่าสุด" name="dCenter" size="md">
+                        <UInput v-model="form.modified_date" disabled/>
                     </UFormGroup>
                 </div>
-                <UFormGroup label="อาการเสีย/ปัญหา" name="dCenter" size="md" class="mb-4">
-                     <UTextarea :rows="4" v-model="form.description" required :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"/>
-                </UFormGroup>
-
-                <UFormGroup label="ผู้ปรับปรุงข้อมูลล่าสุด" name="dCenter" size="md" class="mb-4">
-                    <UInput v-model="form.modified_by" disabled/>
-                </UFormGroup>
-                 <UFormGroup label="วันที่ปรับปรุงล่าสุด" name="dCenter" size="md">
-                    <UInput v-model="form.modified_date" disabled/>
-                </UFormGroup>
 
                 <template #footer v-if="form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)'">
                     <div class="flex items-center justify-end space-x-4">
