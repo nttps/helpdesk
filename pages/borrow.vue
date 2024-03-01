@@ -273,7 +273,8 @@
 
                 <template #footer v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)">
                     <div class="flex items-center justify-end space-x-4">
-                        <UButton color="green" label="แจ้งคืนพัสดุ" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" />
+
+                        <UButton color="green" label="แจ้งคืนพัสดุ" v-if="waitingItemComputed.length > 0 || dataReturn.returnAll" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" />
                         <UButton color="gray" @click="modalReturn = false; resetForm()" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
@@ -496,7 +497,8 @@
      const dataReturn = ref({
         ReqID: "",
         ActiondBy:auth.username,
-        returnAll: false
+        returnAll: false,
+        items: []
     })
 
     const approveRequest = (approve) => {
@@ -820,6 +822,14 @@
     }
     
 
+    const waitingItemComputed = computed(() => form.value.borrowItems.filter(item => item.qty_return > 0).map(item => {
+        return {
+            item_id: item.item_id,
+            serial_number: item.serial_number,
+            qty_return: item.qty_return,
+        }
+    }))
+
     const checkMaxReturn = (value, id) => {
         const item = form.value.borrowItems.find(item => item.item_id === id)
         item.qty_return = value
@@ -895,14 +905,28 @@
 
     const submitReturn = async () => {
 
-        const returnItems = form.value.borrowItems.map(item => {
+        let returnItems = form.value.borrowItems.filter(item => item.qty_return > 0).map(item => {
             return {
                 item_id: item.item_id,
                 serial_number: item.serial_number,
                 qty_return: item.qty_return,
             }
         })
+
+        if(dataReturn.value.returnAll) {
+            returnItems =  form.value.borrowItems.map(item => {
+                return {
+                    item_id: item.item_id,
+                    serial_number: item.serial_number,
+                    qty_return: item.qty_return,
+                }
+            })
+
+        }
+       
+        
         dataReturn.value.items = returnItems
+
 
         const res = await postApi('/hd/request/SetReturn', dataReturn.value)
 
