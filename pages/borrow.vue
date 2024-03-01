@@ -234,7 +234,7 @@
                 <div class="p-8 pt-4 mb-2 border rounded-lg flex space-2 relative" v-for="(cate, index) in groupBy(form.borrowItems, 'item_cate')" v-if="!dataReturn.returnAll">
                     <div class="w-[100px] font-bold"> {{ index }}</div>
 
-                    <div class="min-w-max w-full ">
+                    <div class="w-full ">
                         <div  v-for="item in cate" class="grid grid-cols-4 gap-2 items-center mb-2 border-b border-black pb-2">
                             <UFormGroup label="อุปกรณ์" name="inventory" size="xl">
                                 {{ item.item_name }}
@@ -242,13 +242,30 @@
 
                             <div  class="text-xl font-bold ">
                                 <div :class="{ 'text-red-600': item.qty_return === 0, 'text-green-500': item.qty_return}">{{ item.qty_return ? 'คืนแล้ว' : 'ยังไม่คืน' }}</div>
-                                <div class="text-sm">เวลาคืน {{ moment(item.date_end).format('DD/MM/YYYY') }}</div>
+                               
+                               
+                                <div class="text-sm">เวลาคืน {{ moment(item.date_return_ext || item.date_end).format('DD/MM/YYYY') }}  </div>
+                                <div v-if="item.appv_status_ext === 'อนุมัติ'" class="text-sm text-green-500">{{ item.appv_status_ext }}ยื่นเวลาคืน</div>
+                                <div v-if="item.appv_status_ext === 'รออนุมัติ'" class="text-sm text-yellow-600"> {{ item.appv_status_ext }}ขยายเวลายืม-คืน</div>
+                                <div v-if="item.appv_status_ext === 'ปฏิเสธ'" class="text-sm text-red-600 break-words">ปฏิเสธการยื่นเวลาเนื่องจาก {{ item.appv_status_ext_reason }} </div>
+
+                                <div v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)">
+                                    <UButton label="อนุมัติการยื่นเวลา" v-if="item.appv_status_ext === 'รออนุมัติ'" color="blue" size="xs" @click="setAprroveExtendDate(item)" />
+                                    <UButton label="ปฏิเสธ" v-if="item.appv_status_ext === 'รออนุมัติ'" color="red" class="ml-1" size="xs" @click="setAprroveExtendDate(item, false)" />
+                                </div>
+                                
+                            
+
+                               
                             </div>
                             
                             <UButton :color="item.qty_return ? 'red' : 'green'" :label="item.qty_return ? 'ยกเลิกคืนอุปกรณ์นี้' : 'คืนอุปกรณ์นี้'" size="sm" @click="checkMaxReturn((item.qty_return ? 0 : 1), item.item_id)" v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)"/>
 
-                          
-                            <UButton label="ยื่นเวลายืม" v-if="!item.qty_return" size="sm" @click="setDateBorrow(item)" />
+                            <div class="self-center">
+                                <UButton :label="item.appv_status_ext === '' ? 'ยื่นเวลายืม' : 'เปลี่ยนเวลาคืน'" :color="item.appv_status_ext === '' ? 'primary' : 'white'" v-if="!item.qty_return" size="sm" @click="setDateBorrow(item)" />
+                               
+                            </div>
+                           
                         </div>
                     </div>
                 </div>
@@ -303,6 +320,32 @@
                 </UCard>
             </UForm>
         </UModal>
+        <UModal v-model="modalAprroveSetDate">
+            <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+                <template #header>
+                    <div class="text-center">แจ้งเตือนการยืนยัน</div>
+                </template>
+
+                <div class="font-bold text-xl text-center"></div>
+                <div class="font-bold text-xl text-center" v-if="setApproveDate.ApproveResult === 'อนุมัติ'">คุณต้องการอนุมัติการขยายเวลาใช่หรือไม่</div>
+
+                <div v-else>
+                    
+                    <div class="text-red-600 font-bold text-xl text-center">ปฏิเสธการขยายเวลาใช่หรือไม่</div>
+                    <UFormGroup label="กรอกเหตุผล" name="Reason" size="xl">
+                        <UTextarea v-model="setApproveDate.ApproveReason" placeholder="" required/>
+                    </UFormGroup>
+                </div>
+
+            <template #footer>
+                <div class="flex justify-between">
+                    <button type="button" class="px-4 py-2 bg-red-600 text-base rounded-[5px] text-white" @click="confirmApproveSetDate">ยืนยัน</button>
+                    <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalAprroveSetDate = false">ยกเลิก</button>
+                </div>
+            </template>
+            </UCard>
+        </UModal>
+
     </UModal>
 
     <UModal v-model="modelDeleteConfirm">
@@ -322,6 +365,9 @@
         </UCard>
     </UModal>
 
+   
+
+    
     <UModal v-model="modalPrint">
         <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
           <template #header>
@@ -434,7 +480,7 @@
         count: 0,
         color: 'green'
     }, {
-        name : 'รายการที่ถูกปฎิเสธ',
+        name : 'รายการที่ถูกปฏิเสธ',
         count: 0,
         color: 'gray'
     }])
@@ -700,7 +746,7 @@
             case 'รายการที่คืนแล้ว':
                 statusSearch = 'คืน'
                 break;
-            case 'รายการที่ถูกปฎิเสธ':
+            case 'รายการที่ถูกปฏิเสธ':
                 statusSearch = 'ปฏิเสธจาก(ทส.),ปฏิเสธจากหน่วยงาน'
                 break;
             default:
@@ -941,8 +987,16 @@
     const setDateReturn = ref({
         ReqID: "",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
         LineNum: "",//Line number set null หรือ 0 เพื่อเปลี่ยนวันที่ทุกรายการ
-        Begin: moment(form.value.date_begin).format('YYYY-MM-DD'),//วันที่ขอยืม (เริ่มต้น)
         End: form.value.date_end// ถึงวันที่ 
+    })
+
+    const setApproveDate = ref({
+        ReqID: "",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
+        LineNum: "",//Line number set null หรือ 0 เพื่อเปลี่ยนวันที่ทุกรายการ
+        ApproveBy: auth.username,// ถึงวันที่ 
+        ApproveResult: "อนุมัติ",
+        ApproveReason: ""
+
     })
 
     const labelDateBorrow = computed(() => moment(setDateReturn.value.End).format('DD/MM/YYYY'))
@@ -953,7 +1007,7 @@
     const setDateBorrow = (item) => {
         setDateReturn.value.ReqID = item.req_id;
         setDateReturn.value.LineNum = item.line_num;
-        setDateReturn.value.End = item.date_end;
+        setDateReturn.value.End = item.date_return_ext || item.date_end;
 
         stateItemSet.value = item
         
@@ -961,14 +1015,35 @@
         modalSetDate.value = true
     }
 
+    const modalAprroveSetDate  = ref(false)
+    const setAprroveExtendDate = (item, status = true) => {
+
+        setApproveDate.value.ReqID = item.req_id;
+        setApproveDate.value.LineNum = item.line_num;
+        setApproveDate.value.ApproveResult = status ? 'อนุมัติ': 'ปฏิเสธ';
+
+        modalAprroveSetDate.value = true
+
+    }
+
+    const confirmApproveSetDate = async () => {
+        const res = await postApi('/hd/request/SetExtenReturnDateApprove', setApproveDate.value)
+
+        modalAprroveSetDate.value = false
+
+        fetchEditData(setApproveDate.value.ReqID, false, true, true)
+    }
+
     const submitSetDateReturn = async () => {
         setDateReturn.value.End = moment(setDateReturn.value.End).format('YYYY-MM-DD');
 
-        stateItemSet.value.date_end = setDateReturn.value.End
+        stateItemSet.value.date_return_ext = setDateReturn.value.End
 
-        const res = await postApi('/hd/request/SetBorrowReqDate', setDateReturn.value)
+        const res = await postApi('/hd/request/SetExtenReturnDate', setDateReturn.value)
 
         modalSetDate.value = false
+
+        fetchEditData(setDateReturn.value.ReqID, false, true, true)
     }
 </script>
 

@@ -65,6 +65,7 @@
                 searchable
                 searchable-placeholder="ค้นหาประเภทอุปกรณ์"
                 :disabled="notDisable"
+                required
             />
         </UFormGroup>
         <UFormGroup label="หมวดหมู่" name="inventory" size="xl">
@@ -77,6 +78,7 @@
                 searchable
                 searchable-placeholder="ค้นหาหมวดหมู่"
                 :disabled="notDisable"
+                required
             > 
                 <template #label>
                     <template v-if="item.item_cate">
