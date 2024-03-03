@@ -45,7 +45,7 @@
 
     const markRead = async () => {
 
-        const res = await getApi(`/hd/request/SetReadNotify?user=${user.user.currentUser}`)
+        const res = await fetch(`/hd/request/SetReadNotify?user=${user.user.currentUser}`)
         emit('refresh')
         
     }
