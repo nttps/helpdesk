@@ -560,7 +560,7 @@
             }]
 
 
-            if(row.status == 'รออนุมัติหน่วยงาน' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติยืมพัสดุประจำหน่วยงาน' && g.isInGroup === true) || row.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)) {
+            if(row.status == 'รออนุมัติหน่วยงาน' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติยืมพัสดุประจำหน่วยงาน' && g.isInGroup === true) || row.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true) || row.status == 'รอ ผอ.ทส.ตรวจสอบ' && auth.user.userInGroups.some(g => g.userGroupId === 'อนุมัติยืมโดย ผอ.ทส.' && g.isInGroup === true)) {
                 btn.push({
                     label: 'อนุมัติ',
                     icon: 'i-heroicons-archive-box-20-solid',
@@ -574,14 +574,14 @@
                     }
                 })
             }
-            if((row.status == 'ส่งมอบใช้งาน' || row.status == 'รายการคงค้าง') && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)) {
+            if((row.status == 'ส่งมอบใช้งาน' || row.status == 'รายการคงค้าง') && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true || auth.user.userInGroups.some(g => g.userGroupId === 'อนุมัติยืมโดย ผอ.ทส.' && g.isInGroup === true))) {
                 btn.push( {
                     label: 'คืนพัสดุ',
                     icon: 'i-heroicons-archive-box-20-solid',
                     click: () => fetchEditData(row.req_id, false, true)
                 })
             }
-            if((row.status == 'ส่งมอบใช้งาน' || row.status == 'รายการคงค้าง') && !(auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true))) {
+            if((row.status == 'ส่งมอบใช้งาน' || row.status == 'รายการคงค้าง') && !(auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true) && !(auth.user.userInGroups.some(g => g.userGroupId === 'อนุมัติยืมโดย ผอ.ทส.' && g.isInGroup === true)))) {
                 btn.push( {
                     label: 'ขยายเวลายืม-คืน',
                     icon: 'i-heroicons-archive-box-20-solid',
@@ -892,10 +892,10 @@
     const submitApprove = async () => {
 
         if(form.value.status === 'รอตรวจสอบ(ทส.)') {
-            submitRequest()
+             submitRequest()
         }
 
-        const res = await postApi('/hd/request/ApproveDocument', dataApprove.value)
+        await postApi('/hd/request/ApproveDocument', dataApprove.value)
 
         modalConfirmApprove.value = false
         modalApprove.value = false

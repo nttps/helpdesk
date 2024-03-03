@@ -49,6 +49,14 @@
         <nav class="nav-bottom">
             <ul>
                 <li>
+                    <button type="button" class="relative" @click="notificationBar = true" ref="buttonNotificationRef">
+                        <UChip :text="notifications.length" color="red" size="2xl" class="flex-col">
+                            <Icon name="material-symbols:notifications" size="40"/>
+                            <div>แจ้งเตือน</div>
+                        </UChip>
+                    </button>
+                </li>
+                <li>
                     <NuxtLink to="/help" v-slot="{ isActive }">
                         <Icon name="material-symbols:help" size="40" :class="isActive ? 'text-black' : ''"/>
                         <div :class="isActive ? 'text-black' : ''">ช่วยเหลือ</div>
@@ -89,14 +97,16 @@
             </ul>
         </nav>
     </div>
-  
+    <USlideover v-model="notificationBar">
+        <Notification :notifications="notifications || []" @refresh="refresh"/>
+    </USlideover>
 
 </template>
 
 <style scoped>
     
-    nav ul li a {
-        @apply flex flex-col items-center text-xs
+    nav ul li a, nav ul li button {
+        @apply flex flex-col items-center text-xs w-full
     }
     .nav-top ul li {
         @apply mb-6 mt-6
@@ -115,4 +125,7 @@
         navigateTo('/login')
     }
 
+     const notificationBar = ref(false)
+
+    const { data: notifications, pending, refresh } = await useAsyncData('notifications', async () => await getApi(`/hd/request/ListNotify?user=${authStore.username}`))
 </script>
