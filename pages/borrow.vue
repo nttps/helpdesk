@@ -176,7 +176,7 @@
                 
              
 
-                <template #footer v-if="form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)'">
+                <template #footer v-if="form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)' || form.status == 'รอ ผอ.ทส.ตรวจสอบ'">
                     <div class="flex items-center justify-end space-x-4" >
                         <UButton color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
                         <UButton color="red" label="ไม่อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(false)" />
@@ -249,7 +249,7 @@
                                 <div v-if="item.appv_status_ext === 'รออนุมัติ'" class="text-sm text-yellow-600"> {{ item.appv_status_ext }}ขยายเวลายืม-คืน</div>
                                 <div v-if="item.appv_status_ext === 'ปฏิเสธ'" class="text-sm text-red-600 break-words">ปฏิเสธการยื่นเวลาเนื่องจาก {{ item.appv_status_ext_reason }} </div>
 
-                                <div v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)">
+                                <div v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true) || auth.user.userInGroups.some(g => g.userGroupId === 'อนุมัติยืมโดย ผอ.ทส.' && g.isInGroup === true)">
                                     <UButton label="อนุมัติการยื่นเวลา" v-if="item.appv_status_ext === 'รออนุมัติ'" color="blue" size="xs" @click="setAprroveExtendDate(item)" />
                                     <UButton label="ปฏิเสธ" v-if="item.appv_status_ext === 'รออนุมัติ'" color="red" class="ml-1" size="xs" @click="setAprroveExtendDate(item, false)" />
                                 </div>
@@ -259,7 +259,7 @@
                                
                             </div>
                             
-                            <UButton :color="item.qty_return ? 'red' : 'green'" :label="item.qty_return ? 'ยกเลิกคืนอุปกรณ์นี้' : 'คืนอุปกรณ์นี้'" size="sm" @click="checkMaxReturn((item.qty_return ? 0 : 1), item.item_id)" v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)"/>
+                            <UButton :color="item.qty_return ? 'red' : 'green'" :label="item.qty_return ? 'ยกเลิกคืนอุปกรณ์นี้' : 'คืนอุปกรณ์นี้'" size="sm" @click="checkMaxReturn((item.qty_return ? 0 : 1), item.item_id)" v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true) || auth.user.userInGroups.some(g => g.userGroupId === 'อนุมัติยืมโดย ผอ.ทส.' && g.isInGroup === true)"/>
 
                             <div class="self-center">
                                 <UButton :label="item.appv_status_ext === '' ? 'ยื่นเวลายืม' : 'เปลี่ยนเวลาคืน'" :color="item.appv_status_ext === '' ? 'primary' : 'white'" v-if="!item.qty_return" size="sm" @click="setDateBorrow(item)" />
@@ -271,7 +271,8 @@
                 </div>
                 <div class="text-red-600 font-bold" v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติยืมพัสดุประจำหน่วยงาน' && g.isInGroup === true) || auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)">หมายเหตุ : เมื่อกดคืนอุปกรณ์เรียบร้อยแล้ว กรุณาอย่าลืมกดปุ่มแจ้งคืนพัสดุเพื่อยืนยันการคืนทุกครั้ง</div>
 
-                <template #footer v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)">
+           
+                <template #footer v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true) || auth.user.userInGroups.some(g => g.userGroupId === 'อนุมัติยืมโดย ผอ.ทส.' && g.isInGroup === true)">
                     <div class="flex items-center justify-end space-x-4">
 
                         <UButton color="green" label="แจ้งคืนพัสดุ" v-if="waitingItemComputed.length > 0 || dataReturn.returnAll" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" />
