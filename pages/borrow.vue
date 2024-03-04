@@ -629,7 +629,8 @@
             inventory: []
 
         }],
-        borrowItems: []
+        borrowItems: [],
+        status: ""
     })
 
     const rejectHandle = () => {
@@ -703,7 +704,8 @@
                 inventory: []
 
             }],
-            borrowItems: []
+            borrowItems: [],
+            status: ""
         }
     }
 
