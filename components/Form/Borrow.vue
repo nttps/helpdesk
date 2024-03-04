@@ -228,8 +228,8 @@
 
     console.log(notDisable);
 
-    const labelStartDate = computed(() => moment(props.form.date_begin).format('DD/MM/YYYY'))
-    const labelEndDate = computed(() => moment(props.form.date_end).format('DD/MM/YYYY'))
+    const labelStartDate = computed(() => props.form.date_begin ? moment(props.form.date_begin).format('DD/MM/YYYY'): 'กรุณาเลือกเวลา')
+    const labelEndDate = computed(() => props.form.date_end ? moment(props.form.date_end).format('DD/MM/YYYY'): 'กรุณาเลือกเวลา')
     const users = ref([])
     const itemsType = ref([])
 

@@ -505,7 +505,7 @@
     const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
     const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
 
-    const date = ref(new Date())
+    const date = ref(moment())
     const labelDate = computed(() => moment(form.value.req_date).format('DD/MM/YYYY'))
 
 
@@ -552,7 +552,7 @@
             department_id:  auth.username.length === 13 ? auth.user.currentUserInfo.departmentID: '',
             department_desc: "",
             item_id: "",
-             item_name: "",
+            item_name: "",
             fix_by: "",
             item_type: "",
             description:"",//รายละเอียด  

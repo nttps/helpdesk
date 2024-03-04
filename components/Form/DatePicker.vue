@@ -3,24 +3,13 @@ import moment from 'moment'
 import { DatePicker as VCalendarDatePicker } from 'v-calendar'
 import 'v-calendar/dist/style.css'
 
-const props = defineProps({
-  modelValue: {
-    type: String,
-    default: null
-  },
-  dateTime: {
-    type: Boolean,
-    default: false
-  }
-})
-
-console.log(props.dateTime);
+const props = defineProps(['modelValue', 'dateTime'])
 
 const emit = defineEmits(['update:model-value', 'close'])
 const date = computed({
   get: () => props.modelValue,
   set: (value) => {
-    emit('update:model-value',  moment(value).format('YYYY-MM-DDT00:00:00'))
+    emit('update:model-value',  value ? moment(value).format('YYYY-MM-DDT00:00:00'): null)
     emit('close')
   }
 })
