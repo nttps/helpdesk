@@ -179,7 +179,6 @@
                                 placeholder="เลือกประเภทอุปกรณ์" 
                                 searchable
                                 searchable-placeholder="ค้นหาประเภทอุปกรณ์"
-                                required
                                 class="mb-2"
                                 :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.item_type == 'อื่น ๆ'"
                             />
@@ -195,7 +194,6 @@
                                 placeholder="เลือกอุปกรณ์" 
                                 searchable
                                 searchable-placeholder="ค้นหาอุปกรณ์"
-                                required
                                 :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"
                                 v-if="form.item_type != 'อื่น ๆ'"
                             > 
