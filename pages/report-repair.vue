@@ -101,7 +101,7 @@
                 <template #header>
                     <div class="flex items-center justify-between">
                         <h3 class="text-2xl text-center font-bold leading-6 text-gray-900 dark:text-white">
-                            แบบฟอร์มการแจ้งซ่อม
+                            แบบฟอร์มการแจ้งปัญหา
                         </h3>
                         <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="md" class="-my-1" @click="modalAdd = false;" />
                     </div>
@@ -558,7 +558,7 @@
             description:"",//รายละเอียด  
             created_by:auth.username, //ผู้ทำรายการ
             modified_by:auth.username, //ผู้แก้ไขรายการ
-            services: [],
+            services: servicesType.value,
             contact: ''
 
         }
@@ -636,28 +636,7 @@
 
     }
 
-    const closeModal = () => {
-        form.value = {
-            req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
-            req_date: date.value,//วันที่ขอ
-            req_by_user_id: auth.username.length === 13 ? auth.username: '',
-            req_by_fullname: auth.username.length === 13 ? auth.user.currentUserInfo.fullName : '',
-            phone_req:auth.user.currentUserInfo.tel,
-            emal_req: auth.username.length === 13 ? auth.user.currentUserInfo.email : '',
-            department_id: "",
-            department_desc: "",
-            item_id: "",
-            fix_by: "",
-            item_type: "",
-            item_checkbox: false,
-            item_other: null,
-            description:"",//รายละเอียด  
-            created_by:auth.username, //ผู้ทำรายการ
-            modified_by:auth.username,//ผู้แก้ไขรายการ
-            services: [],
-            contact: ''
-        }
-    }
+  
     const coditionStatus = (status) => {
         let statusSearch
         switch (status) {
