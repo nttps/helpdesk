@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PartialsTitle title="ยืม - คืน" @add="modalAdd = true" />
+        <PartialsTitle title="ยืม - คืน" @add="addData" />
         <div class="mt-8">
             <div class="search-bar flex justify-between items-center mb-2">
                 <div>
@@ -660,7 +660,7 @@
     }
 
     const closeModal = () => {
-        resetForm()
+        
     }
 
     onMounted(() => {
@@ -705,6 +705,11 @@
             }],
             borrowItems: []
         }
+    }
+
+    const addData = () => {
+        resetForm()
+        modalAdd.value = true
     }
 
     const switchStatus = (status) => {
@@ -819,7 +824,6 @@
         }
 
         modalAdd.value = false
-        resetForm()
     }
     
 
@@ -901,7 +905,6 @@
         modalConfirmApprove.value = false
         modalApprove.value = false
         refresh()
-        resetForm()
     }
 
     const submitReturn = async () => {
@@ -934,7 +937,6 @@
         modalReturn.value = false
         modalConfirmReturn.value = false
         refresh()
-        resetForm()
     }
 
     const approveAll = async () => {
