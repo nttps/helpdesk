@@ -10,7 +10,7 @@
                 </NuxtLink>
                 <NuxtLink to="/settings/report-repair" class="p-6 text-center border rounded-xl w-1/6">
                     <Icon name="ic:baseline-handyman" size="80" color="gray" />
-                    <div class="mt-2">แจ้งซ่อม</div>
+                    <div class="mt-2">แจ้งปัญหา</div>
                 </NuxtLink>
                  <NuxtLink to="/settings/inventory" class="p-6 text-center border rounded-xl w-1/6">
                     <Icon name="bi:box-seam-fill" size="80" color="gray" />

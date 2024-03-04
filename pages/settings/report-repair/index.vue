@@ -1,6 +1,6 @@
 <template>
     <div class="h-full ">
-        <PartialsTitle title="แจ้งซ่อม" title-breadcrum="การตั้งค่า" url-back="/settings" noAdd/>
+        <PartialsTitle title="แจ้งปัญหา" title-breadcrum="การตั้งค่า" url-back="/settings" noAdd/>
 
         <div class="flex flex-col h-full items-center justify-center"> 
             <div class="flex w-full justify-center space-x-10">

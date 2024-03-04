@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PartialsTitle title="แจ้งซ่อม" url-back="/settings/report-repair" :text-button="`เพิ่มบริการแจ้งซ่อม`" title-breadcrum="บริการแจ้งซ่อม" @add="modalAdd = true" :priority="false" />
+        <PartialsTitle title="แจ้งปัญหา" url-back="/settings/report-repair" :text-button="`เพิ่มบริการแจ้งปัญหา`" title-breadcrum="บริการแจ้งปัญหา" @add="modalAdd = true" :priority="false" />
         <div class="mt-8">
             <div class="search-bar flex justify-center items-center mb-2">
                 <div class="min-w-3xl w-96">
@@ -54,7 +54,7 @@
                 <template #header>
                     <div class="flex items-center justify-between">
                         <h3 class="text-xl text-center font-bold leading-6 text-gray-900 dark:text-white">
-                            เพิ่มบริการแจ้งซ่อม
+                            เพิ่มบริการแจ้งปัญหา
                         </h3>
                         <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalAdd = false" />
                     </div>

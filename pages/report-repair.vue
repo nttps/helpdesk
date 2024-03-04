@@ -241,7 +241,7 @@
                 <template #header>
                     <div class="flex items-center justify-between">
                         <h3 class="text-2xl text-center font-bold leading-6 text-gray-900 dark:text-white">
-                            {{ (isView ? 'รายการแจ้งซ่อม' : 'อนุมัติรายการแจ้งซ่อม') }}
+                            {{ (isView ? 'รายการแจ้งปัญหา' : 'อนุมัติรายการแจ้งปัญหา') }}
                         </h3>
                         <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalApprove = false;" />
                     </div>

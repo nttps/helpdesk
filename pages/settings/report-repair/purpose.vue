@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PartialsTitle title="แจ้งซ่อม" url-back="/settings/report-repair" :text-button="`เพิ่มวัตถุประสงค์แจ้งซ่อม`" title-breadcrum="วัตถุประสงค์" @add="modalAdd = true" :priority="false" />
+        <PartialsTitle title="แจ้งปัญหา" url-back="/settings/report-repair" :text-button="`เพิ่มวัตถุประสงค์แจ้งปัญหา`" title-breadcrum="วัตถุประสงค์" @add="modalAdd = true" :priority="false" />
         <div class="mt-8">
             <div class="search-bar flex justify-center items-center mb-2">
                 <div class="min-w-3xl w-96">
