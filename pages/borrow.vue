@@ -897,7 +897,7 @@
     const submitApprove = async () => {
 
         if(form.value.status === 'รอตรวจสอบ(ทส.)') {
-             submitRequest()
+            await submitRequest()
         }
 
         await postApi('/hd/request/ApproveDocument', dataApprove.value)
