@@ -8,7 +8,7 @@
     </div>
   </div>
   <div class=" fixed bottom-10 right-10">
-    <UButton size="xl" :ui="{ rounded: 'rounded-full' }" color="blue" label="DX" :to="config.public.authUrl" />
+    <UButton size="xl" :ui="{ rounded: 'rounded-full' }" color="blue" label="DX" :to="config.public.homeUrl" />
   </div>
 </template>
 
