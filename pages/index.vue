@@ -252,21 +252,27 @@
     }))
 
     const repairStackCate = computed(() => dashboard.value.repairColumnChart.map((e , i)=> {
-        return e.axis_x
+        return e.series.map(s => s.description)
     }).flat().filter(onlyUnique))
 
-    const repairStackSeries = computed(() => dashboard.value.repairColumnChart.map((e , i)=> {
-        return e.series.map(s => {
-            return {
-                name: s.description,
-                data: dashboard.value.repairColumnChart.find(g => g.axis_x === e.axis_x).series.filter(v => v.description == e).map(v => v.value)
-            }
-        })
-    }).flat())
 
-    console.log(repairStackCate.value);
+   const repairStackSeries = computed(() => dashboard.value.repairColumnChart.map((e , i)=> {
+        return {
+            name: e.axis_x,
+            data: repairStackCate.value.map((s , i) => {
+                const item = e.series.find(a => a.description == s)
 
-    console.log(repairStackSeries.value);
+                let value 
+                if(item !== undefined){
+                    value = item.value
+                }else{
+                    value = 0
+                }
+                return value
+                
+            })
+        }
+    }))
 
     const repairPieOption = computed(() => dashboard.value.repairPieChart.map(e => {
         return { name: e.description, y: e.value}
