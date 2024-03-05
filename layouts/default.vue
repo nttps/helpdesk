@@ -7,11 +7,15 @@
       <slot />
     </div>
   </div>
+  <div class=" fixed bottom-10 right-10">
+    <UButton size="xl" :ui="{ rounded: 'rounded-full' }" color="blue" label="DX" :to="config.public.authUrl" />
+  </div>
 </template>
 
 
 <script setup>
   const route = useRoute()
+  const config = useRuntimeConfig()
   useHead({
     title: `E-Helpdesk`,
     meta: [{ property: 'og:title', content: `E-Helpdesk` }],
