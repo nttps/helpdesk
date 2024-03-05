@@ -52,7 +52,7 @@ export default defineNuxtConfig({
             version: pkg.version,
             apiUrl: apiBaseUrl,
             authUrl: "",
-            homeUrl: "",
+            homeUrl: "https://dxportal.disaster.go.th",
         },
     },
 });
