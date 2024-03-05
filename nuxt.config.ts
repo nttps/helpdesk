@@ -52,6 +52,7 @@ export default defineNuxtConfig({
             version: pkg.version,
             apiUrl: apiBaseUrl,
             authUrl: "",
+            homeUrl: "",
         },
     },
 });
