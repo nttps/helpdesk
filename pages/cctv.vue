@@ -117,7 +117,7 @@
                     <h3 class="font-bold leading-6 text-xl mb-4">รายละเอียดผู้ยื่นคำร้อง</h3>
                     <div class="grid grid-cols-2 gap-8 bg-zinc-300/80 p-8 rounded-xl mb-4 relative">
                         <UFormGroup label="ชื่อ-นามสกุล" name="type" size="xl">
-                            <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" @input="searchUserId" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ') || form.req_by_user_id.length === 13" />
+                            <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" @input="searchUserId" :disabled="(form.status === 'ปฏิเสธ' && form.status === 'อนุมัติ' && form.status === 'ปฏิเสธจาก(ทส.)')" />
 
                             <div class="bg-white divide-y-2 rounded absolute z-10" v-if="users.length">
 
@@ -125,7 +125,7 @@
                             </div>
                         </UFormGroup>
                         <UFormGroup label="เบอร์โทรศัพท์" name="phone_req" size="xl">
-                        <UInput v-model="form.phone_req" placeholder="" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ') || (form.req_by_user_id.length === 13 && form.phone_req !== '')"/>
+                            <UInput v-model="form.phone_req" placeholder="" :disabled="(form.status === 'ปฏิเสธ' && form.status === 'อนุมัติ' && form.status === 'ปฏิเสธจาก(ทส.)')"/>
                         </UFormGroup>
                     </div>
                     <h3 class="font-bold leading-6 text-xl mb-4">รายละเอียดคำร้อง</h3>

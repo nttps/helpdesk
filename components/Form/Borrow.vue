@@ -39,7 +39,7 @@
             <UInput v-model="form.emal_req" placeholder="" :disabled="notDisable || (form.req_by_user_id.length === 13 && form.emal_req !== '')" />
         </UFormGroup>
         <UFormGroup label="เบอร์โทรศัพท์" name="phone_req" size="xl">
-            <UInput v-model="form.phone_req" placeholder="" :disabled="notDisable || (form.req_by_user_id.length === 13 && form.phone_req !== '')" />
+            <UInput v-model="form.phone_req" placeholder="" :disabled="notDisable" />
         </UFormGroup>
     </div>
     <div class="mb-4"> 
