@@ -17,7 +17,7 @@
                     <div class="mt-2">อุปกรณ์</div>
                 </NuxtLink>
             </div>
-            <div class="flex w-full justify-center space-x-10 mt-4">
+            <!-- <div class="flex w-full justify-center space-x-10 mt-4">
                 <NuxtLink to="/settings/users" class="p-6 text-center border rounded-xl w-1/6">
                     <Icon name="i-majesticons-users-line" size="80" color="gray" />
                     <div class="mt-2">ผู้ใช้งาน</div>
@@ -26,7 +26,7 @@
                     <Icon name="i-tdesign-usergroup" size="80" color="gray" />
                     <div class="mt-2">กลุ่มผู้ใช้งาน</div>
                 </NuxtLink>
-            </div>
+            </div> -->
         </div>
        
     </div>
