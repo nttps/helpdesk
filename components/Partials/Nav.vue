@@ -3,7 +3,7 @@
         <div class="lg:flex-1 ">
             <NuxtLink class="flex items-center gap-1.5">
                 <img src="~/assets/images/logo.png" class="w-[70px]" alt="ระบบขอรับบริการด้าน IT Support">
-                <div class="text-lg 2xl:text-xl ml-2">
+                <div class="text-xl 2xl:text-2xl ml-2">
                     <div>ระบบขอรับบริการด้าน IT Support</div> 
                     <div class="text-[#FFA133]">กรมป้องกันและบรรเทาสาธารณภัย</div> 
                 </div>
