@@ -8,7 +8,7 @@
         </div>
     </NuxtLink>
   </div>
-  <div class="flex flex-grow h-[calc(100vh-101px)] overflow-hidden">
+  <div class="flex flex-grow h-[calc(100vh-80px)] overflow-hidden">
     <div class="shrink-0 w-20 bg-[#FFA825] text-white pb-4" role="navigation" aria-label="เมนู">
       <PartialsNav />
     </div>
