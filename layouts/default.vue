@@ -26,8 +26,8 @@
   const route = useRoute()
   const config = useRuntimeConfig()
   useHead({
-    title: `E-Helpdesk`,
-    meta: [{ property: 'og:title', content: `E-Helpdesk` }],
+    title: `ระบบขอรับบริการด้าน IT Support`,
+    meta: [{ property: 'og:title', content: `ระบบขอรับบริการด้าน IT Support` }],
     htmlAttrs: {
       lang: 'en'
     },
