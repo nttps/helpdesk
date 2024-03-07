@@ -1,9 +1,9 @@
 <template>
     <div class="flex items-center justify-between gap-3 py-2 px-4 border-b-2 border-[#FFA825]">
         <NuxtLink class="lg:flex-1 flex items-center gap-1.5">
-            <img src="~assets/images/logo.png" class="w-[70px]" alt="logo">
+             <img src="~/assets/images/logo.png" class="w-[70px]" alt="ระบบขอรับบริการด้าน IT Support">
             <div class="text-lg 2xl:text-xl ml-4">
-                <div >ระบบโหวตและแบบสอบถาม</div> 
+                <div>ระบบขอรับบริการด้าน IT Support</div> 
                 <div class="text-[#FFA133]">กรมป้องกันและบรรเทาสาธาร</div> 
             </div>
         </NuxtLink>
