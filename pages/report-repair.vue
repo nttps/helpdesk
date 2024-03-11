@@ -161,6 +161,7 @@
                     <UFormGroup label="ขอรับบริการด้าน" size="xl" class="mb-8">
                         <div class="pl-4 my-2">
                             <UCheckbox color="primary" 
+                                :id="index"
                                 v-model="service.is_select" 
                                 :label="service.description1" 
                                 class="mb-2" 
