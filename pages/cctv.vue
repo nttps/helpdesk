@@ -180,13 +180,6 @@
                             <UFormGroup label="กรณีอื่น ๆ" name="type" size="xl" v-if="form.case_desc === 'กรณีอื่น ๆ'">
                                 <UInput v-model="form.case_desc_other" placeholder="กรอกกรณี" size="xl" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                             </UFormGroup>
-                            <UFormGroup label="อาคาร" class="mb-4" name="type" size="xl">
-                                <UInput v-model="form.building_id" placeholder="" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
-                            </UFormGroup>
-                            <UFormGroup label="ชั้น" class="mb-4" name="type" size="xl">
-                                <UInput v-model="form.floor" placeholder="" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
-                            </UFormGroup>
-                            
                         </div>
                     </div>
                 </div>
