@@ -142,9 +142,6 @@
                                     </UPopover>
                                 </UFormGroup>
                             </div>
-                            <UFormGroup label="สถานที่" class="mb-4" name="type" size="xl">
-                                <UTextarea v-model="form.location" :rows="4" name="input" placeholder="กรอกรายละเอียดสถานที่ ..." :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
-                            </UFormGroup>
                             <div class="grid grid-cols-2 mb-4">
                                 <UFormGroup label="ตั้งแต่วันที่" class="mb-4" name="type" size="xl">
                                     <UPopover :popper="{ placement: 'bottom-start' }">
@@ -163,9 +160,15 @@
                                     </UPopover>
                                 </UFormGroup>
 
+                                
                             </div>
+                            <UFormGroup label="สถานที่ (กรุณาระบุ บริเวณสถานที่ หรืออาคาร/ชั้น)" class="mb-4" name="type" size="xl">
+                                <UTextarea v-model="form.location" :rows="4" name="input" placeholder="กรอกรายละเอียดสถานที่ ..." :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
+                            </UFormGroup>
                         </div>
                         <div>
+                            
+                            
                             <UFormGroup label="วัตถุประสงค์" class="mb-4" name="type" size="xl">
                                 <USelectMenu :options="objectiveSelect" searchable searchable-placeholder="ค้นหากรณี" value-attribute="description1" option-attribute="description1" v-model="form.purpose_desc" @update:model-value="updateObjective" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                                 
