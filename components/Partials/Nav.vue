@@ -27,7 +27,7 @@
                             <div :class="isActive ? 'text-black' : ''">แจ้งปัญหา</div>
                         </NuxtLink>
                     </li>
-                    <li>
+                    <li v-if="authStore.isNotUser">
                         <NuxtLink to="/inventory" v-slot="{ isActive }">
                             <Icon name="bi:box-seam-fill" size="40" :class="isActive ? 'text-black' : ''"/>
                             <div :class="isActive ? 'text-black' : ''">คลังอุปกรณ์</div>

@@ -11,6 +11,44 @@ export const useAuthStore = defineStore("auth-helpdesk", {
             !!state.user.userInGroups.some(
                 (p) => p.userGroupId.includes("ADMIN") && p.isInGroup == true
             ),
+        isNotUser: (state) =>
+            state.user.userInGroups.some(
+                (g) =>
+                    (g.userGroupId === "ผู้ตรวจสอบยืมพัสดุประจำ ทศ." &&
+                        g.isInGroup === true) ||
+                    state.user.userInGroups.some(
+                        (g) =>
+                            g.userGroupId === "อนุมัติยืมโดย ผอ.ทส." &&
+                            g.isInGroup === true
+                    ) ||
+                    state.user.userInGroups.some(
+                        (g) =>
+                            g.userGroupId === "ผู้ตรวจสอบการขอดู CCTV (ทส.)" &&
+                            g.isInGroup === true
+                    ) ||
+                    state.user.userInGroups.some(
+                        (g) =>
+                            g.userGroupId === "ผู้ตรวจสอบการแจ้งซ่อม(ทส.)" &&
+                            g.isInGroup === true
+                    ) ||
+                    state.user.userInGroups.some(
+                        (g) =>
+                            g.userGroupId === "ผู้อนุมัติการขอดู CCTV (ทส.)" &&
+                            g.isInGroup === true
+                    ) ||
+                    state.user.userInGroups.some(
+                        (g) =>
+                            g.userGroupId ===
+                                "ผู้อนุมัติแจ้งซ่อมประจำหน่วยงาน" &&
+                            g.isInGroup === true
+                    ) ||
+                    state.user.userInGroups.some(
+                        (g) =>
+                            g.userGroupId ===
+                                "ผู้อนุมัติยืมพัสดุประจำหน่วยงาน" &&
+                            g.isInGroup === true
+                    )
+            ),
         username: (state) => state.user?.currentUser || "",
         fullName: (state) => state.user?.currentUserInfo?.fullName || "",
         firstName: (state) => state.user?.currentUserInfo?.firstName || "",

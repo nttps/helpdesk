@@ -38,8 +38,8 @@ definePageMeta({
 })
 
 const loginForm = ref({
-  username: "tammon.y",
-  password: "1234",
+  username: "",
+  password: "",
   AppsID: "HELP DESK"
 })
 
