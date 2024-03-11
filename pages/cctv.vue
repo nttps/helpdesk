@@ -27,6 +27,7 @@
                         :trailing="false"
                         class="mr-2"
                         @click="approveHandle"
+                        v-if="auth.isNotUser"
                     />
                 </div>
                 <UButton class="ml-auto" icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray" @click="exportFile"/>

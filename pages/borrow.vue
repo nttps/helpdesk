@@ -27,6 +27,7 @@
                         :trailing="false"
                         class="mr-2"
                         @click="approveHandle"
+                        v-if="auth.isNotUser"
                     />
                     <!-- <UButton
                         icon="i-heroicons-plus-20-solid"
