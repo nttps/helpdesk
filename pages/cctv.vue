@@ -141,9 +141,6 @@
                                         </template>
                                     </UPopover>
                                 </UFormGroup>
-                                <UFormGroup label="ความสำคัญ" name="type" size="xl">
-                                    <USelect v-model="form.urgent_level" :options="['ด่วนมาก' , 'ด่วน' , 'ปานกลาง' , 'ไม่ด่วน']" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
-                                </UFormGroup>
                             </div>
                             <UFormGroup label="สถานที่" class="mb-4" name="type" size="xl">
                                 <UTextarea v-model="form.location" :rows="4" name="input" placeholder="กรอกรายละเอียดสถานที่ ..." :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
