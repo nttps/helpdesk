@@ -2,9 +2,10 @@
     <div>
         <PartialsTitle title="คลังอุปกรณ์" no-add />
         <div class="mt-8">
-            <div class="search-bar flex justify-between mb-2">
-                <div class="w-96">
+            <div class="search-bar flex items-center justify-between mb-2">
+                <div class="flex space-x-3">
                     <UInput placeholder="ค้นหาจากชื่ออุปกรณ์" v-model="search" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
+                    <USelect placeholder="ค้นหาจากสถานะ" :options="['ทั้งหมด', 'ว่าง', 'ไม่ว่าง']" v-model="searchStatus"  size="xl"/>
                 </div>
                 <div>
                     <UButton
@@ -18,7 +19,7 @@
                 </div>
             </div>
             <div class="text-right">
-                <UButton class="ml-auto" icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray"/>
+                <UButton class="ml-auto" icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray" @click="exportFile"/>
             </div>
             <UTable 
                 v-model="selected" 
@@ -207,11 +208,11 @@
         key: 'item_name',
         label: 'อุปกรณ์'
     }, {
-        key: 'item_type',
-        label: 'ประเภท'
-    }, {
         key: 'item_cate',
         label: 'หมวดหมู่'
+    }, {
+        key: 'item_type',
+        label: 'ประเภท'
     }, {
         key: 'brand',
         label: 'ยีห้อ'
@@ -243,6 +244,7 @@
     const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
     const selected = ref([])
     const search = ref('')
+    const searchStatus = ref('ทั้งหมด')
    
     const itemsType = ref()
     const itemsCate = ref()
@@ -270,7 +272,7 @@
     const { data: lists, pending, refresh } = await useAsyncData(
         'lists',
         async () => {
-            const data = await getListItems(search.value, '')
+            const data = await getListItems(search.value, searchStatus.value == 'ทั้งหมด' ? '' : searchStatus.value)
 
             if( search.value !== ''  && page.value > 1) {
                 page.value = 1
@@ -280,7 +282,7 @@
                 data: data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
             }
         }, {
-            watch: [page, search, pageCount]
+            watch: [page, search, pageCount, searchStatus]
         }
     )
 
@@ -372,6 +374,44 @@
         refresh()
     }
 
+
+ const exportFile = async () => {
+
+        const config = useRuntimeConfig();
+
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({
+            "SearchText": search.value//ค้นหาใน cate_name ,description ,ค่าว่างค้นหาทั้งหมด 
+            ,"Type":""//ประเภท ส่งค่าจาก dropdown  ที่มากจาก masterTypeID =HD_ITEMTYPE
+            ,"Status": searchStatus.value == 'ทั้งหมด' ? '' : searchStatus.value //ว่าง , ไม่ว่าง , ส่งซ่อม ,ใช้งานไม่ได้ ค่าว่างแสดงทั้งหมด ใส่ได้หลายค่าคั่นด้วย ","
+        });
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
+
+        fetch(config.public.apiUrl + '/hd/Items/ExportItemExcel', requestOptions)
+        .then( res => res.blob() )
+        .then( re => {
+            var file = URL.createObjectURL(re);
+
+            var a = document.createElement('a');
+            a.href = file;
+            a.download = "คลังอุปกรณ์.xlsx";
+            document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+            a.click();    
+            a.remove();  //afterwards we remove the element again      
+        });
+
+      
+        
+        
+    }
 </script>
 
 <style lang="scss" scoped>
