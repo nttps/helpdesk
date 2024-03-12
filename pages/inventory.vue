@@ -89,18 +89,6 @@
                     <UFormGroup label="ชื่อ" name="item_name" size="xl">
                         <UInput v-model="form.item_name" placeholder="" required />
                     </UFormGroup>
-                    <UFormGroup label="ประเภทอุปกรณ์" name="item_type" size="xl" >
-                        <USelectMenu 
-                            :options="itemsType" 
-                            placeholder="เลือกประเภทอุปกรณ์" 
-                            size="xl"
-                            v-model="form.item_type"
-                            value-attribute="description1" 
-                            option-attribute="description1" 
-                            searchable
-                            searchable-placeholder="ค้นหาประเภทอุปกรณ์"
-                        />
-                    </UFormGroup>
                     <UFormGroup label="หมวดหมู่" name="item_type" size="xl" >
                         <USelectMenu 
                             :options="itemsCate" 
@@ -113,6 +101,19 @@
                             searchable-placeholder="ค้นหาประเภทอุปกรณ์"
                         />
                     </UFormGroup>
+                    <UFormGroup label="ประเภทอุปกรณ์" name="item_type" size="xl" >
+                        <USelectMenu 
+                            :options="itemsType" 
+                            placeholder="เลือกประเภทอุปกรณ์" 
+                            size="xl"
+                            v-model="form.item_type"
+                            value-attribute="description1" 
+                            option-attribute="description1" 
+                            searchable
+                            searchable-placeholder="ค้นหาประเภทอุปกรณ์"
+                        />
+                    </UFormGroup>
+                    
                    
                     <UFormGroup label="ยีห้อ" name="brand" size="xl">
                        <UInput v-model="form.brand" placeholder="" />
