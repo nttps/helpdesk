@@ -12,7 +12,7 @@
     <div class="shrink-0 w-20 bg-[#FFA825] text-white pb-4" role="navigation" aria-label="เมนู">
       <PartialsNav />
     </div>
-    <div class="shrink-0 flex-grow max-w-[calc(100%-5rem)] overflow-auto min-h-screen  py-10 px-8" role="main" aria-label="เนื้อหา">
+    <div class="shrink-0 flex-grow max-w-[calc(100%-5rem)] overflow-auto py-10 px-8" role="main" aria-label="เนื้อหา">
       <slot />
     </div>
   </div>
