@@ -53,30 +53,16 @@
         <div class="absolute right-0 p-2" v-if="form.items.length > 1 ">
             <UButton color="red" :padded="false" icon="i-heroicons-x-mark-20-solid" size="xl" @click="deleteItem(index)" v-if="form.status === '' || form.status === 'รออนุมัติหน่วยงาน' || form.status === 'รอตรวจสอบ(ทส.)'" />
         </div>
-        <UFormGroup label="ประเภทอุปกรณ์" name="item_type" size="xl">
-            <USelectMenu 
-                :options="itemsType" 
-                placeholder="ประเภทอุปกรณ์" 
-                size="xl"
-                v-model="item.item_type"
-                value-attribute="description1" 
-                option-attribute="description1" 
-                @update:model-value="selectItem($event, item)"
-                searchable
-                searchable-placeholder="ค้นหาประเภทอุปกรณ์"
-                :disabled="notDisable"
-                required
-            />
-        </UFormGroup>
-        <UFormGroup label="หมวดหมู่" name="inventory" size="xl">
+        <UFormGroup label="หมวดหมู่อุปกรณ์" name="inventory" size="xl">
             <USelectMenu 
                 v-model="item.item_cate" 
-                :options="item.inventory" 
-                value-attribute="item_cate" 
-                option-attribute="item_cate" 
+                :options="itemsCate" 
+                value-attribute="description1" 
+                option-attribute="description1" 
                 placeholder="เลือกหมวดหมู่" 
                 searchable
                 searchable-placeholder="ค้นหาหมวดหมู่"
+                @update:model-value="selectItem($event, item)"
                 :disabled="notDisable"
                 required
             > 
@@ -87,6 +73,53 @@
                     <template v-else>
                         <span class="text-gray-500 dark:text-gray-400 truncate">เลือกหมวดหมู่</span>
                     </template>
+                </template>
+            </USelectMenu>
+        </UFormGroup>
+        <UFormGroup label="ประเภทอุปกรณ์" name="item_type" size="xl">
+            <USelectMenu 
+                :options="item.inventory" 
+                placeholder="ประเภทอุปกรณ์" 
+                size="xl"
+                v-model="item.item_type"
+                value-attribute="item_type" 
+                option-attribute="item_type" 
+                @update:model-value="selectItem($event, item)"
+                searchable
+                searchable-placeholder="ค้นหาประเภทอุปกรณ์"
+                :disabled="notDisable"
+                required
+            >
+                <template #label>
+                    <template v-if="item.item_type">
+                        {{ itemSelect(item.inventory, item.item_type)?.item_type ?? item.item_type}}
+                    </template>
+                    <template v-else>
+                        <span class="text-gray-500 dark:text-gray-400 truncate">เลือกหมวดหมู่</span>
+                    </template>
+                </template>
+                <template #empty>
+                    ไม่พบอุปกรณ์ภายในประเภทของหมวดหมู่นี้
+                </template>
+            </USelectMenu>
+        </UFormGroup>
+
+        <UFormGroup label="รายละเอียดอุปกรณ์" name="item_type" size="xl">
+            <USelectMenu 
+                :options="item.inventory" 
+                placeholder="รายละเอียดอุปกรณ์" 
+                size="xl"
+                v-model="item.item_type"
+                value-attribute="item_type" 
+                option-attribute="item_type" 
+                @update:model-value="selectItem($event, item)"
+                searchable
+                searchable-placeholder="ค้นหาประเภทอุปกรณ์"
+                :disabled="notDisable"
+                required
+            >
+                <template #empty>
+                    ไม่พบรายละเอียดอุปกรณ์
                 </template>
             </USelectMenu>
         </UFormGroup>
@@ -226,12 +259,11 @@
 
     const notDisable = props.disabled && (props.form.status === 'รออนุมัติหน่วยงาน' || props.form.status === 'รอตรวจสอบ(ทส.)')
 
-    console.log(notDisable);
-
     const labelStartDate = computed(() => props.form.date_begin ? moment(props.form.date_begin).format('DD/MM/YYYY'): 'กรุณาเลือกเวลา')
     const labelEndDate = computed(() => props.form.date_end ? moment(props.form.date_end).format('DD/MM/YYYY'): 'กรุณาเลือกเวลา')
     const users = ref([])
-    const itemsType = ref([])
+    const itemsCate = ref([])
+
 
     const selectUserName = (user) => {
 
@@ -260,21 +292,22 @@
     }
 
     onMounted(() => {
-        fetchTypeItems()
+        fetchCateItems()
     })
 
     const selectItem = async (value, item) => {
-        const data = await getListItems('', '', value)
+        const data = await getListItems('', '', '', value)
 
 
         item.inventory = data.filter((value, index, self) =>
             index === self.findIndex((t) => (
-                t.item_cate === value.item_cate
+                t.item_type === value.item_type
             ))
         )
     }
-    const fetchTypeItems = async (item) => {
-        itemsType.value = await getMasterType(`HD_ITEMTYPE`, '')
+
+    const fetchCateItems = async (item) => {
+        itemsCate.value = await getMasterType(`HD_ITEMCATE`, '')
     }
 
 
@@ -289,8 +322,6 @@
     const page = ref(1)
     const pageCount = ref(20)
 
-    const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
-    const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
 
     const modalItemSelect = async (type, cate) => {
         modalItem.value = true

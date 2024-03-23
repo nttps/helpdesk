@@ -172,30 +172,30 @@
                     </UFormGroup>
                     <div class="grid grid-cols-3 gap-8 mb-8">
                         
-                        <UFormGroup label="ประเภทอุปกรณ์" name="item_type" size="md">
+                        <UFormGroup label="หมวดหมู่" name="item_type" size="md">
                             <USelectMenu 
                                 v-model="form.item_type" 
                                 :options="itemsType" 
                                 value-attribute="description1" 
                                 option-attribute="description1" 
-                                placeholder="เลือกประเภทอุปกรณ์" 
+                                placeholder="เลือกหมวดหมู่" 
                                 searchable
-                                searchable-placeholder="ค้นหาประเภทอุปกรณ์"
+                                searchable-placeholder="ค้นหาหมวดหมู่"
                                 class="mb-2"
                                 :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.item_type == 'อื่น ๆ'"
                             />
 
                             <UCheckbox label="อื่น ๆ" :model-value="form.item_type == 'อื่น ๆ' ? true: false"  @update:model-value="value => updateItemOther(value)" />
                         </UFormGroup>
-                        <UFormGroup label="อุปกรณ์" name="item_id" size="md">
+                        <UFormGroup label="ประเภท" name="item_id" size="md">
                             <USelectMenu 
                                 v-model="form.item_id" 
                                 :options="inventoryitems" 
                                 value-attribute="item_id" 
                                 option-attribute="item_name" 
-                                placeholder="เลือกอุปกรณ์" 
+                                placeholder="เลือกประเภท" 
                                 searchable
-                                searchable-placeholder="ค้นหาอุปกรณ์"
+                                searchable-placeholder="ค้นหาประเภท"
                                 :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"
                                 v-if="form.item_type != 'อื่น ๆ'"
                             > 
@@ -424,6 +424,9 @@
     const columns = [{
         key: 'id',
         label: 'ลำดับที่'
+    }, {
+        key: 'req_date',
+        label: 'Icon'
     }, {
         key: 'req_date',
         label: 'วันที่ส่งคำขอ'

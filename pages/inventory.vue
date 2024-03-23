@@ -206,14 +206,14 @@
         label: 'ลำดับที่',
         class: 'text-center'
     }, {
-        key: 'item_name',
-        label: 'อุปกรณ์'
-    }, {
         key: 'item_cate',
         label: 'หมวดหมู่'
     }, {
         key: 'item_type',
         label: 'ประเภท'
+    }, {
+        key: 'item_name',
+        label: 'อุปกรณ์'
     }, {
         key: 'brand',
         label: 'ยีห้อ'
