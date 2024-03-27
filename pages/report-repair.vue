@@ -284,6 +284,7 @@
                         </UFormGroup>
                     </div>
 
+
                     <div class="grid grid-cols-3 gap-8 mb-4">
                         <UFormGroup label="หมวดหมู่" name="dCenter" size="md">
                             {{ form.item_type }}
@@ -292,6 +293,21 @@
                             {{ form.item_name }}
                         </UFormGroup>
                     </div>
+
+                    
+                    <UFormGroup label="ขอรับบริการด้าน" size="xl" class="mb-8">
+                        <div class="pl-4 my-2">
+                            <UCheckbox color="primary" 
+                                :id="index"
+                                v-model="service.is_select" 
+                                :label="service.description1" 
+                                disabled
+                                class="mb-2" 
+                                :ui="{container: 'flex items-center h-6', base: 'h-5 w-5 dark:checked:bg-current dark:checked:border-transparent dark:indeterminate:bg-current dark:indeterminate:border-transparent disabled:opacity-50 disabled:cursor-not-allowed focus:ring-0 focus:ring-transparent focus:ring-offset-transparent'}"
+                                v-for="(service, index) in form.services"
+                            />
+                        </div>
+                    </UFormGroup>
                     <UFormGroup label="อาการเสีย/ปัญหา" name="dCenter" size="md" class="mb-6">
                         {{ form.description }}
                     </UFormGroup>
