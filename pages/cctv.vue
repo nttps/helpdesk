@@ -704,7 +704,7 @@
         dataApprove.value.ReqID = id
         const data = await getApi(`/hd/request/GetDocSet?req_id=${id}`)
         form.value = data.requestHead
-        if(approve || form.value.status == 'รออนุมัติ(ผอ.ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติการขอดู CCTV (ทส.)' && g.isInGroup === true) || form.value.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบการขอดู CCTV (ทส.)' && g.isInGroup === true)) {
+        if(approve || form.value.status == 'รออนุมัติ(ผอ.ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติการขอดู CCTV (ทส.)' && g.isInGroup === true)) {
 
             modalApprove.value = true;
         }else {
