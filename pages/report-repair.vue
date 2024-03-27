@@ -174,20 +174,38 @@
                         
                         <UFormGroup label="หมวดหมู่" name="item_type" size="md">
                             <USelectMenu 
-                                v-model="form.item_type" 
-                                :options="itemsType" 
+                                v-model="form.item_cate" 
+                                :options="itemsCate" 
                                 value-attribute="description1" 
                                 option-attribute="description1" 
                                 placeholder="เลือกหมวดหมู่" 
                                 searchable
                                 searchable-placeholder="ค้นหาหมวดหมู่"
                                 class="mb-2"
-                                :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.item_type == 'อื่น ๆ'"
+                                :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.item_cate == 'อื่น ๆ'"
                             />
 
-                            <UCheckbox label="อื่น ๆ" :model-value="form.item_type == 'อื่น ๆ' ? true: false"  @update:model-value="value => updateItemOther(value)" />
+                            <UCheckbox label="อื่น ๆ" :model-value="form.item_cate == 'อื่น ๆ' ? true: false"  @update:model-value="value => updateItemOther(value)" />
+
+                            <UInput v-if="form.item_cate == 'อื่น ๆ'" class="mt-4" v-model="form.item_id" placeholder="กรอกชื่ออุปกรณ์" />
                         </UFormGroup>
-                        <UFormGroup label="ประเภท" name="item_id" size="md">
+                        <UFormGroup label="ประเภท" name="item_id" size="md" >
+                            <USelectMenu 
+                                v-model="form.item_type" 
+                                :options="itemsType" 
+                                value-attribute="description1" 
+                                option-attribute="description1" 
+                                placeholder="เลือกประเภท" 
+                                searchable
+                                searchable-placeholder="ค้นหาประเภท"
+                                :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.item_cate == 'อื่น ๆ'"
+                               
+                            /> 
+                            
+
+                        </UFormGroup>
+                       
+                        <!-- <UFormGroup label="รายละเอียดอุปกรณ์" name="item_id" size="md">
                             <USelectMenu 
                                 v-model="form.item_id" 
                                 :options="inventoryitems" 
@@ -211,7 +229,7 @@
                             </USelectMenu>
                             <UInput v-else v-model="form.item_id" placeholder="กรอกชื่ออุปกรณ์" />
 
-                        </UFormGroup>
+                        </UFormGroup> -->
                     </div>
                     <UFormGroup label="อาการเสีย/ปัญหา" name="dCenter" size="md" class="mb-4">
                         <UTextarea :rows="4" v-model="form.description" required :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"/>
@@ -687,6 +705,8 @@
     )
 
     const itemsType = ref([])
+    const itemsCate = ref([])
+
     const itemSelect = computed(() => inventoryitems.value.find(item => item.item_id === form.value.item_id))
 
     const { data: inventoryitems } = await useAsyncData(
@@ -697,6 +717,7 @@
     )
 
     onMounted(() => {
+        fetchCateItems()
         fetchTypeItems()
         countStatus()
         fetchTypeService()
@@ -751,6 +772,10 @@
 
    
     const contactType = ref([])
+
+    const fetchCateItems = async () => {
+        itemsCate.value = await getMasterType(`HD_ITEMCATE`, '')
+    }
    
     const fetchTypeItems = async () => {
         itemsType.value = await getMasterType(`HD_ITEMTYPE`, '')
@@ -764,7 +789,7 @@
     }
   
     const updateItemOther = (value) => {
-        value ? form.value.item_type = 'อื่น ๆ' : form.value.item_type = null; form.value.item_id = ''
+        value ? form.value.item_cate = 'อื่น ๆ' : form.value.item_cate = null; form.value.item_type = null; form.value.item_id = ''
     }
 
     const selectUserName = (user) => {
