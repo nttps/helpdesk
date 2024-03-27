@@ -877,7 +877,7 @@
         form.value.items.map(async e => {
             const data = e
 
-            data.inventory = await getListItems('', '', data.item_type)
+            data.inventory = await getListItems('', '', data.item_type, data.item_cate)
 
             return data
         })

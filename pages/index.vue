@@ -61,6 +61,7 @@
                                     variant="solid"
                                     label="อนุมัติ"
                                     :trailing="false"
+                                    v-if="isAdmin"
                                     class="bg-green-600 hover:bg-green-700"
                                     @click="approveRepairHandle"
                                 />
@@ -101,6 +102,7 @@
                                     label="อนุมัติ"
                                     :trailing="false"
                                     class="mr-2"
+                                    v-if="isAdmin"
                                     @click="approveBorrowHandle"
                                 />
                             </div>
@@ -140,6 +142,7 @@
                                     :trailing="false"
                                     class="mr-2"
                                     @click="approveCCTVHandle"
+                                    v-if="isAdmin"
                                 />
                             </div>
                         </div>
@@ -216,6 +219,7 @@
         middleware: ["auth"]
     })
     const searchYear = ref('2567')
+    const { isAdmin } = useAuthStore()
     const { data: dashboard, pending: pendingDashboard } = await useAsyncData('dashboard', async () => {
         return getApi(`/hd/DashBoardHD/GetBoard01Data?year=${searchYear.value}`)
     }, {

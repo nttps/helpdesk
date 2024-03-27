@@ -53,7 +53,7 @@
         <div class="absolute right-0 p-2" v-if="form.items.length > 1 ">
             <UButton color="red" :padded="false" icon="i-heroicons-x-mark-20-solid" size="xl" @click="deleteItem(index)" v-if="form.status === '' || form.status === 'รออนุมัติหน่วยงาน' || form.status === 'รอตรวจสอบ(ทส.)'" />
         </div>
-        <UFormGroup label="หมวดหมู่อุปกรณ์" name="inventory" size="xl">
+        <UFormGroup label="หมวดหมู่อุปกรณ์" name="item_cate" size="xl">
             <USelectMenu 
                 v-model="item.item_cate" 
                 :options="itemsCate" 
@@ -62,7 +62,7 @@
                 placeholder="เลือกหมวดหมู่" 
                 searchable
                 searchable-placeholder="ค้นหาหมวดหมู่"
-                @update:model-value="selectItem($event, item)"
+                @update:model-value="selectItemType($event, item)"
                 :disabled="notDisable"
                 required
             > 
@@ -84,7 +84,7 @@
                 v-model="item.item_type"
                 value-attribute="item_type" 
                 option-attribute="item_type" 
-                @update:model-value="selectItem($event, item)"
+                @update:model-value="selectItem($event, item.item_cate, item)"
                 searchable
                 searchable-placeholder="ค้นหาประเภทอุปกรณ์"
                 :disabled="notDisable"
@@ -104,9 +104,9 @@
             </USelectMenu>
         </UFormGroup>
 
-        <UFormGroup label="รายละเอียดอุปกรณ์" name="item_type" size="xl">
+        <!-- <UFormGroup label="รายละเอียดอุปกรณ์" name="item_detail" size="xl">
             <USelectMenu 
-                :options="item.inventory" 
+                :options="item.items" 
                 placeholder="รายละเอียดอุปกรณ์" 
                 size="xl"
                 v-model="item.item_type"
@@ -122,7 +122,7 @@
                     ไม่พบรายละเอียดอุปกรณ์
                 </template>
             </USelectMenu>
-        </UFormGroup>
+        </UFormGroup> -->
         
         <UFormGroup label="จำนวน" name="qty" size="xl">
             <UInput v-model="item.qty" placeholder="กรอกจำนวน" required :disabled="notDisable" />
@@ -218,6 +218,7 @@
                 <div class="p-4 my-2 border">
                     <UCheckbox color="primary" 
                         :model-value="form.borrowItems.some(bItem => bItem.item_id == item.item_id)"
+                        :id="index"
                         :label="`${item.item_cate} - ${item.serial_number} - ${item.item_name}`" 
                         class="mb-2" 
                         @update:model-value="selectItemBorrow(item)"
@@ -290,12 +291,26 @@
             return inventory.find(item => item.item_id === id)
         }
     }
+    
 
     onMounted(() => {
         fetchCateItems()
     })
 
-    const selectItem = async (value, item) => {
+    
+
+    const selectItem = async (type, cate, item) => {
+        const data = await getListItems('', '', type, cate)
+
+
+        item.inventory = data.filter((value, index, self) =>
+            index === self.findIndex((t) => (
+                t.item_type === value.item_type
+            ))
+        )
+    }
+
+    const selectItemType = async (value, item) => {
         const data = await getListItems('', '', '', value)
 
 
