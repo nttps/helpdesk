@@ -236,9 +236,16 @@
                                     <div class="text-zinc-700">{{ form.urgent_level  }}</div>
                                 </UFormGroup>
                             </div>
-                            <UFormGroup label="สถานที่" class="mb-4" name="type" size="xl">
-                                <div class="text-zinc-700">{{ form.location != "" ? form.location : '-' }}</div>
-                            </UFormGroup>
+
+                            <div class="grid grid-cols-2 mb-2">
+                                <UFormGroup label="สถานที่" class="mb-4" name="type" size="xl">
+                                    <div class="text-zinc-700">{{ form.location != "" ? form.location : '-' }}</div>
+                                </UFormGroup>
+                                <UFormGroup label="อาคาร" class="mb-4" name="type" size="xl">
+                                    <div class="text-zinc-700">{{ form.building_id }}</div>
+                                </UFormGroup>
+                            </div>
+                           
                             <div class="grid grid-cols-2 mb-4">
                                 <UFormGroup label="ตั้งแต่วันที่" class="mb-4" name="type" size="xl">
                                     <div class="text-zinc-700">{{ labelDateTimeBegin }}</div>
@@ -253,9 +260,7 @@
                                 <div class="text-zinc-700">{{ form.purpose_desc }}</div>
                             </UFormGroup>
                             <div class="grid grid-cols-2 gap-x-4 w-full">
-                                <UFormGroup label="อาคาร" class="mb-4" name="type" size="xl">
-                                    <div class="text-zinc-700">{{ form.building_id }}</div>
-                                </UFormGroup>
+                                
                                 <UFormGroup label="ชั้น" class="mb-4" name="type" size="xl">
                                     <div class="text-zinc-700">{{ form.floor }}</div>
                                 </UFormGroup>
