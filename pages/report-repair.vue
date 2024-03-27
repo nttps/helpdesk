@@ -446,11 +446,11 @@
         key: 'id',
         label: 'ลำดับที่'
     }, {
-        key: 'icon',
-        label: 'Icon'
-    }, {
         key: 'req_date',
         label: 'วันที่ส่งคำขอ'
+    }, {
+        key: 'หมวดหมู่',
+        label: 'Icon'
     }, {
         key: 'item_name',
         label: 'อุปกรณ์'
