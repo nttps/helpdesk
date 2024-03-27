@@ -285,10 +285,10 @@
                     </div>
 
                     <div class="grid grid-cols-3 gap-8 mb-4">
-                        <UFormGroup label="ประเภทอุปกรณ์" name="dCenter" size="md">
+                        <UFormGroup label="หมวดหมู่" name="dCenter" size="md">
                             {{ form.item_type }}
                         </UFormGroup>
-                        <UFormGroup label="อุปกรณ์" name="dCenter" size="md">
+                        <UFormGroup label="ประเภท" name="dCenter" size="md">
                             {{ form.item_name }}
                         </UFormGroup>
                     </div>
