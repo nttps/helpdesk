@@ -95,7 +95,7 @@
         </nav>
     </div>
     <USlideover v-model="notificationBar">
-        <Notification :notifications="notifications || []" @refresh="refresh"/>
+        <Notification :notifications="notifications || []" @refresh="refresh" @clickTo="value => clickTo(value)"/>
     </USlideover>
 
 </template>
@@ -125,4 +125,36 @@
      const notificationBar = ref(false)
 
     const { data: notifications, pending, refresh } = await useAsyncData('notifications', async () => await getApi(`/hd/request/ListNotify?user=${authStore.username}&isShowReaded=0`))
+
+
+     const clickTo = (noti) => {
+
+        navigateTo(goToReq(noti), {
+            replace: true,
+            external: true
+        })
+
+        notificationBar.value = false
+         
+    }
+
+    const goToReq = (noti) => {
+
+        let url = ''
+
+        switch (noti.noti_type) {
+            case 'ยืมพัสดุ':
+                url = '/borrow'
+                break;
+            case 'แจ้งซ่อม':
+                url = '/report-repair'
+                break;
+            case 'cctv':
+                url = '/cctv'
+                break;
+            default:
+                break;
+        }
+        return `${url}?read_id=${noti.key_check}`
+    }
 </script>

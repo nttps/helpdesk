@@ -7,7 +7,7 @@
             </button>
         </div>
         <div class=" text-black max-h-[calc(100%-56px)] overflow-y-auto bg-white">
-            <div class="flex items-center space-x-4 border-b-2 border-[#E1E1E1] px-8 py-4 bg-white break-words" v-for="notification in notificationRows">
+            <div @click="emit('clickTo', notification)" class="flex cursor-pointer items-center space-x-4 border-b-2 border-[#E1E1E1] px-8 py-4 bg-white break-words" v-for="notification in notificationRows">
                 <div class="w-[40px]">
                     <Icon name="mdi:alert" class="text-red-600" size="30"/>
                 </div>
@@ -29,7 +29,7 @@
 
 <script setup>
     const props = defineProps(['notifications'])
-    const emit = defineEmits(['refresh'])
+    const emit = defineEmits(['refresh', 'clickTo'])
     const config = useRuntimeConfig();
     const user = useAuthStore();
     const pageCount = ref(5)
@@ -50,6 +50,7 @@
         
     }
 
+   
 </script>
 
 <style lang="scss" scoped>

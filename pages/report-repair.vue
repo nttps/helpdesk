@@ -429,6 +429,9 @@
         middleware: ["auth"]
     })
 
+    const { read_id } = useRoute().query;
+
+
      
     const modalApprove = ref(false)
     const modalConfirmApprove = ref(false)
@@ -723,6 +726,10 @@
         fetchTypeService()
         fetchTypeContact()
 
+        if(read_id) {
+            fetchEditData(read_id)
+        }
+
     })
 
     const isView = ref(false)
@@ -746,10 +753,11 @@
         })
 
 
-        if(!approve) {
-            modalAdd.value = true; 
+        if(approve || (form.value.status == 'รออนุมัติหน่วยงาน' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติแจ้งซ่อมประจำหน่วยงาน' && g.isInGroup === true) ) || (form.value.status == 'รอตรวจสอบ(ทส.)' &&  auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบการแจ้งซ่อม(ทส.)'  && g.isInGroup === true))) {
+           modalApprove.value = true;
         }else {
-            modalApprove.value = true;
+            modalAdd.value = true; 
+            
         }
 
         isView.value = view

@@ -387,7 +387,14 @@
     definePageMeta({
         middleware: ["auth"]
     })
+    const { read_id } = useRoute().query;
 
+
+    onMounted(() =>{
+        if(read_id) {
+            fetchEditData(read_id)
+        }
+    })
 
 
     const modalAdd = ref(false)
@@ -697,10 +704,11 @@
         dataApprove.value.ReqID = id
         const data = await getApi(`/hd/request/GetDocSet?req_id=${id}`)
         form.value = data.requestHead
-        if(!approve) {
-            modalAdd.value = true; 
-        }else {
+        if(approve || form.value.status == 'รออนุมัติ(ผอ.ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติการขอดู CCTV (ทส.)' && g.isInGroup === true) || form.value.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบการขอดู CCTV (ทส.)' && g.isInGroup === true)) {
+
             modalApprove.value = true;
+        }else {
+            modalAdd.value = true; 
         }
 
         isView.value = view

@@ -449,7 +449,14 @@
     })
 
     const auth = useAuthStore();
+    const { read_id } = useRoute().query;
 
+
+    onMounted(() =>{
+        if(read_id) {
+            fetchEditData(read_id)
+        }
+    })
 
     const modalAdd = ref(false)
     const alertSelect = ref(false)
@@ -882,7 +889,7 @@
             return data
         })
        
-        if(approve) {
+        if(approve || form.value.status == 'รออนุมัติหน่วยงาน' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติยืมพัสดุประจำหน่วยงาน' && g.isInGroup === true) || form.value.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true) || form.value.status == 'รอ ผอ.ทส.ตรวจสอบ' && auth.user.userInGroups.some(g => g.userGroupId === 'อนุมัติยืมโดย ผอ.ทส.' && g.isInGroup === true)) {
             modalApprove.value = true;
         }else if(isReturn) {
             dataReturn.value.ReqID = id
