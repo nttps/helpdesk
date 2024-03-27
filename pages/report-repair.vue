@@ -449,8 +449,8 @@
         key: 'req_date',
         label: 'วันที่ส่งคำขอ'
     }, {
-        key: 'หมวดหมู่',
-        label: 'Icon'
+        key: 'item_icon',
+        label: 'หมวดหมู่'
     }, {
         key: 'item_name',
         label: 'อุปกรณ์'
