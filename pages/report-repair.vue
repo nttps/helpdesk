@@ -202,7 +202,7 @@
                                 option-attribute="description1" 
                                 placeholder="เลือกประเภท" 
                                 searchable
-                                @update:model-value="updateType"
+                                @update:model-value="refreshInventory"
                                 searchable-placeholder="ค้นหาประเภท"
                                 :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.item_cate == 'อื่น ๆ'"
                             /> 
@@ -215,17 +215,21 @@
                                 v-model="form.item_id" 
                                 :options="inventoryitems" 
                                 value-attribute="item_id" 
-                                option-attribute="item_name" 
+                                option-attribute="serial_number" 
                                 placeholder="เลือกอุปกรณ์" 
                                 searchable
-                                searchable-placeholder="ค้นหาประเภท"
+                                searchable-placeholder="เลือกอุปกรณ์โดย Serial Number"
                                 :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.item_cate == 'อื่น ๆ'"
                                 v-if="form.item_type != 'อื่น ๆ'"
                             > 
                                 <template #label>
                                     <template v-if="form.item_id">
-                                        {{ itemSelect?.item_name ?? form.item_name}}
+                                        {{ itemSelect(form.item_id)?.serial_number || 'ไม่มี Serial Number'}} - {{ itemSelect(form.item_id)?.item_name}} 
                                     </template>
+                                </template>
+
+                                <template #option="{ option: item }">
+                                   {{ item.serial_number || 'ไม่มี Serial Number' }} -  {{ item.item_name }}
                                 </template>
                             
                             </USelectMenu>
@@ -292,10 +296,13 @@
 
                     <div class="grid grid-cols-3 gap-8 mb-4">
                         <UFormGroup label="หมวดหมู่" name="dCenter" size="md">
-                            {{ form.item_cate }}
+                            {{ form.item_cate_desc }}
                         </UFormGroup>
                         <UFormGroup label="ประเภท" name="dCenter" size="md">
-                            {{ form.item_type }}
+                            {{ form.item_type_desc }}
+                        </UFormGroup>
+                        <UFormGroup label="อุปกรณ์" name="dCenter" size="md">
+                           {{ itemSelect(form.item_id)?.serial_number || 'ไม่มี Serial Number'}} - {{ itemSelect(form.item_id)?.item_name}} 
                         </UFormGroup>
                     </div>
 
@@ -731,17 +738,14 @@
     const itemsType = ref([])
     const itemsCate = ref([])
 
-    const itemSelect = computed(() => inventoryitems.value.find(item => item.item_id === form.value.item_id))
-
-    const { data: inventoryitems } = await useAsyncData(
-        'inventoryitems',
-        async () => await getListItems('', '', form.value.item_type), {
-            watch: [page, pageCount, textSearch, form]
-        }
-    )
+    const inventoryitems = ref([])
+    const itemSelect = (value) => {
+        return inventoryitems.value.find(item => item.item_id === value)
+    }
 
     onMounted(() => {
         fetchCateItems()
+        fetchInventory()
         countStatus()
         fetchTypeService()
         fetchTypeContact()
@@ -752,6 +756,7 @@
 
     })
 
+  
     const isView = ref(false)
     const fetchEditData = async (id, approve = false, view = false) => {
         dataApprove.value.ReqID = id
@@ -763,7 +768,11 @@
         const data = await getApi(`/hd/request/GetDocSet?req_id=${id}`)
         form.value = data.requestHead
 
-        await selectItemType(form.value.item_cate)
+       
+        
+        await fetchTypeItems(form.value.item_cate)
+
+        await fetchInventory()
         
         form.value.services = data.requestService.map(service => {
             return {
@@ -802,22 +811,6 @@
    
     const contactType = ref([])
 
-    const selectItemType = async (value, item) => {
-        const data = await getListItems('', '', '', value)
-
-
-        itemsType.value = data.filter((value, index, self) =>
-            index === self.findIndex((t) => (
-                t.item_type === value.item_type
-            ))
-        )
-    }
-
-
-    const updateType = (value) => {
-        console.log(value);
-        //form.value.item_type = value.valueTXT
-    }
     const fetchCateItems = async () => {
         itemsCate.value = await getMasterType(`HD_ITEMCATE`, '')
     }
@@ -827,6 +820,9 @@
         itemsType.value = await getMasterType(`HD_ITEMTYPE`, '', cate)
     }
    
+    const fetchInventory = async () => {
+        inventoryitems.value = await getListItems('', '', form.value.item_type, form.value.item_cate)
+    }
    
   
     const fetchTypeService = async () => {

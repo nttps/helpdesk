@@ -56,19 +56,19 @@
         <UFormGroup label="หมวดหมู่อุปกรณ์" name="item_cate" size="xl">
             <USelectMenu 
                 v-model="item.item_cate" 
-                :options="itemsCate" 
-                value-attribute="description1" 
+                :options="categories" 
+                value-attribute="valueTXT" 
                 option-attribute="description1" 
                 placeholder="เลือกหมวดหมู่" 
                 searchable
                 searchable-placeholder="ค้นหาหมวดหมู่"
-                @update:model-value="selectItemType($event, item)"
+                @update:model-value="fetchTypeItems"
                 :disabled="notDisable"
                 required
             > 
                 <template #label>
                     <template v-if="item.item_cate">
-                        {{ itemSelect(item.inventory, item.item_cate)?.item_cate ?? item.item_cate}}
+                        {{ categories.find(i => i.valueTXT === item.item_cate)?.description1 || item.item_cate_desc }}
                     </template>
                     <template v-else>
                         <span class="text-gray-500 dark:text-gray-400 truncate">เลือกหมวดหมู่</span>
@@ -78,13 +78,12 @@
         </UFormGroup>
         <UFormGroup label="ประเภทอุปกรณ์" name="item_type" size="xl">
             <USelectMenu 
-                :options="item.inventory" 
+                :options="types" 
                 placeholder="ประเภทอุปกรณ์" 
                 size="xl"
                 v-model="item.item_type"
-                value-attribute="item_type" 
-                option-attribute="item_type" 
-                @update:model-value="selectItem($event, item.item_cate, item)"
+                value-attribute="valueTXT" 
+                option-attribute="description1"  
                 searchable
                 searchable-placeholder="ค้นหาประเภทอุปกรณ์"
                 :disabled="notDisable"
@@ -92,7 +91,7 @@
             >
                 <template #label>
                     <template v-if="item.item_type">
-                        {{ itemSelect(item.inventory, item.item_type)?.item_type ?? item.item_type}}
+                        {{ types.find(i => i.valueTXT === item.item_type)?.description1 || item.item_type_desc  }}
                     </template>
                     <template v-else>
                         <span class="text-gray-500 dark:text-gray-400 truncate">เลือกหมวดหมู่</span>
@@ -145,7 +144,7 @@
         <div class="text-lg font-bold mt-2"> อุปกรณ์ที่ให้ยืม <span class=" text-red-500 font-bold text-base">(สำหรับแอดมินทส. ตรวจสอบ) </span> </div>
         <div class="px-2 mb-2 rounded-lg">
             
-            <div v-for="(items, index) in groupBy(form.borrowItems, 'item_cate')" class="mb-2">
+            <div v-for="(items, index) in groupBy(form.borrowItems, 'item_type_desc')" class="mb-2">
 
                 <div class="text-lg font-bold mb-2">
                     - {{ index }}  <span class="font-bold">รวม</span> {{ items.length }} จำนวน
@@ -263,8 +262,8 @@
     const labelStartDate = computed(() => props.form.date_begin ? moment(props.form.date_begin).format('DD/MM/YYYY'): 'กรุณาเลือกเวลา')
     const labelEndDate = computed(() => props.form.date_end ? moment(props.form.date_end).format('DD/MM/YYYY'): 'กรุณาเลือกเวลา')
     const users = ref([])
-    const itemsCate = ref([])
-
+    const categories = ref([])
+    const types = ref([])
 
     const selectUserName = (user) => {
 
@@ -297,32 +296,14 @@
         fetchCateItems()
     })
 
-    
-
-    const selectItem = async (type, cate, item) => {
-        const data = await getListItems('', '', type, cate)
 
 
-        item.inventory = data.filter((value, index, self) =>
-            index === self.findIndex((t) => (
-                t.item_type === value.item_type
-            ))
-        )
+    const fetchCateItems = async () => {
+        categories.value = await getMasterType(`HD_ITEMCATE`, '')
     }
 
-    const selectItemType = async (value, item) => {
-        const data = await getListItems('', '', '', value)
-
-
-        item.inventory = data.filter((value, index, self) =>
-            index === self.findIndex((t) => (
-                t.item_type === value.item_type
-            ))
-        )
-    }
-
-    const fetchCateItems = async (item) => {
-        itemsCate.value = await getMasterType(`HD_ITEMCATE`, '')
+    const fetchTypeItems = async (cate) => {
+        types.value = await getMasterType(`HD_ITEMTYPE`, '', cate)
     }
 
 
@@ -341,13 +322,13 @@
     const modalItemSelect = async (type, cate) => {
         modalItem.value = true
 
-        const data = await getListItems('', '', type, cate)
+        const data = await getListItems('', 'ว่าง', type, cate)
 
         if(page.value > 1) {
             page.value = 1
         }
         serialTotal.value  = data.length,
-        serialItems.value = data.filter(i => i.status === 'ว่าง' ).slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
+        serialItems.value = data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
 
     }
     const pageTotal = computed(() => serialTotal.value)

@@ -232,7 +232,7 @@
                 
                 <div class="text-lg font-bold mb-2"> อุปกรณ์ที่ต้องการทำรายการ </div>
                 <UCheckbox v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)" v-model="dataReturn.returnAll" name="notifications" label="คืนทั้งหมด" :ui="{label:'text-base font-bold', wrapper: 'items-center'}" />
-                <div class="p-8 pt-4 mb-2 border rounded-lg flex space-2 relative" v-for="(cate, index) in groupBy(form.borrowItems, 'item_cate')" v-if="!dataReturn.returnAll">
+                <div class="p-8 pt-4 mb-2 border rounded-lg flex space-2 relative" v-for="(cate, index) in groupBy(form.borrowItems, 'item_type_desc')" v-if="!dataReturn.returnAll">
                     <div class="w-[100px] font-bold"> {{ index }}</div>
 
                     <div class="w-full ">

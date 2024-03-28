@@ -95,8 +95,9 @@
                             placeholder="เลือกหมวดหมู่" 
                             size="xl"
                             v-model="form.item_cate"
-                            value-attribute="description1" 
+                            value-attribute="valueTXT" 
                             option-attribute="description1" 
+                            @update:model-value="getItemType"
                             searchable
                             searchable-placeholder="ค้นหาประเภทอุปกรณ์"
                         />
@@ -107,7 +108,7 @@
                             placeholder="เลือกประเภทอุปกรณ์" 
                             size="xl"
                             v-model="form.item_type"
-                            value-attribute="description1" 
+                            value-attribute="valueTXT" 
                             option-attribute="description1" 
                             searchable
                             searchable-placeholder="ค้นหาประเภทอุปกรณ์"
@@ -206,10 +207,10 @@
         label: 'ลำดับที่',
         class: 'text-center'
     }, {
-        key: 'item_cate',
+        key: 'item_cate_desc',
         label: 'หมวดหมู่'
     }, {
-        key: 'item_type',
+        key: 'item_type_desc',
         label: 'ประเภท'
     }, {
         key: 'item_name',
@@ -252,14 +253,13 @@
 
 
     onMounted(() => {
-        getItemType()
         getItemCate()
 
     })
     
 
-    const getItemType = async () => {
-        const res = await getMasterType('HD_ITEMTYPE', '', '')
+    const getItemType = async (cate) => {
+        const res = await getMasterType('HD_ITEMTYPE', '', cate)
 
         itemsType.value = res
     }
@@ -345,6 +345,7 @@
     const fetchEditData = async (id) => {
         const data = await getApi(`/hd/Items/GetDocSet?item_id=${id}`)
         form.value = data.itemInfo
+        await getItemType(form.value.item_cate)
 
         modalAdd.value = true
     }
