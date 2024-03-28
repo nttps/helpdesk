@@ -27,7 +27,18 @@
         }
     })
   
-    const typeLabel = computed(() => props.type === 'case' ? 'กรณี' : 'วัตถุประสงค์')
+    const typeLabel = computed(() => {
+        switch (props.type) {
+            case 'case':
+                return 'กรณี'
+            case 'building':
+                return 'อาคาร'
+            case 'floor':
+                return 'ชั้น'
+            default:
+                return 'วัตถุประสงค์'
+        }
+    })
     
   
 </script>

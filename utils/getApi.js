@@ -2,11 +2,12 @@ const config = useRuntimeConfig();
 const myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
 
-export const getMasterType = async (type, search) => {
+export const getMasterType = async (type, search, ParentValue) => {
     var raw = JSON.stringify({
         MasterTypeID: type, //อุปกรณ์คอมพิวเตอร์
         SearchText: search, //ค้นหาใน MasterTypeID ,Description1 ,Description2 ,ค่าว่างค้นหาทั้งหมด
         ShowSelectAll: false, //แสดงตัวเลือก "ทั้งหมด"
+        ParentValue: ParentValue,
     });
 
     var requestOptions = {
@@ -156,6 +157,25 @@ export const postApi = async (url, data) => {
             requestOptions
         );
         return await response.json();
+    } catch (error) {
+        return error;
+    }
+};
+export const postImage = async (url, data) => {
+    var requestOptions = {
+        method: "POST",
+        header: {
+            "Content-Type": "multipart/form-data",
+        },
+        body: data,
+    };
+
+    try {
+        const response = await fetch(
+            `${config.public.apiUrl}${url}`,
+            requestOptions
+        );
+        return await response.text();
     } catch (error) {
         return error;
     }

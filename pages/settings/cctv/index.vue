@@ -12,6 +12,14 @@
                     <Icon name="icon-park-solid:surveillance-cameras-two" size="80" color="gray" />
                     <div class="mt-2">วัตถุประสงค์</div>
                 </NuxtLink>
+                <NuxtLink to="/settings/cctv/building" class="p-6 text-center border rounded-xl w-1/6">
+                    <Icon name="i-ic-baseline-home-work" size="80" color="gray" />
+                    <div class="mt-2">อาคาร</div>
+                </NuxtLink>
+                <NuxtLink to="/settings/cctv/floor" class="p-6 text-center border rounded-xl w-1/6">
+                    <Icon name="i-material-symbols:floor" size="80" color="gray" />
+                    <div class="mt-2">ชั้น</div>
+                </NuxtLink>
             </div>
         </div>
        
