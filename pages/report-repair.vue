@@ -54,7 +54,13 @@
                 <template #req_by_user_id-data="{ row }">
                     <div>{{ row.req_by_fullname ? row.req_by_fullname : row.req_by_user_id }}</div>
                 </template>
+                <template #item_type_icon-data="{ row }">
+                    <UTooltip :text="row.item_cate_desc">
+                        <UAvatar :src="row.item_cate_icon" size="md" />
+                    </UTooltip>
+                </template>
 
+                
                 <template #status-data="{ row }">
                     <div class="font-bold text-black">{{ row.status }}</div>
                     <div class="text-red-600 font-bold" v-if="row.status == 'ปฏิเสธจากหน่วยงาน' || row.status == 'ปฏิเสธจาก(ทส.)'">
@@ -161,7 +167,7 @@
                     <UFormGroup label="ขอรับบริการด้าน" size="xl" class="mb-8">
                         <div class="pl-4 my-2">
                             <UCheckbox color="primary" 
-                                :id="index"
+                                :id="service.description1"
                                 v-model="service.is_select" 
                                 :label="service.description1" 
                                 class="mb-2" 
@@ -170,15 +176,16 @@
                             />
                         </div>
                     </UFormGroup>
-                    <div class="grid grid-cols-3 gap-8 mb-8">
+                    <div class="grid grid-cols-3 gap-8 mb-4" >
                         
                         <UFormGroup label="หมวดหมู่" name="item_type" size="md">
                             <USelectMenu 
                                 v-model="form.item_cate" 
                                 :options="itemsCate" 
-                                value-attribute="description1" 
+                                value-attribute="valueTXT" 
                                 option-attribute="description1" 
                                 placeholder="เลือกหมวดหมู่" 
+                                @update:model-value="fetchTypeItems($event)"
                                 searchable
                                 searchable-placeholder="ค้นหาหมวดหมู่"
                                 class="mb-2"
@@ -186,51 +193,49 @@
                             />
 
                             <UCheckbox label="อื่น ๆ" :model-value="form.item_cate == 'อื่น ๆ' ? true: false"  @update:model-value="value => updateItemOther(value)" />
-
-                            <UInput v-if="form.item_cate == 'อื่น ๆ'" class="mt-4" v-model="form.item_id" placeholder="กรอกชื่ออุปกรณ์" />
                         </UFormGroup>
-                        <UFormGroup label="ประเภท" name="item_id" size="md" >
+                        <UFormGroup label="ประเภท" name="item_type" size="md" >
                             <USelectMenu 
-                                v-model="form.item_type" 
                                 :options="itemsType" 
-                                value-attribute="description1" 
+                                v-model="form.item_type" 
+                                value-attribute="valueTXT" 
                                 option-attribute="description1" 
                                 placeholder="เลือกประเภท" 
                                 searchable
+                                @update:model-value="updateType"
                                 searchable-placeholder="ค้นหาประเภท"
                                 :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.item_cate == 'อื่น ๆ'"
-                               
                             /> 
                             
 
                         </UFormGroup>
                        
-                        <!-- <UFormGroup label="รายละเอียดอุปกรณ์" name="item_id" size="md">
+                        <UFormGroup label="อุปกรณ์" name="item_id" size="md">
                             <USelectMenu 
                                 v-model="form.item_id" 
                                 :options="inventoryitems" 
                                 value-attribute="item_id" 
                                 option-attribute="item_name" 
-                                placeholder="เลือกประเภท" 
+                                placeholder="เลือกอุปกรณ์" 
                                 searchable
                                 searchable-placeholder="ค้นหาประเภท"
-                                :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"
+                                :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.item_cate == 'อื่น ๆ'"
                                 v-if="form.item_type != 'อื่น ๆ'"
                             > 
                                 <template #label>
                                     <template v-if="form.item_id">
                                         {{ itemSelect?.item_name ?? form.item_name}}
                                     </template>
-                                    <template v-else>
-                                        <span class="text-gray-500 dark:text-gray-400 truncate">เลือกอุปกรณ์</span>
-                                    </template>
                                 </template>
                             
                             </USelectMenu>
                             <UInput v-else v-model="form.item_id" placeholder="กรอกชื่ออุปกรณ์" />
 
-                        </UFormGroup> -->
+                        </UFormGroup>
+                        
+                        
                     </div>
+                    <UInput v-if="form.item_cate == 'อื่น ๆ'" class="mb-4" v-model="form.item_id" placeholder="กรอกชื่ออุปกรณ์" />
                     <UFormGroup label="อาการเสีย/ปัญหา" name="dCenter" size="md" class="mb-4">
                         <UTextarea :rows="4" v-model="form.description" required :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"/>
                     </UFormGroup>
@@ -287,10 +292,10 @@
 
                     <div class="grid grid-cols-3 gap-8 mb-4">
                         <UFormGroup label="หมวดหมู่" name="dCenter" size="md">
-                            {{ form.item_type }}
+                            {{ form.item_cate }}
                         </UFormGroup>
                         <UFormGroup label="ประเภท" name="dCenter" size="md">
-                            {{ form.item_name }}
+                            {{ form.item_type }}
                         </UFormGroup>
                     </div>
 
@@ -298,7 +303,7 @@
                     <UFormGroup label="ขอรับบริการด้าน" size="xl" class="mb-8">
                         <div class="pl-4 my-2">
                             <UCheckbox color="primary" 
-                                :id="index"
+                                :id="service.description1"
                                 v-model="service.is_select" 
                                 :label="service.description1" 
                                 disabled
@@ -465,7 +470,7 @@
         key: 'req_date',
         label: 'วันที่ส่งคำขอ'
     }, {
-        key: 'item_icon',
+        key: 'item_type_icon',
         label: 'หมวดหมู่'
     }, {
         key: 'item_name',
@@ -737,7 +742,6 @@
 
     onMounted(() => {
         fetchCateItems()
-        fetchTypeItems()
         countStatus()
         fetchTypeService()
         fetchTypeContact()
@@ -759,6 +763,7 @@
         const data = await getApi(`/hd/request/GetDocSet?req_id=${id}`)
         form.value = data.requestHead
 
+        await selectItemType(form.value.item_cate)
         
         form.value.services = data.requestService.map(service => {
             return {
@@ -797,14 +802,33 @@
    
     const contactType = ref([])
 
+    const selectItemType = async (value, item) => {
+        const data = await getListItems('', '', '', value)
+
+
+        itemsType.value = data.filter((value, index, self) =>
+            index === self.findIndex((t) => (
+                t.item_type === value.item_type
+            ))
+        )
+    }
+
+
+    const updateType = (value) => {
+        console.log(value);
+        //form.value.item_type = value.valueTXT
+    }
     const fetchCateItems = async () => {
         itemsCate.value = await getMasterType(`HD_ITEMCATE`, '')
     }
-   
-    const fetchTypeItems = async () => {
-        itemsType.value = await getMasterType(`HD_ITEMTYPE`, '')
-    }
 
+    const fetchTypeItems = async (cate) => {
+
+        itemsType.value = await getMasterType(`HD_ITEMTYPE`, '', cate)
+    }
+   
+   
+  
     const fetchTypeService = async () => {
         servicesType.value = await getMasterType(`HD_SERVICE_TYPE`, '')
     }
