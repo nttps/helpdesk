@@ -21,6 +21,11 @@
                     <div >{{ pageFrom + index }}</div>
                 </template>
 
+                 <template #iconUrl-data="{ row }">
+                    <UAvatar :src="row.iconUrl" size="md" />
+                </template>
+
+
                 <template #actions-data="{ row }">
                     <UButton color="amber" variant="ghost" icon="i-heroicons-pencil-solid"  @click="fetchEditData(row.valueTXT)" />
                     <UButton color="red" variant="ghost" icon="i-heroicons-trash-20-solid" @click="modelDeleteConfirm = true; itemDelete = row.valueTXT" />
@@ -60,13 +65,18 @@
                     </div>
                 </template>
 
-                <UFormGroup label="หมวดหมู่" name="description1" size="xl">
+                <UFormGroup label="หมวดหมู่" name="description1" size="xl" class="mb-2">
                     <UInput v-model="form.description1" placeholder="" />
                 </UFormGroup>
+                <UFormGroup label="Icon (ขนาด 50*50 px)" name="file" size="xl">
+                    <UAvatar :src="previewImage" size="xl" />
+                    <UInput type="file" v-model="form.icon" size="sm" @input="pickFile" accept="image/png, image/gif, image/jpeg" />
+                </UFormGroup>
+                
                 
                 <template #footer>
                     <div class="flex items-center justify-end space-x-2">
-                        <UButton color="amber" label="บันทึก" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                        <UButton color="amber" label="บันทึก" :loading="loading" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                         <UButton color="gray" @click="modalAdd = false" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
@@ -104,6 +114,9 @@
         key: 'id',
         label: 'ลำดับที่'
     }, {
+        key: 'iconUrl',
+        label: 'Icon'
+    },{
         key: 'description1',
         label: 'รายการ'
     }, {
@@ -141,7 +154,8 @@
         MasterTypeID: "HD_ITEMCATE",
         valueTXT: `HD_ITEMCATE_${Math.random().toString(16).slice(2)}`,
         description1: "", 
-        description2: ""
+        description2: "",
+        image: ""
     })
 
     const addNew = () => {
@@ -149,7 +163,10 @@
             masterTypeID:"HD_ITEMCATE",
             valueTXT: `HD_ITEMCATE_${Math.random().toString(16).slice(2)}`,
             description1:"",
+            image: ""
         }
+
+        previewImage.value = ''
         modalAdd.value = true
     }
 
@@ -158,11 +175,45 @@
     })
 
     const auth = useAuthStore();
+    const previewImage  = ref('');
+    const  pickFile = (e) => {
+        let file = e.target.files
+
+        form.value.image = file[0]
+        if (file && file[0]) {
+          let reader = new FileReader
+          reader.onload = e => {
+            previewImage.value = e.target.result
+          }
+          reader.readAsDataURL(file[0])
+        }
+    }
+
+    const loading = ref(false)
 
     const submit = async () => {
         const res = await addMasterType(form.value)
+
+        if(form.value.image) {
+            
+            await uploadIcon()
+           
+        }
         refresh()
         resetForm()
+    }
+
+    const uploadIcon = async () => {
+
+        loading.value = true
+
+        console.log(loading.value);
+        let data = new FormData();
+        data.append('files', form.value.image)
+
+        await postImage(`/MasterType/UploadMasterTypeIcon?masterTypeID=HD_ITEMCATE&value=${form.value.valueTXT}`, data)
+
+         loading.value = false
     }
   
     const deleteItem = async () => {
@@ -185,6 +236,7 @@
 
         })
         form.value = data
+        previewImage.value = data.iconUrl
         modalAdd.value = true; 
     }
 

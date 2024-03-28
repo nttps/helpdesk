@@ -48,7 +48,7 @@
             </div>
         </div>
     </div>
-    <UModal v-model="modalAdd"  :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}" @close="closeModal">
+    <UModal v-model="modalAdd"  :ui="{ base: '', width: 'sm:max-w-7xl', height: 'min-h-7xl'}" @close="closeModal">
         <UForm :state="form" :schema="schema" @submit="submit">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
@@ -59,6 +59,18 @@
                         <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalAdd = false" />
                     </div>
                 </template>
+
+                <UFormGroup label="หมวดหมู่" name="parentValue" size="xl" class="mb-2">
+                    <USelectMenu 
+                        v-model="form.parentValue"
+                        :options="categories" 
+                        value-attribute="valueTXT" 
+                        option-attribute="description1" 
+                        placeholder="หมวดหมู่" 
+                        searchable
+                        searchable-placeholder="ค้นหาหมวดหมู่"
+                    />
+                </UFormGroup>
 
                 <UFormGroup label="ประเภท" name="description1" size="xl">
                     <UInput v-model="form.description1" placeholder="" />
@@ -104,6 +116,9 @@
         key: 'id',
         label: 'ลำดับที่'
     }, {
+        key: 'parentDesc',
+        label: 'หมวดหมู่'
+    }, {
         key: 'description1',
         label: 'รายการ'
     }, {
@@ -141,15 +156,29 @@
         MasterTypeID: "HD_ITEMTYPE",
         valueTXT: `HD_ITEMTYPE_${Math.random().toString(16).slice(2)}`,
         description1: "", 
-        description2: ""
+        description2: "",
+        parentID: "",
+        parentValue: ""
     })
+
+    const categories = ref([])
+
+
+    const fetchCategories = async () => {
+        const res = await getMasterType(`HD_ITEMCATE`, '')
+        categories.value = res
+    }
+
 
     const addNew = () => {
         form.value ={
             masterTypeID:"HD_ITEMTYPE",
             valueTXT: `HD_ITEMTYPE_${Math.random().toString(16).slice(2)}`,
             description1:"",
+            parentID: "HD_ITEMCATE",
+            parentValue: ""
         }
+        fetchCategories()
         modalAdd.value = true
     }
 
@@ -184,7 +213,9 @@
             Value: value
 
         })
+        fetchCategories()
         form.value = data
+        form.value.parentID = 'HD_ITEMCATE'
         modalAdd.value = true; 
     }
 
@@ -194,6 +225,8 @@
             masterTypeID:"HD_ITEMTYPE",
             valueTXT: `HD_ITEMTYPE_${Math.random().toString(16).slice(2)}`,
             description1:"",
+            parentID: "HD_ITEMCATE",
+            parentValue: ""
         }
 
         modalAdd.value = false
