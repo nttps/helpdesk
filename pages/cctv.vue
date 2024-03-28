@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PartialsTitle title="คำขอดู CCTV" @add="modalAdd = true" />
+        <PartialsTitle title="คำขอดู CCTV" @add="addNew" />
         <div class="mt-8">
             <div class="search-bar flex justify-between mb-2">
                 <div>
@@ -153,7 +153,7 @@
                                 </UFormGroup>
                                 <UFormGroup label="ถึงวันที่" name="type" size="xl">
                                     <UPopover :popper="{ placement: 'bottom-start' }">
-                                        <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDateTimeEnd" />
+                                        <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDateTimeEnd" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                                         <template #panel="{ close }">
                                             <FormDatePicker v-model="form.date_end" :date-time="true" @close="close" />
                                         </template>
@@ -167,10 +167,31 @@
                             </UFormGroup>
                             <div class="grid grid-cols-2 gap-2 mb-4">
                                 <UFormGroup label="อาคาร" class="mb-4" name="type" size="xl">
-                                    <USelect v-model="form.building_id" placeholder="" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
+                                    <USelectMenu 
+                                        v-model="form.building_id"
+                                        :options="buildings" 
+                                        value-attribute="valueTXT" 
+                                        option-attribute="description1" 
+                                        placeholder="อาคาร" 
+                                        searchable
+                                        @update:model-value="fetchFloor"
+                                        searchable-placeholder="ค้นหาอาคาร"
+                                        :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"
+                                    />
                                 </UFormGroup>
+
+                                
                                 <UFormGroup label="ชั้น" class="mb-4" name="type" size="xl">
-                                    <USelect v-model="form.floor" placeholder="" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
+                                     <USelectMenu 
+                                        v-model="form.floor"
+                                        :options="floors" 
+                                        value-attribute="valueTXT" 
+                                        option-attribute="description1" 
+                                        placeholder="ชั้น" 
+                                        searchable
+                                        searchable-placeholder="ค้นหาชั้น"
+                                        :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"
+                                    />
                                 </UFormGroup>
                             </div>
                            
@@ -242,7 +263,7 @@
                                     <div class="text-zinc-700">{{ form.location != "" ? form.location : '-' }}</div>
                                 </UFormGroup>
                                 <UFormGroup label="อาคาร" class="mb-4" name="type" size="xl">
-                                    <div class="text-zinc-700">{{ form.building_id }}</div>
+                                    <div class="text-zinc-700">{{ buildings.find(v => v.valueTXT === form.building_id).description1  }}</div>
                                 </UFormGroup>
                             </div>
                            
@@ -262,7 +283,7 @@
                             <div class="grid grid-cols-2 gap-x-4 w-full">
                                 
                                 <UFormGroup label="ชั้น" class="mb-4" name="type" size="xl">
-                                    <div class="text-zinc-700">{{ form.floor }}</div>
+                                    <div class="text-zinc-700">{{ floors.find(v => v.valueTXT === form.floor).description1  }}</div>
                                 </UFormGroup>
                             </div>
                             <UFormGroup label="กรณี" name="type" size="xl">
@@ -547,9 +568,23 @@
     onMounted(() => {
         fetchCaseCCTV()
         fetchObjectiveCCTV()
-
+        fetchBuildings()
         countStatus()
     })
+
+    const buildings = ref([])
+    const floors = ref([])
+
+
+    const fetchBuildings = async () => {
+        const res = await getMasterType(`BUILDING`, '')
+        buildings.value = res
+    }
+
+    const fetchFloor = async (building) => {
+        const res = await getMasterType(`FLOOR`, '', building)
+        floors.value = res
+    }
 
     const fetchObjectiveCCTV = async () => {
         const data = await getMasterType(`HD_CCTV_PURPOSE`, '')
@@ -599,6 +634,33 @@
     }
     const form = ref(templateEmpty)
 
+    const addNew = () => {
+        form.value = {
+            req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
+            req_date: dateRequest.value,//วันที่ขอ
+            req_by_user_id: auth.username.length === 13 ? auth.username: '',
+            req_by_fullname: auth.username.length === 13 ? auth.user.currentUserInfo.fullName : '',
+            phone_req:auth.user.currentUserInfo.tel,
+            emal_req: auth.username.length === 13 ? auth.user.currentUserInfo.email : '',
+            howto_inform:"walkin",//วิธีการแจ้ง มี 2 ค่า (walkin , email)
+            date_begin: dateTimeBegin.value,//วันที่เวลาที่ต้องดู (เริ่มต้น)
+            date_end: dateTimeEnd.value,// ถึงวันที่ 
+            urgent_level:"",//ระดับความสำคัญ (ด่วนมาก , ด่วน , ปานกลาง , ไม่ด่วน )
+            purpose_id:"",//รหัสวัตถุประสงค์
+            purpose_desc:"",//คำบรรยายวัตถุประสงค์
+            case_desc:"",//ใช้ในกรณี
+            case_desc_other: "",
+            location:"",//สถานที่ใช้งาน 
+            building_id:"",//รหัสตึก
+            floor:"",//ชั้นที่
+            description:"",//รายละเอียด  
+            created_by: auth.username, //ผู้ทำรายการ
+            modified_by:"",//ผู้แก้ไขรายการ
+            purpose_other: ""
+        }
+
+        modalAdd.value = true
+    }
 
     const statusSearch = ref('')
     const statusList = ref([{
@@ -719,6 +781,8 @@
         dataApprove.value.ReqID = id
         const data = await getApi(`/hd/request/GetDocSet?req_id=${id}`)
         form.value = data.requestHead
+
+        await fetchFloor(form.value.building_id)
         if(approve || form.value.status == 'รออนุมัติ(ผอ.ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติการขอดู CCTV (ทส.)' && g.isInGroup === true)) {
 
             modalApprove.value = true;
@@ -731,6 +795,8 @@
     
     const closeModal = () => {
         form.value = templateEmpty
+
+        floors.value = []
     }
 
     const updateCase = (value) => {
