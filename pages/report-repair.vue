@@ -173,6 +173,7 @@
                                 class="mb-2" 
                                 :ui="{container: 'flex items-center h-6', base: 'h-5 w-5 dark:checked:bg-current dark:checked:border-transparent dark:indeterminate:bg-current dark:indeterminate:border-transparent disabled:opacity-50 disabled:cursor-not-allowed focus:ring-0 focus:ring-transparent focus:ring-offset-transparent'}"
                                 v-for="(service, index) in form.services"
+                                :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"
                             />
                         </div>
                     </UFormGroup>
@@ -241,6 +242,19 @@
                     <UFormGroup label="อาการเสีย/ปัญหา" name="dCenter" size="md" class="mb-4">
                         <UTextarea :rows="4" v-model="form.description" required :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"/>
                     </UFormGroup>
+                    <div class="grid grid-cols-2 gap-8 mb-4" >
+                        <UFormGroup v-if="form.result_report" label="ผลการแก้ไข" name="dCenter" size="md">
+                            {{ form.result_report }}
+                        </UFormGroup>
+                        <UFormGroup v-if="form.fix_by" label="ผู้ซ่อม" name="dCenter" size="md">
+                            {{ form.result_report }}
+                        </UFormGroup>
+
+
+
+                    </div>
+
+                 
 
                     <UFormGroup label="ผู้ปรับปรุงข้อมูลล่าสุด" name="dCenter" size="md" class="mb-4">
                         <UInput v-model="form.modified_by" disabled/>
@@ -322,6 +336,7 @@
                         {{ form.description }}
                     </UFormGroup>
 
+                  
                     <div v-if="form.status === 'ปฏิเสธจากหน่วยงาน'" class="text-red-600">
                         <h3 class="font-bold leading-6 text-xl mb-2 ">เหตุผลการปฏิเสธ</h3>
                         <div>{{ form.status1_reason || form.status2_reason }}</div>
@@ -377,7 +392,7 @@
                         <UFormGroup label="ซ่อมโดย" name="ActiondBy" size="xl" class="mb-4">
                             <UInput v-model="dataFinish.ActiondBy" placeholder="" required/>
                         </UFormGroup>
-                        <UFormGroup label="สาเหตุของอาการเสีย/ปัญหา" name="Result_report" size="xl" class="mb-4">
+                        <UFormGroup v-if="form.item_cate != '' && form.item_type != ''" label="ชิ้นส่วนที่เสีย" name="Result_report" size="xl" class="mb-4">
                             <USelect  size="xl"/>
                         </UFormGroup>
 
@@ -763,13 +778,14 @@
     const fetchEditData = async (id, approve = false, view = false) => {
         dataApprove.value.ReqID = id
         dataFinish.value.ReqID = id
-
+        dataFinish.value.Result_report = ''
+        dataFinish.value.ActiondBy = ''
 
         
 
         const data = await getApi(`/hd/request/GetDocSet?req_id=${id}`)
         form.value = data.requestHead
-
+        
        
         
         await fetchTypeItems(form.value.item_cate)
@@ -872,6 +888,9 @@
             created_by:auth.username, //ผู้ทำรายการ
             modified_by:auth.username//ผู้แก้ไขรายการ
         }
+
+
+
     }
 
     const submit = async () => {

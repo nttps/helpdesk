@@ -1,5 +1,13 @@
 <template>
-    <SettingsCCTV type="case" @add="modalAdd = true"  v-model="search">
+    <div>
+        <PartialsTitle title="แจ้งปัญหา" url-back="/settings/report-repair" :text-button="`เพิ่มชื้นส่วน`" title-breadcrum="ชื้นส่วน" @add="modalAdd = true" :priority="false" />
+        <div class="mt-8">
+            <div class="search-bar flex justify-center items-center mb-2">
+                <div class="min-w-3xl w-96">
+                    <UInput placeholder="ค้นหา" v-model="search" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
+                </div>
+                <UButton icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray"/>
+            </div>
 
             <UTable 
                 v-model="selected" 
@@ -39,8 +47,8 @@
                   :total="lists.total" 
                 />
             </div>
-           
-    </SettingsCCTV>
+        </div>
+    </div>
 
     <UModal v-model="modalAdd"  :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}" @close="closeModal">
         <UForm :state="form" :schema="schema" @submit="submit">
@@ -79,7 +87,7 @@
                 </UFormGroup>
 
                 <UFormGroup label="ชิ้นส่วน" name="description1" size="xl">
-                    <UTextarea v-model="form.description1" placeholder="" autoresize :rows="8" />
+                    <UInput v-model="form.description1" placeholder="" autoresize :rows="8" />
                 </UFormGroup>
                 
                 <template #footer>

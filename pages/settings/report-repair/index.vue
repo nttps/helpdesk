@@ -13,11 +13,11 @@
                     <div class="mt-2">ช่องทางติดต่อ</div>
                 </NuxtLink>
                 <NuxtLink to="/settings/report-repair/service" class="p-6 text-center border rounded-xl w-1/6">
-                    <Icon name="i-ri-ticket-fill" size="80" color="gray" />
-                    <div class="mt-2">บริการ</div>
+                    <Icon name="i-eos-icons:service" size="80" color="gray" />
+                    <div class="mt-2">บริการแจ้งปัญหา</div>
                 </NuxtLink>
                 <NuxtLink to="/settings/report-repair/reason" class="p-6 text-center border rounded-xl w-1/6">
-                    <Icon name="i-material-symbols:floor" size="80" color="gray" />
+                    <Icon name="i-streamline:interface-setting-cog-work-loading-cog-gear-settings-machine" size="80" color="gray" />
                     <div class="mt-2">ชิ้นส่วน</div>
                 </NuxtLink>
             </div>
