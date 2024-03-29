@@ -48,21 +48,21 @@
                 <template #header>
                     <div class="flex items-center justify-between">
                         <h3 class="text-xl text-center font-bold leading-6 text-gray-900 dark:text-white">
-                            เพิ่มสาเหตุของอาการเสีย/ปัญหา
+                            เพิ่มชื้นส่วน
                         </h3>
                         <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalAdd = false" />
                     </div>
                 </template>
 
-                <UFormGroup label="ประเภท" name="parentValue" size="xl" class="mb-2">
+                <UFormGroup label="หมวดหมู่" name="parentValue" size="xl" class="mb-2">
                     <USelectMenu 
                         v-model="form.parentValue"
                         :options="categories" 
                         value-attribute="valueTXT" 
                         option-attribute="description1" 
-                        placeholder="ประเภท" 
+                        placeholder="หมวดหมู่" 
                         searchable
-                        searchable-placeholder="ค้นหาประเภท"
+                        searchable-placeholder="ค้นหาหมวดหมู่"
                     />
                 </UFormGroup>
 
@@ -78,7 +78,7 @@
                     />
                 </UFormGroup>
 
-                <UFormGroup label="กรณี" name="description1" size="xl">
+                <UFormGroup label="ชิ้นส่วน" name="description1" size="xl">
                     <UTextarea v-model="form.description1" placeholder="" autoresize :rows="8" />
                 </UFormGroup>
                 

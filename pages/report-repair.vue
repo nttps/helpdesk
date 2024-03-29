@@ -205,17 +205,7 @@
                                 @update:model-value="fetchInventory"
                                 searchable-placeholder="ค้นหาประเภท"
                                 :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.item_cate == 'อื่น ๆ'"
-                            >
-                                <template #label>
-                                    <template v-if="form.item_id">
-                                        {{ itemSelect(form.item_id)?.serial_number || 'ไม่มี Serial Number'}} - {{ itemSelect(form.item_id)?.item_name}} 
-                                    </template>
-                                </template> 
-
-                                </USelectMenu>
-
-                            
-
+                            />
                         </UFormGroup>
                        
                         <UFormGroup label="อุปกรณ์" name="item_id" size="md">
