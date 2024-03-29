@@ -202,10 +202,18 @@
                                 option-attribute="description1" 
                                 placeholder="เลือกประเภท" 
                                 searchable
-                                @update:model-value="refreshInventory"
+                                @update:model-value="fetchInventory"
                                 searchable-placeholder="ค้นหาประเภท"
                                 :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.item_cate == 'อื่น ๆ'"
-                            /> 
+                            >
+                                <template #label>
+                                    <template v-if="form.item_id">
+                                        {{ itemSelect(form.item_id)?.serial_number || 'ไม่มี Serial Number'}} - {{ itemSelect(form.item_id)?.item_name}} 
+                                    </template>
+                                </template> 
+
+                                </USelectMenu>
+
                             
 
                         </UFormGroup>
@@ -376,9 +384,13 @@
                         <div class="text-center">แจ้งเตือนการยืนยัน</div>
                     </template>
                     <div>
-                        <UFormGroup label="ซ่อมโดย" name="ActiondBy" size="xl">
-                            <UTextarea v-model="dataFinish.ActiondBy" placeholder="" required/>
+                        <UFormGroup label="ซ่อมโดย" name="ActiondBy" size="xl" class="mb-4">
+                            <UInput v-model="dataFinish.ActiondBy" placeholder="" required/>
                         </UFormGroup>
+                        <UFormGroup label="สาเหตุของอาการเสีย/ปัญหา" name="Result_report" size="xl" class="mb-4">
+                            <USelect  size="xl"/>
+                        </UFormGroup>
+
                         <UFormGroup label="ผลการแก้ไข" name="Result_report" size="xl">
                             <UTextarea v-model="dataFinish.Result_report" placeholder="" required/>
                         </UFormGroup>

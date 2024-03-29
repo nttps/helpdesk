@@ -16,6 +16,10 @@
                     <Icon name="i-ri-ticket-fill" size="80" color="gray" />
                     <div class="mt-2">บริการ</div>
                 </NuxtLink>
+                <NuxtLink to="/settings/report-repair/reason" class="p-6 text-center border rounded-xl w-1/6">
+                    <Icon name="i-material-symbols:floor" size="80" color="gray" />
+                    <div class="mt-2">ชิ้นส่วน</div>
+                </NuxtLink>
             </div>
         </div>
        

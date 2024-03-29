@@ -20,6 +20,7 @@
                     <Icon name="i-material-symbols:floor" size="80" color="gray" />
                     <div class="mt-2">ชั้น</div>
                 </NuxtLink>
+                
             </div>
         </div>
        
