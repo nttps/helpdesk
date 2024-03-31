@@ -220,8 +220,9 @@
     })
     const searchYear = ref('2567')
     const { isAdmin } = useAuthStore()
+    const auth = useAuthStore()
     const { data: dashboard, pending: pendingDashboard } = await useAsyncData('dashboard', async () => {
-        return getApi(`/hd/DashBoardHD/GetBoard01Data?year=${searchYear.value}`)
+        return getApi(`/hd/DashBoardHD/GetBoard01Data?year=${searchYear.value}&user=${auth.username}`)
     }, {
         default: () => [],
         watch: [searchYear]
@@ -575,7 +576,7 @@
             showInLegend: true
         }] 
     })
-    const auth = useAuthStore()
+   
 
     const tabItems = [{
         label: 'แจ้งปัญหา',
