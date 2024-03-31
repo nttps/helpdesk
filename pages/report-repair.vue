@@ -38,6 +38,7 @@
                 :loading="pending" 
                 :loading-state="{ label: 'กำลังโหลด ...' }" 
                 :empty-state="{ label: 'ไม่พบรายการ' }"
+                :ui="{ td: { base: 'whitespace-normal' }}"
             > 
 
                 <template #id-data="{ row, index }">
@@ -512,6 +513,9 @@
     }, {
         key: 'description',
         label: 'ความเสีย/ปัญหา'
+    }, {
+        key: 'item_desc',
+        label: 'รายการขอรับบริการ'
     }, {
         key: 'req_by_user_id',
         label: 'ผู้แจ้ง'
