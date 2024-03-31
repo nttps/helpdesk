@@ -53,6 +53,29 @@ export const getListItems = async (search, status, type = '', cate = '') => {
     }
 };
 
+export const getSpares = async (search, type = "", cate = "") => {
+    var raw = JSON.stringify({
+        SearchText: search, //ค้นหาใน cate_name ,description ,ค่าว่างค้นหาทั้งหมด
+        Type: type, //ประเภท ส่งค่าจาก dropdown  ที่มากจาก masterTypeID =HD_ITEMTYPE
+        Cate: cate, //ประเภท ส่งค่าจาก dropdown  ที่มากจาก masterTypeID =HD_ITEMTYPE
+    });
+
+    var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+    };
+
+    try {
+        const response = await fetch(
+            `${config.public.apiUrl}/hd/spare/ListData`,
+            requestOptions
+        );
+        return await response.json();
+    } catch (error) {
+        return error;
+    }
+};
 
 export const getListCCTV = async (search, dataBegin, dateEnd, status) => {
     var raw = JSON.stringify({

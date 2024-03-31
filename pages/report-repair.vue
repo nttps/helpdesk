@@ -242,10 +242,14 @@
                     <UFormGroup label="อาการเสีย/ปัญหา" name="dCenter" size="md" class="mb-4">
                         <UTextarea :rows="4" v-model="form.description" required :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"/>
                     </UFormGroup>
-                    <div class="grid grid-cols-2 gap-8 mb-4" >
+                    <div class="grid grid-cols-3 gap-8 mb-4" >
                         <UFormGroup v-if="form.result_report" label="ผลการแก้ไข" name="dCenter" size="md">
                             {{ form.result_report }}
                         </UFormGroup>
+                        <UFormGroup  v-if="form.spare_name"  label="ชิ้นส่วน" name="Result_report" size="md">
+                           {{ form.spare_name }}
+                        </UFormGroup>
+
                         <UFormGroup v-if="form.fix_by" label="ผู้ซ่อม" name="dCenter" size="md">
                             {{ form.result_report }}
                         </UFormGroup>
@@ -393,9 +397,15 @@
                             <UInput v-model="dataFinish.ActiondBy" placeholder="" required/>
                         </UFormGroup>
                         <UFormGroup v-if="form.item_cate != '' && form.item_type != ''" label="ชิ้นส่วนที่เสีย" name="Result_report" size="xl" class="mb-4">
-                            <USelect  size="xl"/>
+                            <USelectMenu
+                                v-model="dataFinish.SpareID"
+                                value-attribute="spare_id" 
+                                option-attribute="spare_name" 
+                                searchable
+                                searchable-placeholder="เลือกอุปกรณ์โดย Serial Number"
+                                :options="spares"  size="xl"
+                            />
                         </UFormGroup>
-
                         <UFormGroup label="ผลการแก้ไข" name="Result_report" size="xl">
                             <UTextarea v-model="dataFinish.Result_report" placeholder="" required/>
                         </UFormGroup>
@@ -672,6 +682,7 @@
 
     const dataFinish = ref({
         ReqID:"",  
+        SpareID: "",
         ActiondBy:"",//อนุมัติหรือปฏิเสธโดย
         Result_report:""//เหตุผลการไม่อนุมัติ ถ้าอนุมัติไม่ต้องใส่
     })
@@ -754,6 +765,7 @@
 
     const itemsType = ref([])
     const itemsCate = ref([])
+    const spares = ref([])
 
     const inventoryitems = ref([])
     const itemSelect = (value) => {
@@ -780,17 +792,22 @@
         dataFinish.value.ReqID = id
         dataFinish.value.Result_report = ''
         dataFinish.value.ActiondBy = ''
+      
+        
 
         
 
         const data = await getApi(`/hd/request/GetDocSet?req_id=${id}`)
         form.value = data.requestHead
+        dataFinish.value.SpareID = data.requestHead.fix_spare_id
         
        
         
         await fetchTypeItems(form.value.item_cate)
 
         await fetchInventory()
+
+        await fetchSpares()
         
         form.value.services = data.requestService.map(service => {
             return {
@@ -842,6 +859,10 @@
         inventoryitems.value = await getListItems('', '', form.value.item_type, form.value.item_cate)
     }
    
+    const fetchSpares = async () => {
+        spares.value = await getSpares('', form.value.item_type, form.value.item_cate)
+    }
+    
   
     const fetchTypeService = async () => {
         servicesType.value = await getMasterType(`HD_SERVICE_TYPE`, '')

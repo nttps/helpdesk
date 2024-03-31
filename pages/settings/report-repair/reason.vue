@@ -1,14 +1,23 @@
 <template>
     <div>
-        <PartialsTitle title="แจ้งปัญหา" url-back="/settings/report-repair" :text-button="`เพิ่มชื้นส่วน`" title-breadcrum="ชื้นส่วน" @add="modalAdd = true" :priority="false" />
+        <PartialsTitle title="ชิ้นส่วน" no-add />
         <div class="mt-8">
-            <div class="search-bar flex justify-center items-center mb-2">
-                <div class="min-w-3xl w-96">
-                    <UInput placeholder="ค้นหา" v-model="search" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
+            <div class="search-bar flex items-center justify-between mb-2">
+                <div class="flex space-x-3">
+                    <UInput placeholder="ค้นหาจากชื่อชิ้นส่วน" v-model="search" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
+                    <USelect placeholder="ค้นหาจากสถานะ" :options="['ทั้งหมด', 'ว่าง', 'ไม่ว่าง']" v-model="searchStatus"  size="xl"/>
                 </div>
-                <UButton icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray"/>
+                <div>
+                    <UButton
+                        icon="i-heroicons-plus-20-solid"
+                        size="md"
+                        variant="solid"
+                        label="ชิ้นส่วน"
+                        :trailing="false"
+                        @click="addItem"
+                    />
+                </div>
             </div>
-
             <UTable 
                 v-model="selected" 
                 :columns="columns" 
@@ -17,14 +26,23 @@
                 :loading-state="{ label: 'กำลังโหลด ...' }" 
                 :empty-state="{ label: 'ไม่พบรายการ' }"
             > 
-
-                <template #id-data="{ row, index }">
-                    <div >{{  index + 1 }}</div>
+                <template #is_in_warranty-data="{ row }">
+                    <div class="text-center">
+                        <UBadge size="xs" :label="row.is_in_warranty ? 'อยู่ในประกัน' : 'ไม่อยู่ในประกัน'" :color="row.is_in_warranty ? 'emerald' : 'red'" variant="subtle" />
+                    </div>
                 </template>
-
+                <template #status-data="{ row }">
+                    <div class="text-center">
+                        <UBadge size="xs" :label="row.status" :color="row.status === 'ว่าง' ? 'emerald' : 'red'" variant="solid" />
+                    </div>
+                </template>
+                
+                <template #id-data="{ row, index }">
+                    <div class="text-center">{{  index + 1 }}</div>
+                </template>
                 <template #actions-data="{ row }">
-                    <UButton color="amber" variant="ghost" icon="i-heroicons-pencil-solid" @click="fetchEditData(row.valueTXT)" />
-                    <UButton color="red" variant="ghost" icon="i-heroicons-trash-20-solid" @click="modelDeleteConfirm = true; itemDelete = row.valueTXT" />
+                    <UButton color="amber" variant="ghost" icon="i-heroicons-pencil-solid" @click="fetchEditData(row.item_id)"/>
+                    <UButton color="red" variant="ghost" icon="i-heroicons-trash-20-solid" @click="modelDeleteConfirm = true; itemDelete = row.item_id" />
                 </template>
             </UTable>
             <div class="flex flex-wrap justify-between items-center px-3 pt-3.5">
@@ -40,7 +58,6 @@
                   </span>
                 </div>
 
-
                 <UPagination 
                   v-model="page" 
                   :page-count="pageCount" 
@@ -50,50 +67,51 @@
         </div>
     </div>
 
-    <UModal v-model="modalAdd"  :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}" @close="closeModal">
-        <UForm :state="form" :schema="schema" @submit="submit">
+    <UModal v-model="modalAdd" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
+        <UForm :state="form" @submit="submit">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
                     <div class="flex items-center justify-between">
-                        <h3 class="text-xl text-center font-bold leading-6 text-gray-900 dark:text-white">
-                            เพิ่มชื้นส่วน
+                        <h3 class="text-2xl text-center font-bold leading-6 text-gray-900 dark:text-white">
+                            คลังชิ้นส่วน
                         </h3>
                         <UButton color="yellow" variant="link" icon="i-heroicons-x-mark-20-solid" size="xl" class="-my-1" @click="modalAdd = false" />
                     </div>
                 </template>
 
-                <UFormGroup label="หมวดหมู่" name="parentValue" size="xl" class="mb-2">
+                <UFormGroup label="หมวดหมู่" name="item_type" size="xl" class="mb-4">
                     <USelectMenu 
-                        v-model="form.parentValue"
-                        :options="categories" 
+                        :options="itemsCate" 
+                        placeholder="เลือกหมวดหมู่" 
+                        size="xl"
+                        v-model="form.spare_cate"
                         value-attribute="valueTXT" 
                         option-attribute="description1" 
-                        placeholder="หมวดหมู่" 
+                        @update:model-value="getItemType"
                         searchable
-                        searchable-placeholder="ค้นหาหมวดหมู่"
+                        searchable-placeholder="ค้นหาประเภทชิ้นส่วน"
                     />
                 </UFormGroup>
-
-                <UFormGroup label="ประเภท" name="parentValue" size="xl" class="mb-2">
+                <UFormGroup label="ประเภทชิ้นส่วน" name="item_type" size="xl" class="mb-4" >
                     <USelectMenu 
-                        v-model="form.parentValue"
-                        :options="categories" 
+                        :options="itemsType" 
+                        placeholder="เลือกประเภทชิ้นส่วน" 
+                        size="xl"
+                        v-model="form.spare_type"
                         value-attribute="valueTXT" 
                         option-attribute="description1" 
-                        placeholder="ประเภท" 
                         searchable
-                        searchable-placeholder="ค้นหาประเภท"
+                        searchable-placeholder="ค้นหาประเภทชิ้นส่วน"
                     />
-                </UFormGroup>
-
-                <UFormGroup label="ชิ้นส่วน" name="description1" size="xl">
-                    <UInput v-model="form.description1" placeholder="" autoresize :rows="8" />
                 </UFormGroup>
                 
+                <UFormGroup label="ชื้นส่วน" name="brand" size="xl" class="mb-4">
+                    <UInput v-model="form.spare_name" placeholder="" />
+                </UFormGroup>
                 <template #footer>
-                    <div class="flex items-center justify-end space-x-2">
+                    <div class="flex items-center justify-end">
                         <UButton color="amber" label="บันทึก" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
-                        <UButton color="gray" @click="modalAdd = false; closeModal()" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                        <UButton color="gray" @click="modalAdd = false" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
             </UCard>
@@ -118,122 +136,141 @@
     </UModal>
 </template>
 
-
 <script setup>
+    import moment from 'moment'
+    moment.locale('th')
+    const modalAdd = ref(false)
 
-    import { object, string } from 'yup'
     definePageMeta({
         middleware: ["auth"]
     })
     const auth = useAuthStore();
-
-
+    const modelDeleteConfirm = ref(false)
     const columns = [{
         key: 'id',
-        label: 'ลำดับที่'
+        label: 'ลำดับที่',
+        class: 'text-center'
     }, {
-        key: 'description1',
-        label: 'รายการ'
+        key: 'spare_cate_desc',
+        label: 'หมวดหมู่'
+    }, {
+        key: 'spare_type_desc',
+        label: 'ประเภท'
+    }, {
+        key: 'spare_name',
+        label: 'ชิ้นส่วน'
     }, {
         key: 'actions'
     }]
 
-    const search = ref('')
     const page = ref(1)
     const pageCount = ref(20)
-    
-    const selected = ref([])
     const pageTotal = computed(() => lists.value.total)
     const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
     const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
-    
-    const modelDeleteConfirm = ref(false)
-    const itemDelete = ref(null)
+    const selected = ref([])
+    const search = ref('')
+    const searchStatus = ref('ทั้งหมด')
    
+    const itemsType = ref()
+    const itemsCate = ref()
+
+
+    onMounted(() => {
+        getItemCate()
+    })
+    
+    const getItemType = async (cate) => {
+        const res = await getMasterType('HD_ITEMTYPE', '', cate)
+        itemsType.value = res
+    }
+
+    const getItemCate = async () => {
+        const res = await getMasterType('HD_ITEMCATE', '', '')
+        itemsCate.value = res
+    }
+
     const { data: lists, pending, refresh } = await useAsyncData(
         'lists',
         async () => {
-            const data = await getMasterType(`HD_CCTV_REASON`, search.value)
+            const data = await getSpares(search.value)
 
-            if(search.value !== ''  && page.value > 1 ) {
+            if( search.value !== ''  && page.value > 1) {
                 page.value = 1
             }
+
+            console.log(data);
             return {
                 total: data.length,
                 data: data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
             }
         }, {
-            watch: [page, search, pageCount]
+            watch: [page, search, pageCount, searchStatus]
         }
     )
 
-    const modalAdd = ref(false)
-    const form = ref({
-        MasterTypeID: "HD_CCTV_REASON",
-        ValueTXT: `CCTV_REASON_${Math.random().toString(16).slice(2)}`,
-        description1: "", 
-        description2: "",
-        parentID: "HD_ITEMTYPE",
-        parentValue: ""
-    })
-
-    const fetchEditData = async (value) => {
-        const data = await postApi(`/MasterType/GetValue`, {
-            MasterTypeID:"HD_CCTV_REASON",
-            Value: value
-
-        })
-        form.value = data
-        modalAdd.value = true; 
+    const empty = {
+        spare_id:"",//กรณีเพิ่มใหม่ให้ปล่อยว่างถ้า แก้ไขให้ใส่รหัสอะไหล่ที่ต้องการ update
+        spare_ref:"",//รหัสอ้างอิง ใช้แทนรหัสอะไหล่
+        spare_name:"",//ชื่ออะไหล่
+        spare_cate:"",//หมวดอุปกรณ์
+        spare_type:"",// ประเภท ส่งค่าจาก dropdown  ที่มากจาก masterTypeID =HD_ITEMTYPE
+        brand:"",//ยี่ห้ออะไหล่
+        model:"",//รุ่น
+        serial_number:"",
+        remark:"",  
+        created_by: auth.username,//current user login 
+        modified_by:""//current user login กรณีที่ต้องการแก้ไข
     }
 
+    const form = ref(empty)
 
-    const closeModal = () => {
+    const addItem = () => {
         form.value = {
-            MasterTypeID: "HD_CCTV_REASON",
-            ValueTXT: `CCTV_REASON_${Math.random().toString(16).slice(2)}`,
-            description1: "",
-            description2: "",
-            parentID: "HD_ITEMTYPE",
-            parentValue: ""
+            spare_id:"",//กรณีเพิ่มใหม่ให้ปล่อยว่างถ้า แก้ไขให้ใส่รหัสอะไหล่ที่ต้องการ update
+            spare_ref:"",//รหัสอ้างอิง ใช้แทนรหัสอะไหล่
+            spare_name:"",//ชื่ออะไหล่
+            spare_cate:"",//หมวดอุปกรณ์
+            spare_type:"",// ประเภท ส่งค่าจาก dropdown  ที่มากจาก masterTypeID =HD_ITEMTYPE
+            brand:"",//ยี่ห้ออะไหล่
+            model:"",//รุ่น
+            serial_number:"",
+            remark:"",  
+            created_by: auth.username,//current user login 
+            modified_by:""//current user login กรณีที่ต้องการแก้ไข
         }
+        modalAdd.value = true
     }
 
-    const schema = object({
-        description1: string().required('กรอกรายละเอียดกรณี'),
-    })
+    const fetchEditData = async (id) => {
+        const data = await getApi(`/hd/spare/GetDocSet?item_id=${id}`)
+        form.value = data.itemInfo
+        await getItemType(form.value.item_cate)
 
+        modalAdd.value = true
+    }
 
     const submit = async () => {
-        const res = await addMasterType(form.value)
+        const res = await postApi('/hd/spare/Save', form.value)
 
         if(res.outputAction.result === 'ok') {
-            modalAdd.value = false
-
-            form.value = {
-                MasterTypeID: "HD_CCTV_REASON",
-                ValueTXT: `CCTV_REASON_${Math.random().toString(16).slice(2)}`,
-                description1: "", 
-                description2: "",
-                parentID: "HD_ITEMTYPE",
-                parentValue: ""
-            }
             refresh()
         }
+        modalAdd.value = false
     }
 
+    const itemDelete = ref()
     const deleteItem = async () => {
-        const res = await deleteMasterType({
-            MasterTypeID:"HD_CCTV_REASON",
-            Value: itemDelete.value,
-            DeletedBy: auth.username
+        const res = await deleteApi('/hd/spare/DeleteDoc', {
+            ItemID: itemDelete.value,//รหัสสินค้า
+            DeletedBy:auth.username//current user login
         })
 
         modelDeleteConfirm.value = false
-
         refresh()
     }
-
-    
-  
 </script>
+
+<style lang="scss" scoped>
+
+</style>
