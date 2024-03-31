@@ -5,7 +5,6 @@
             <div class="search-bar flex items-center justify-between mb-2">
                 <div class="flex space-x-3">
                     <UInput placeholder="ค้นหาจากชื่อชิ้นส่วน" v-model="search" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
-                    <USelect placeholder="ค้นหาจากสถานะ" :options="['ทั้งหมด', 'ว่าง', 'ไม่ว่าง']" v-model="searchStatus"  size="xl"/>
                 </div>
                 <div>
                     <UButton
