@@ -145,13 +145,13 @@
 
         switch (noti.noti_type) {
             case 'ยืมพัสดุ':
-                url = '/borrow'
+                url = 'borrow'
                 break;
             case 'แจ้งซ่อม':
-                url = '/report-repair'
+                url = 'report-repair'
                 break;
             case 'cctv':
-                url = '/cctv'
+                url = 'cctv'
                 break;
             default:
                 break;
