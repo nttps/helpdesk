@@ -115,6 +115,7 @@
 
 <script setup>
     const authStore = useAuthStore();
+    const config = useRuntimeConfig()
 
     const logout = () => {
         authStore.logout()
@@ -155,6 +156,6 @@
             default:
                 break;
         }
-        return `${url}?read_id=${noti.key_check}`
+        return `${config.app.baseURL}${url}?read_id=${noti.key_check}`
     }
 </script>
