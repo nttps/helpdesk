@@ -1,3 +1,5 @@
+
+
 export const useNotifyStore = defineStore("auth-notify", {
     state: () => ({
         lists: [],
@@ -16,6 +18,14 @@ export const useNotifyStore = defineStore("auth-notify", {
             );
 
             this.lists = res;
+        },
+        async readNotiyAll() {
+            const authStore = useAuthStore();
+            const res = await getApi(
+                `/hd/request/SetReadNotify?user=${authStore.username}`
+            );
+
+            this.fetchNotify();
         },
     },
     persist: {

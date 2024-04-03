@@ -33,6 +33,7 @@
     const config = useRuntimeConfig();
     const user = useAuthStore();
     const pageCount = ref(10)
+    const noti = useNotifyStore()
 
 
     const notificationRows = computed(() => {
@@ -45,8 +46,7 @@
 
     const markRead = async () => {
 
-        const res = await getApi(`/hd/request/SetReadNotify?user=${user.user.currentUser}`)
-        emit('refresh')
+        noti.readNotiyAll()
     }
 
    
