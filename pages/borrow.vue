@@ -16,8 +16,11 @@
                     <UInput v-model="textSearch" placeholder="ค้นหาจากชื่อผู้ยืม, เบอร์โทรศัพท์" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
                 </div>
             </div>
-            <div class="flex items-center justify-end space-x-2">
-                <div>
+            <div class="flex items-center justify-between space-x-2">
+                <div class="text-red-600">
+                    *การอนุมัติหลายรายการสามารถทำได้เฉพาะรายการที่เป็น สถานะ <span class="font-bold">รออนุมัติหน่วยงาน</span> และ <span class="font-bold">รอ ผอ. ตรวจสอบ</span> เท่านั้น
+                </div>
+                <div class="flex items-center text-right">
                     <UButton
                         icon="i-heroicons-plus-20-solid"
                         size="sm"
@@ -38,19 +41,26 @@
                         :trailing="false"
                         @click="rejectHandle"
                     /> -->
+                    <UButton icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray" @click="exportFile"/>
                 </div>
-                <UButton icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray" @click="exportFile"/>
+               
             </div>
             <UTable 
-                v-model="selectedRows" 
                 :columns="columns" 
                 :rows="lists.data" 
                 :loading="pending" 
                 :loading-state="{ label: 'กำลังโหลด ...' }" 
                 :empty-state="{ label: 'ไม่พบรายการ' }"
-                @update:model-value="updateSelected"
-                by="req_id"
             > 
+
+                <template #checkbox-header="{ row, index }">
+                    <UCheckbox :model-value="indeterminate || selectedRows.length === lists.data.length" :indeterminate="indeterminate" aria-label="Select all" @change="onChange" />
+                </template>
+          
+                <template #checkbox-data="{ row, index }">
+                    <UCheckbox v-if="row.status === 'รออนุมัติหน่วยงาน' || row.status === 'รอ ผอ.ทส.ตรวจสอบ'" v-model="selectedRows" :value="row" aria-label="Select row" @click.stop />
+                </template>
+
                 <template #id-data="{ row, index }">
                     <div >{{ pageFrom + index }}</div>
                 </template>
@@ -111,7 +121,7 @@
 
     </div>
 
-    <UModal v-model="modalAdd" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}" @close="closeModal">
+    <UModal v-model="modalAdd" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
         <UForm :state="form" @submit="submitRequest">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
@@ -146,7 +156,7 @@
         </UForm>
     </UModal>
 
-    <UModal v-model="modalApprove" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}" @close="closeModal">
+    <UModal v-model="modalApprove" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
         <UForm :state="form" @submit="submitRequest">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
@@ -169,14 +179,7 @@
                         <div>{{ form.status1_reason || form.status2_reason }}</div>
                     </div>
                     <FormBorrow :form="form" :auth="auth" @addItem="addItem" />
-
-                    
-                    
-
                 </div>
-                
-             
-
                 <template #footer v-if="form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)' || form.status == 'รอ ผอ.ทส.ตรวจสอบ'">
                     <div class="flex items-center justify-end space-x-4" >
                         <UButton color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
@@ -217,7 +220,7 @@
     </UModal>
 
 
-    <UModal v-model="modalReturn" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}" @close="closeModal">
+    <UModal v-model="modalReturn" :ui="{ width: 'sm:max-w-7xl', height: 'min-h-7xl'}">
         <UForm :state="form" @submit="modalConfirmReturn = true">
             <UCard :ui="{ base: 'px-8', ring: '', divide: 'divide-y divide-black dark:divide-black' }">
                 <template #header>
@@ -374,7 +377,7 @@
     <UModal v-model="modalPrint">
         <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
           <template #header>
-              <div class="text-center">Print รายละเอียด</div>
+              <div class="text-center">Print รายละเอียด</div>http://127.0.0.1:3000/report-repair
           </template>
 
           <div class="font-bold text-xl text-center">คุณต้องการยืนยันที่จะลบข้อมูลนี้ใช่หรือไม่</div>
@@ -518,6 +521,10 @@
     }
 
     const columns = [{
+        key: 'checkbox',
+        label: '',
+        sortable: false
+    },{
         key: 'id',
         label: 'ลำดับที่',
         sortable: false
@@ -653,7 +660,6 @@
      
     const approveHandle = () => {
 
-
         if(selectedRows.value.length === 0) {
             alertSelect.value = true
             return
@@ -661,18 +667,32 @@
         modalAlertApproveAll.value = true
     }
 
-
-
     const forDeletion = ['คืน', 'ปฏิเสธจาก(ทส.)', 'ปฏิเสธจากหน่วยงาน', 'ส่งมอบใช้งาน']
 
-    const updateSelected = (row) => {
-       
-        selectedRows.value = row
+    function compare(a, z) {
+        return a?.['req_id'] === z?.['req_id'];
+    }
+    function isSelected(row) {
+      return selectedRows.value.some((item) => compare(toRaw(item), toRaw(row)));
     }
 
-    const closeModal = () => {
-        
+    function selectAllRows() {
+        lists.value.data.filter(s => s.status === 'รออนุมัติหน่วยงาน' || s.status === 'รอ ผอ.ทส.ตรวจสอบ').forEach((row) => {
+            if (isSelected(row)) {
+                return;
+            }
+            selectedRows.value.push(row);
+        });
     }
+    function onChange(event) {
+      if (event.target.checked) {
+        selectAllRows();
+      } else {
+        selectedRows.value = [];
+      }
+    }
+
+    const indeterminate = computed(() => selectedRows.value && selectedRows.value.length > 0 && selectedRows.value.length < lists.value.data.length);
 
     onMounted(() => {
         countStatus()
@@ -684,8 +704,6 @@
             item_type: '',
 
         })
-
-        console.log(form.value.items);
     }
 
     const resetForm = () => {
