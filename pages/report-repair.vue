@@ -412,9 +412,14 @@
                                 value-attribute="spare_id" 
                                 option-attribute="spare_name" 
                                 searchable
-                                searchable-placeholder="เลือกอุปกรณ์โดย Serial Number"
+                                searchable-placeholder="เลือกชื้นส่วนที่เสียบ"
+                                
                                 :options="spares"  size="xl"
-                            />
+                            >
+                            <template #empty>
+                                <div class="text-red-600 text-cemter">ยังไม่มีชิ้นส่วนในหมวดหมู่ และประเภทอุปกรณ์นี้ กรุณาเพิ่มเติมข้อมูล</div>
+                            </template>
+                            </USelectMenu>
                         </UFormGroup>
                         <UFormGroup label="ผลการแก้ไข" name="Result_report" size="xl">
                             <UTextarea v-model="dataFinish.Result_report" placeholder="" required/>
