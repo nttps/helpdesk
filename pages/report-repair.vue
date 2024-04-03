@@ -412,7 +412,7 @@
                                 value-attribute="spare_id" 
                                 option-attribute="spare_name" 
                                 searchable
-                                searchable-placeholder="เลือกชื้นส่วนที่เสียบ"
+                                searchable-placeholder="เลือกชื้นส่วนที่เสีย"
                                 
                                 :options="spares"  size="xl"
                             >
