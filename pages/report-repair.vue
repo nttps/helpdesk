@@ -16,8 +16,11 @@
                     <UInput v-model="textSearch" placeholder="ค้นหาจากชื่อผู้แจ้ง, เบอร์โทรศัพท์" size="md" icon="i-heroicons-magnifying-glass-20-solid" />
                 </div>
             </div>
-            <div class="flex items-center justify-end space-x-2">
-                <div>
+            <div class="flex items-center justify-between space-x-2">
+                <div class="text-red-600">
+                    *การอนุมัติหลายรายการสามารถทำได้เฉพาะรายการที่เป็น สถานะ <span class="font-bold">รออนุมัติหน่วยงาน</span> และ <span class="font-bold">รอตรวจสอบ(ทส.)</span> เท่านั้น
+                </div>
+                <div class="text-right flex items-center">
                     <UButton
                         icon="i-heroicons-plus-20-solid"
                         size="sm"
@@ -28,11 +31,11 @@
                         @click="approveHandle"
                         v-if="auth.isNotUser"
                     />
+                    <UButton class="ml-auto" icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray" @click="exportFile"/>
                 </div>
-                <UButton class="ml-auto" icon="i-heroicons-printer-solid" :ui="{ icon: {size: { xl: 'w-10 h-10'}}}" square variant="link" size="xl" color="gray" @click="exportFile"/>
+                
             </div>
             <UTable 
-                v-model="selected" 
                 :columns="columns" 
                 :rows="lists.data" 
                 :loading="pending" 
@@ -40,7 +43,13 @@
                 :empty-state="{ label: 'ไม่พบรายการ' }"
                 :ui="{ td: { base: 'whitespace-normal' }}"
             > 
-
+                <template #checkbox-header="{ row, index }">
+                    <UCheckbox :model-value="indeterminate || selected.length === lists.data.length" :indeterminate="indeterminate" aria-label="Select all" @change="onChange" />
+                </template>
+          
+                <template #checkbox-data="{ row, index }">
+                    <UCheckbox v-if="(row.status == 'รออนุมัติหน่วยงาน' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติแจ้งซ่อมประจำหน่วยงาน' && g.isInGroup === true) ) || (row.status == 'รอตรวจสอบ(ทส.)' &&  auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบการแจ้งซ่อม(ทส.)'  && g.isInGroup === true))" v-model="selected" :value="row" aria-label="Select row" @click.stop />
+                </template>
                 <template #id-data="{ row, index }">
                     <div>{{ pageFrom + index }}</div>
                 </template>
@@ -499,6 +508,10 @@
    
 
     const columns = [{
+        key: 'checkbox',
+        label: '',
+        sortable: false
+    },{
         key: 'id',
         label: 'ลำดับที่'
     }, {
@@ -766,6 +779,33 @@
             watch: [page, pageCount, textSearch, statusSearch, auth]
         }
     )
+
+    
+    function compare(a, z) {
+        return a?.['req_id'] === z?.['req_id'];
+    }
+    function isSelected(row) {
+      return selected.value.some((item) => compare(toRaw(item), toRaw(row)));
+    }
+
+    function selectAllRows() {
+
+        lists.value.data.filter(s => s.status === 'รออนุมัติหน่วยงาน' || s.status === 'รอตรวจสอบ(ทส.)').forEach((row) => {
+            if (isSelected(row)) {
+                return;
+            }
+            selected.value.push(row);
+        });
+    }
+    function onChange(event) {http://127.0.0.1:3000/
+      if (event.target.checked) {
+        selectAllRows();
+      } else {
+        selected.value = [];
+      }
+    }
+
+    const indeterminate = computed(() => selected.value && selected.value.length > 0 && selected.value.length < lists.value.data.length);
 
     const itemsType = ref([])
     const itemsCate = ref([])

@@ -58,8 +58,9 @@
                 </template>
           
                 <template #checkbox-data="{ row, index }">
-                    <UCheckbox v-if="row.status === 'รออนุมัติหน่วยงาน' || row.status === 'รอ ผอ.ทส.ตรวจสอบ'" v-model="selectedRows" :value="row" aria-label="Select row" @click.stop />
+                    <UCheckbox v-if="(row.status == 'รออนุมัติหน่วยงาน' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติยืมพัสดุประจำหน่วยงาน' && g.isInGroup === true) || row.status == 'รอ ผอ.ทส.ตรวจสอบ' && auth.user.userInGroups.some(g => g.userGroupId === 'อนุมัติยืมโดย ผอ.ทส.' && g.isInGroup === true))" v-model="selectedRows" :value="row" aria-label="Select row" @click.stop />
                 </template>
+
 
                 <template #id-data="{ row, index }">
                     <div >{{ pageFrom + index }}</div>
