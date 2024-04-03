@@ -30,8 +30,6 @@
 <script setup>
     const props = defineProps(['notifications'])
     const emit = defineEmits(['refresh', 'clickTo'])
-    const config = useRuntimeConfig();
-    const user = useAuthStore();
     const pageCount = ref(10)
     const noti = useNotifyStore()
 
@@ -46,7 +44,7 @@
 
     const markRead = async () => {
 
-        noti.readNotiyAll()
+        await noti.readNotiyAll()
     }
 
    
