@@ -47,7 +47,7 @@
             <ul>
                 <li>
                     <button type="button" class="relative" @click="notificationBar = true" ref="buttonNotificationRef">
-                        <UChip :text="notifyCount" color="red" size="2xl" class="flex-col">
+                        <UChip :text="noti.unReadCount" color="red" size="2xl" class="flex-col">
                             <Icon name="material-symbols:notifications" size="40"/>
                             <div>แจ้งเตือน</div>
                         </UChip>
@@ -95,7 +95,7 @@
         </nav>
     </div>
     <USlideover v-model="notificationBar">
-        <Notification :notifications="notifications || []" @refresh="refresh" @clickTo="value => clickTo(value)"/>
+        <Notification :notifications="noti.lists || []" @refresh="refresh" @clickTo="value => clickTo(value)"/>
     </USlideover>
 
 </template>
@@ -116,6 +116,7 @@
 <script setup>
     const authStore = useAuthStore();
     const config = useRuntimeConfig()
+    const noti = useNotifyStore()
 
     const logout = () => {
         authStore.logout()
@@ -123,13 +124,11 @@
         navigateTo('/login')
     }
 
-     const notificationBar = ref(false)
+    const notificationBar = ref(false)
 
-    const { data: notifications, pending, refresh } = await useAsyncData('notifications', async () => await getApi(`/hd/request/ListNotify?user=${authStore.username}&isShowReaded=1`))
+    
 
-    const { data: notifyCount, refresh: refresgCount } = await useAsyncData('notifyCount', async () => await getApi(`/hd/request/CountNewNotify?user=${authStore.username}`))
-
-     const clickTo = (noti) => {
+    const clickTo = (noti) => {
 
         navigateTo(goToReq(noti), {
             replace: true,

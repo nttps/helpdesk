@@ -487,7 +487,7 @@
 
     const { read_id } = useRoute().query;
 
-
+    const { fetchNotify } = useNotifyStore()
      
     const modalApprove = ref(false)
     const modalConfirmApprove = ref(false)
@@ -935,7 +935,6 @@
         if(res.outputAction.result === 'ok') {
             refreshDataAll()
             users.value = []
-            
         }
 
         resetForm()
@@ -953,8 +952,6 @@
 
     const submitApprove = async () => {
         const res = await postApi('/hd/request/ApproveDocument', dataApprove.value)
-        console.log(res);
-
         modalConfirmApprove.value = false
         modalApprove.value = false
         refreshDataAll()
@@ -963,15 +960,16 @@
 
     const submitFinish = async () => {
         const res = await postApi('/hd/request/FinishRepair', dataFinish.value)
-
+        
         modalApprove.value = false
         modalFinish.value = false
         refreshDataAll()
     }
 
-    const refreshDataAll = () => {
+    const refreshDataAll = async () => {
         refresh()
         countStatus()
+        await fetchNotify()
     }
 
     const alertSelect = ref(false)
@@ -998,8 +996,7 @@
             modalAlertApproveAll.value = false
             const res = await postApi('/hd/request/ApproveDocument', dataApprove.value)
 
-            refresh()
-            countStatus()
+            refreshDataAll()
 
             selected.value = []
 

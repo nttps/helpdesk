@@ -39,6 +39,10 @@
       }
     ]
   })
+
+  const noti = useNotifyStore()
+
+  noti.fetchNotify()
 </script>
 
 

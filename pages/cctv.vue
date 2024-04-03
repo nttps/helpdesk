@@ -424,7 +424,7 @@
         middleware: ["auth"]
     })
     const { read_id } = useRoute().query;
-
+    const { fetchNotify } = useNotifyStore()
 
     onMounted(() =>{
         if(read_id) {
@@ -839,6 +839,7 @@
         if(res.outputAction.result === 'ok') {
             refresh()
             countStatus()
+            await fetchNotify()
         }
 
         modalAdd.value = false
@@ -859,7 +860,7 @@
         modalConfirmApprove.value = false
         modalApprove.value = false
 
-        
+        await fetchNotify()
         refresh()
         countStatus()
     }
@@ -877,6 +878,7 @@
 
         refresh()
         countStatus()
+        await fetchNotify()
 
         selected.value = []
     }
@@ -891,6 +893,7 @@
 
         refresh()
         countStatus()
+        await fetchNotify()
 
         selected.value = []
 

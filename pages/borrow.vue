@@ -449,6 +449,8 @@
     })
 
     const auth = useAuthStore();
+    const noti = useNotifyStore()
+        
     const { read_id } = useRoute().query;
 
 
@@ -832,6 +834,7 @@
         if(res.outputAction.result === 'ok') {
             refresh()
         }
+        noti.fetchNotify()
 
         modalAdd.value = false
     }
@@ -911,7 +914,7 @@
         }
 
         await postApi('/hd/request/ApproveDocument', dataApprove.value)
-
+        await noti.fetchNotify()
         modalConfirmApprove.value = false
         modalApprove.value = false
         refresh()
@@ -943,7 +946,7 @@
 
 
         const res = await postApi('/hd/request/SetReturn', dataReturn.value)
-
+        await noti.fetchNotify()
         modalReturn.value = false
         modalConfirmReturn.value = false
         refresh()

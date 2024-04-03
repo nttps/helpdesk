@@ -179,6 +179,8 @@ export const postApi = async (url, data) => {
             `${config.public.apiUrl}${url}`,
             requestOptions
         );
+
+        
         return await response.json();
     } catch (error) {
         return error;
