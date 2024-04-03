@@ -47,7 +47,7 @@
             <ul>
                 <li>
                     <button type="button" class="relative" @click="notificationBar = true" ref="buttonNotificationRef">
-                        <UChip :text="notifications.length" color="red" size="2xl" class="flex-col">
+                        <UChip :text="notifyCount" color="red" size="2xl" class="flex-col">
                             <Icon name="material-symbols:notifications" size="40"/>
                             <div>แจ้งเตือน</div>
                         </UChip>
@@ -125,8 +125,9 @@
 
      const notificationBar = ref(false)
 
-    const { data: notifications, pending, refresh } = await useAsyncData('notifications', async () => await getApi(`/hd/request/ListNotify?user=${authStore.username}&isShowReaded=0`))
+    const { data: notifications, pending, refresh } = await useAsyncData('notifications', async () => await getApi(`/hd/request/ListNotify?user=${authStore.username}&isShowReaded=1`))
 
+    const { data: notifyCount, refresh: refresgCount } = await useAsyncData('notifyCount', async () => await getApi(`/hd/request/CountNewNotify?user=${authStore.username}`))
 
      const clickTo = (noti) => {
 
