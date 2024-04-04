@@ -22,10 +22,19 @@ export const useNotifyStore = defineStore("auth-notify", {
         async readNotiyAll() {
             const authStore = useAuthStore();
             const res = await getApi(
-                `/hd/request/SetReadNotify?user=${authStore.username}`
+                `/hd/request/SetReadNotify?user=${authStore.username}&id=`
             );
 
             this.fetchNotify();
+        },
+        async readNotiyId(id) {
+            const res = await getApi(
+                `/hd/request/SetReadNotify?id=${id}`
+            );
+
+            const noti = this.lists.find(list => list.id === id)
+
+            noti.is_read = true;
         },
     },
     persist: {

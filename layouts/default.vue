@@ -41,8 +41,12 @@
   })
 
   const noti = useNotifyStore()
+  
+  await callOnce(async () => {
+     noti.fetchNotify()
+  })
 
-  noti.fetchNotify()
+ 
 </script>
 
 

@@ -95,7 +95,7 @@
         </nav>
     </div>
     <USlideover v-model="notificationBar">
-        <Notification :notifications="noti.lists || []" @refresh="refresh" @clickTo="value => clickTo(value)"/>
+        <Notification :notifications="noti.lists || []" @clickTo="value => clickTo(value)"/>
     </USlideover>
 
 </template>
@@ -128,10 +128,9 @@
 
     
 
-    const clickTo = (noti) => {
-
-        navigateTo(goToReq(noti), {
-            replace: true,
+    const clickTo = async (row) => {
+        await navigateTo(goToReq(row), {
+            //replace: true,
             external: true
         })
 
