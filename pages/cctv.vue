@@ -200,14 +200,14 @@
                         <div>
                            
                             <UFormGroup label="วัตถุประสงค์" class="mb-4" name="type" size="xl">
-                                <USelectMenu :options="objectiveSelect" searchable searchable-placeholder="ค้นหากรณี" value-attribute="description1" option-attribute="description1" v-model="form.purpose_desc" @update:model-value="updateObjective" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
+                                <USelectMenu :options="objectiveSelect" searchable searchable-placeholder="ค้นหากรณี" value-attribute="valueTXT" option-attribute="description1" v-model="form.purpose_desc" @update:model-value="updateObjective" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                                 
                             </UFormGroup>
                             <UFormGroup label="วัตถุประสงค์อื่น ๆ" class="mb-4" name="type" size="xl" v-if="form.purpose_desc === 'วัตถุประสงค์อื่น ๆ'">
                                 <UInput v-model="form.purpose_other" placeholder="กรอกวัตถุประสงค์" size="xl" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                             </UFormGroup>
                             <UFormGroup label="กรณี" name="type" size="xl">
-                                <USelectMenu :options="caseSelect" searchable searchable-placeholder="ค้นหากรณี" value-attribute="description1" option-attribute="description1" v-model="form.case_desc" @update:model-value="updateCase" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
+                                <USelectMenu :options="caseSelect" searchable searchable-placeholder="ค้นหากรณี" value-attribute="valueTXT" option-attribute="description1" v-model="form.case_desc" @update:model-value="updateCase" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                             </UFormGroup>
                             
                             <UFormGroup label="กรณีอื่น ๆ" name="type" size="xl" v-if="form.case_desc === 'กรณีอื่น ๆ'">
