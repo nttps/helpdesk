@@ -215,15 +215,17 @@
             <UFormGroup label="อุปกรณ์" name="inventory" size="xl">
 
                 <div class="p-4 my-2 border">
+
                     <UCheckbox color="primary" 
                         :model-value="form.borrowItems.some(bItem => bItem.item_id == item.item_id)"
                         :id="index"
-                        :label="`${item.item_cate} - ${item.serial_number} - ${item.item_name}`" 
+                        :label="`${item.brand} - ${item.model} - ${item.item_name} ( S/N ${item.serial_number} )`" 
                         class="mb-2" 
                         @update:model-value="selectItemBorrow(item)"
                         :ui="{container: 'flex items-center h-6', base: 'h-5 w-5 dark:checked:bg-current dark:checked:border-transparent dark:indeterminate:bg-current dark:indeterminate:border-transparent disabled:opacity-50 disabled:cursor-not-allowed focus:ring-0 focus:ring-transparent focus:ring-offset-transparent'}"
                         v-for="(item, index) in serialItems"
-                    />
+                    >
+                    </UCheckbox>
 
                     <div v-if="serialItems.length === 0" class="text-red-500"> ไม่มีอุปกรณ์ที่ว่าง หรือยังไม่มีอุปกรณ์ ในหมวดหมู่ของอุปกรณ์นี้</div>
                 </div>
