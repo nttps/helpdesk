@@ -13,7 +13,7 @@
                     </UButtonGroup>
                 </div>
                 <div class="w-96">
-                    <UInput v-model="textSearch" placeholder="ค้นหาจากชื่อผู้แจ้ง, เบอร์โทรศัพท์" size="md" icon="i-heroicons-magnifying-glass-20-solid" />
+                    <UInput v-model="textSearch" placeholder="ค้นหาจากชื่อผู้แจ้ง, เบอร์โทรศัพท์" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
                 </div>
             </div>
             <div class="flex items-center justify-between space-x-2">
