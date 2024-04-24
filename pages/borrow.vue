@@ -2,8 +2,8 @@
     <div>
         <PartialsTitle title="ยืม - คืน" @add="addData" />
         <div class="mt-8">
-            <div class="search-bar flex justify-between items-center mb-2">
-                <div>
+            <div class="search-bar flex justify-between space-x-2 items-center mb-2">
+                <div class="shrink-0 flex-grow">
                     <UButtonGroup size="lg" orientation="horizontal">
                         <UButton :label="status.name" v-for="status in statusList" @click="switchStatus(status.name)" :color="statusActive === status.name ? `${status.color}` : 'white'">
                             <template #leading>
@@ -12,7 +12,7 @@
                         </UButton>
                     </UButtonGroup>
                 </div>
-                <div class="w-96">
+                <div class="flex-grow max-w-96">
                     <UInput v-model="textSearch" placeholder="ค้นหาจากชื่อผู้ยืม, เบอร์โทรศัพท์" size="xl" icon="i-heroicons-magnifying-glass-20-solid" />
                 </div>
             </div>
@@ -648,7 +648,6 @@
 
         }],
         borrowItems: [],
-        status: ""
     })
 
     const rejectHandle = () => {
