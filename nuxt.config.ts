@@ -19,6 +19,10 @@ export default defineNuxtConfig({
         },
     },
     ssr: false,
+    colorMode: {
+        preference: "light",
+        storageKey: "theme-ad",
+    },
     modules: [
         "@nuxtjs/google-fonts",
         "@nuxt/ui",
