@@ -17,7 +17,7 @@
             </UPopover>
         </UFormGroup>
         <UFormGroup label="อุปกรณ์ครบ" name="location_unit" size="xl">
-            <UToggle v-model="form.itemApprove" :disabled="notDisable" size="2xl" />
+            <UToggle v-model="form.is_full_option" :disabled="notDisable" size="2xl" />
         </UFormGroup>
     </div>
 

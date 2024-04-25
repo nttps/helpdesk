@@ -648,6 +648,7 @@
 
         }],
         borrowItems: [],
+        is_full_option: false
     })
 
     const rejectHandle = () => {
@@ -733,7 +734,8 @@
 
             }],
             borrowItems: [],
-            status: ""
+            status: "",
+            is_full_option: false
         }
     }
 
