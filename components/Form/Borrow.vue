@@ -212,9 +212,9 @@
                 <div class="text-center">เลือก Serial Number</div>
             </template>
 
-            <UFormGroup label="อุปกรณ์" name="inventory" size="xl">
+            <UFormGroup :label="`อุปกรณ์ทั้งหมด ${serialTotal} รายการ`" name="inventory" size="xl">
 
-                <div class="p-4 my-2 border">
+                <div class="p-4 my-2 border overflow-y-auto h-[500px]">
 
                     <UCheckbox color="primary" 
                         :model-value="form.borrowItems.some(bItem => bItem.item_id == item.item_id)"
@@ -223,20 +223,11 @@
                         class="mb-2" 
                         @update:model-value="selectItemBorrow(item)"
                         :ui="{container: 'flex items-center h-6', base: 'h-5 w-5 dark:checked:bg-current dark:checked:border-transparent dark:indeterminate:bg-current dark:indeterminate:border-transparent disabled:opacity-50 disabled:cursor-not-allowed focus:ring-0 focus:ring-transparent focus:ring-offset-transparent'}"
-                        v-for="(item, index) in serialItems"
+                        v-for="(item, index) in serialItemShow"
                     >
                     </UCheckbox>
 
                     <div v-if="serialItems.length === 0" class="text-red-500"> ไม่มีอุปกรณ์ที่ว่าง หรือยังไม่มีอุปกรณ์ ในหมวดหมู่ของอุปกรณ์นี้</div>
-                </div>
-               
-                
-                <div class="flex flex-wrap justify-end items-center px-3 pt-3" v-if="serialItems.length > 0">
-                    <UPagination 
-                    v-model="page" 
-                    :page-count="pageCount" 
-                    :total="serialTotal" 
-                    />
                 </div>
                
             </UFormGroup>
@@ -323,16 +314,23 @@
 
     const modalItemSelect = async (type, cate) => {
         modalItem.value = true
+        await updateSerailItem(type, cate)
+    }
+
+    const updateSerailItem = async (type, cate) => {
 
         const data = await getListItems('', 'ว่าง', type, cate)
 
         if(page.value > 1) {
             page.value = 1
         }
-        serialTotal.value  = data.length,
-        serialItems.value = data.slice((page.value - 1) * pageCount.value, (page.value) * pageCount.value)
+        serialTotal.value  = data.length
+        serialItems.value = data
+
 
     }
+
+    const serialItemShow = computed(() => serialItems.value)
     const pageTotal = computed(() => serialTotal.value)
 
    
