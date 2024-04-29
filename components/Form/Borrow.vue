@@ -158,6 +158,9 @@
                         key: 'item_name',
                         label: 'ชื่ออุปกรณ์'
                     }, {
+                        key: 'model',
+                        label: 'รุ่นของอุปกรณ์'
+                    }, {
                         key: 'qty',
                         label: 'จำนวน'
                     }, {
