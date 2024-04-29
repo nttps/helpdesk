@@ -46,6 +46,8 @@
      noti.fetchNotify()
   })
 
+  localStorage.removeItem('nuxt-color-mode');
+
  
 </script>
 
