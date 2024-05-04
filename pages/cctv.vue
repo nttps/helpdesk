@@ -198,7 +198,6 @@
                             
                         </div>
                         <div>
-                           
                             <UFormGroup label="วัตถุประสงค์" class="mb-4" name="type" size="xl">
                                 <USelectMenu :options="objectiveSelect" searchable searchable-placeholder="ค้นหากรณี" value-attribute="valueTXT" option-attribute="description1" v-model="form.purpose_desc" @update:model-value="updateObjective" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                                 
@@ -213,6 +212,12 @@
                             <UFormGroup label="กรณีอื่น ๆ" name="type" size="xl" v-if="form.case_desc === 'กรณีอื่น ๆ'">
                                 <UInput v-model="form.case_desc_other" placeholder="กรอกกรณี" size="xl" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                             </UFormGroup>
+
+                            <div class="mb-4">
+                                <UFormGroup label="แนบไฟล์" name="file" size="xl">
+                                    <UInput v-model="form.description" type="file" placeholder="" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')" />
+                                </UFormGroup>
+                            </div>
                             
                         </div>
                     </div>

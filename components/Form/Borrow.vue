@@ -48,6 +48,12 @@
         </UFormGroup>
     </div>
 
+    <div class="mb-4">
+        <UFormGroup label="แนบไฟล์" name="file" size="xl">
+            <UInput v-model="form.description" type="file" placeholder="" :disabled="!notDisable" />
+        </UFormGroup>
+    </div>
+
     <div class="text-lg font-bold mb-2"> ประเภทและหมวดหมู่ที่ต้องการยืม</div>
     <div class="p-8 pt-4 mb-2 border rounded-lg grid grid-cols-2 gap-2 relative" v-for="item, index in form.items">
         <div class="absolute right-0 p-2" v-if="form.items.length > 1 ">
@@ -191,6 +197,7 @@
         </div>
 
 
+       
        
        
     </div>

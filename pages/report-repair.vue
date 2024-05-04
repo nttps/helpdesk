@@ -252,6 +252,10 @@
                     <UFormGroup label="อาการเสีย/ปัญหา" name="dCenter" size="md" class="mb-4">
                         <UTextarea :rows="4" v-model="form.description" required :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"/>
                     </UFormGroup>
+
+                    <UFormGroup label="แนบไฟล์" name="file" size="xl"  class="mb-4">
+                        <UInput v-model="form.description" type="file" placeholder="" :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')" />
+                    </UFormGroup>
                     <div class="grid grid-cols-3 gap-8 mb-4" >
                         <UFormGroup v-if="form.result_report" label="ผลการแก้ไข" name="dCenter" size="md">
                             {{ form.result_report }}
@@ -263,6 +267,8 @@
                         <UFormGroup v-if="form.fix_by" label="ผู้ซ่อม" name="dCenter" size="md">
                             {{ form.result_report }}
                         </UFormGroup>
+
+
 
 
 
@@ -833,7 +839,7 @@
             countStatus()
         }, 1000 * 60 * 60)
 
-        
+
         fetchCateItems()
         fetchInventory()
         countStatus()
