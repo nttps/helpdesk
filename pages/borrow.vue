@@ -581,7 +581,7 @@
             }]
 
 
-            if(row.status == 'รออนุมัติหน่วยงาน' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติยืมพัสดุประจำหน่วยงาน' && g.isInGroup === true) || row.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true) || row.status == 'รอ ผอ.ทส.ตรวจสอบ' && auth.user.userInGroups.some(g => g.userGroupId === 'อนุมัติยืมโดย ผอ.ทส.' && g.isInGroup === true)) {
+            if(row.status == 'รออนุมัติหน่วยงาน' || (row.status == 'รอตรวจสอบ(ทส.)'&& auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)) || (row.status == 'รอ ผอ.ทส.ตรวจสอบ' && auth.user.userInGroups.some(g => g.userGroupId === 'อนุมัติยืมโดย ผอ.ทส.' && g.isInGroup === true))) {
                 btn.push({
                     label: 'ลบ',
                     icon: 'i-heroicons-trash-20-solid',

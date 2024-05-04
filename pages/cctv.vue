@@ -497,7 +497,7 @@
             })
         }
 
-        if((row.status == 'รออนุมัติ(ผอ.ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติการขอดู CCTV (ทส.)' && g.isInGroup === true)) || (row.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบการขอดู CCTV (ทส.)' && g.isInGroup === true))) {
+        if(row.status == 'รออนุมัติ(ผอ.ทส.)' || (row.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบการขอดู CCTV (ทส.)' && g.isInGroup === true))) {
             btn.push({
                 label: 'ลบ',
                 icon: 'i-heroicons-trash-20-solid',
