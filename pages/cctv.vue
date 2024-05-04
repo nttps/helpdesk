@@ -215,7 +215,7 @@
 
                             <div class="mb-4">
                                 <UFormGroup label="แนบไฟล์" name="file" size="xl">
-                                    <UInput v-model="form.description" type="file" placeholder="" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')" />
+                                    <UInput type="file" placeholder="" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')" />
                                 </UFormGroup>
                             </div>
                             

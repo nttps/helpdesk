@@ -254,7 +254,7 @@
                     </UFormGroup>
 
                     <UFormGroup label="แนบไฟล์" name="file" size="xl"  class="mb-4">
-                        <UInput v-model="form.description" type="file" placeholder="" :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')" />
+                        <UInput type="file" placeholder="" :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')" />
                     </UFormGroup>
                     <div class="grid grid-cols-3 gap-8 mb-4" >
                         <UFormGroup v-if="form.result_report" label="ผลการแก้ไข" name="dCenter" size="md">
@@ -633,7 +633,8 @@
         item_type: "",
         description:"",//รายละเอียด  
         created_by:auth.username, //ผู้ทำรายการ
-        modified_by:auth.username,//ผู้แก้ไขรายการ
+        modified_by: auth.user.currentUserInfo?.fullName,//ผู้แก้ไขรายการ
+        modified_date: moment().format('YYYY-MM-DDTHH:mm:ss'),
         services: [],
         contact: ''
     }

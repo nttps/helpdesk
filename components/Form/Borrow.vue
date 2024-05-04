@@ -50,7 +50,7 @@
 
     <div class="mb-4">
         <UFormGroup label="แนบไฟล์" name="file" size="xl">
-            <UInput v-model="form.description" type="file" placeholder="" :disabled="!notDisable" />
+            <UInput type="file" placeholder="" :disabled="!notDisable" />
         </UFormGroup>
     </div>
 
