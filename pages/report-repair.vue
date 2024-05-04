@@ -666,7 +666,7 @@
             item_type: "",
             description:"",//รายละเอียด  
             created_by:auth.username, //ผู้ทำรายการ
-            modified_by: auth.user.currentUserInfo?.fullName, //ผู้แก้ไขรายการ
+            modified_date: moment().format('YYYY-MM-DDTHH:mm:ss'), //ผู้แก้ไขรายการ
             services: servicesType.value,
             contact: ''
 
@@ -969,7 +969,8 @@
             item_type: "",
             description:"",//รายละเอียด  
             created_by:auth.username, //ผู้ทำรายการ
-            modified_by:auth.user.currentUserInfo?.fullName//ผู้แก้ไขรายการ
+            modified_by:auth.user.currentUserInfo?.fullName,//ผู้แก้ไขรายการ
+            modified_date: moment().format('YYYY-MM-DDTHH:mm:ss')
         }
 
 
@@ -978,6 +979,7 @@
     const submit = async () => {
 
         form.value.modified_by = auth.user.currentUserInfo?.fullName
+        form.value.modified_date = moment().format('YYYY-MM-DDTHH:mm:ss')
        
         const res = await postApi('/hd/request/SaveRepair', {
             RequestHead: form.value,
