@@ -977,7 +977,7 @@
     }
     const submit = async () => {
 
-        form.value.modified_by = auth.username
+        form.value.modified_by = auth.user.currentUserInfo?.fullName
        
         const res = await postApi('/hd/request/SaveRepair', {
             RequestHead: form.value,
