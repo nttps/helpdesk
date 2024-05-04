@@ -484,12 +484,16 @@
             click: () => fetchEditData(row.req_id)
         }]
 
-        if(row.status == 'รออนุมัติ(ผอ.ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติการขอดู CCTV (ทส.)' && g.isInGroup === true) || row.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบการขอดู CCTV (ทส.)' && g.isInGroup === true)) {
+        if((row.status == 'รออนุมัติ(ผอ.ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติการขอดู CCTV (ทส.)') && g.isInGroup === true) || (row.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบการขอดู CCTV (ทส.)' && g.isInGroup === true))) {
             btn.push({
                 label: 'อนุมัติ',
                 icon: 'i-heroicons-archive-box-20-solid',
                 click: () => fetchEditData(row.req_id, true)
-            },{
+            })
+        }
+
+        if((row.status == 'รออนุมัติ(ผอ.ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติการขอดู CCTV (ทส.)' && g.isInGroup === true)) || (row.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบการขอดู CCTV (ทส.)' && g.isInGroup === true))) {
+            btn.push({
                 label: 'ลบ',
                 icon: 'i-heroicons-trash-20-solid',
                 click: () => {
@@ -510,7 +514,10 @@
             click: () => fetchEditData(row.req_id, true, true)
         }]
 
-        if(row.status === 'รอตรวจสอบ(ทส.)') {
+        if(row.status === 'รอตรวจสอบ(ทส.)' 
+            && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติการขอดู CCTV (ทส.)')
+            && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบการขอดู CCTV (ทส.)')
+        ) {
             btn.push({
                 label: 'ลบ',
                 icon: 'i-heroicons-trash-20-solid',
@@ -566,10 +573,20 @@
 
 
     onMounted(() => {
+       
+
         fetchCaseCCTV()
         fetchObjectiveCCTV()
         fetchBuildings()
         countStatus()
+        setInterval(() => {
+            refresh()
+            countStatus()
+        }, 1000 * 60 * 60)
+    })
+
+    onUnmounted(() => {
+        clearInterval()
     })
 
     const buildings = ref([])
@@ -761,6 +778,12 @@
             watch: [page, pageCount, textSearch, statusSearch, auth]
         }
     )
+
+    onUnmounted(() => {
+        clearInterval()
+    })
+
+   
 
     const dataPrint = ref('')
 

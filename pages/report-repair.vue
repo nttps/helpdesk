@@ -571,15 +571,16 @@
             click: () => fetchEditData(row.req_id)
         }]
 
-
-       
-
         if((row.status == 'รออนุมัติหน่วยงาน' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติแจ้งซ่อมประจำหน่วยงาน' && g.isInGroup === true) ) || (row.status == 'รอตรวจสอบ(ทส.)' &&  auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบการแจ้งซ่อม(ทส.)'  && g.isInGroup === true))) {
             btn.push({
                 label: 'อนุมัติ',
                 icon: 'i-heroicons-archive-box-20-solid',
                 click: () => fetchEditData(row.req_id, true)
-            },{
+            })
+        }
+
+        if((row.status == 'รออนุมัติหน่วยงาน' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติแจ้งซ่อมประจำหน่วยงาน' && g.isInGroup === true) ) || (row.status == 'รอตรวจสอบ(ทส.)' &&  auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบการแจ้งซ่อม(ทส.)'  && g.isInGroup === true))) {
+            btn.push({
                 label: 'ลบ',
                 icon: 'i-heroicons-trash-20-solid',
                 click: () => {
@@ -614,11 +615,11 @@
     const template =  {
         req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
         req_date: date.value,//วันที่ขอ
-        req_by_user_id: auth.username.length === 13 ? auth.username: '',
-        req_by_fullname: auth.username.length === 13 ? auth.user.currentUserInfo.fullName : '',
-        phone_req:auth.user.currentUserInfo.tel,
-        emal_req: auth.username.length === 13 ? auth.user.currentUserInfo.email : '',
-        department_id:  auth.username.length === 13 ? auth.user.currentUserInfo.departmentID: '',
+        req_by_user_id: '',
+        req_by_fullname: '',
+        phone_req: '',
+        emal_req: '',
+        department_id: '',
         department_desc: "",
         item_id: "",
         item_name: "",
@@ -646,11 +647,11 @@
           form.value = {
             req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
             req_date: date.value,//วันที่ขอ
-            req_by_user_id: auth.username.length === 13 ? auth.username: '',
-            req_by_fullname: auth.username.length === 13 ? auth.user.currentUserInfo.fullName : '',
-            phone_req:auth.user.currentUserInfo.tel,
-            emal_req: auth.username.length === 13 ? auth.user.currentUserInfo.email : '',
-            department_id:  auth.username.length === 13 ? auth.user.currentUserInfo.departmentID: '',
+            req_by_user_id: '',
+            req_by_fullname: '',
+            phone_req: '',
+            emal_req: '',
+            department_id: '',
             department_desc: "",
             item_id: "",
             item_name: "",
@@ -786,6 +787,7 @@
     )
 
     
+    
     function compare(a, z) {
         return a?.['req_id'] === z?.['req_id'];
     }
@@ -821,7 +823,17 @@
         return inventoryitems.value.find(item => item.item_id === value)
     }
 
+    onUnmounted(() => {
+        clearInterval()
+    })
     onMounted(() => {
+
+        setInterval(() => {
+            refresh()
+            countStatus()
+        }, 1000 * 60 * 60)
+
+        
         fetchCateItems()
         fetchInventory()
         countStatus()
@@ -842,15 +854,9 @@
         dataFinish.value.Result_report = ''
         dataFinish.value.ActiondBy = ''
       
-        
-
-        
-
         const data = await getApi(`/hd/request/GetDocSet?req_id=${id}`)
         form.value = data.requestHead
         dataFinish.value.SpareID = data.requestHead.fix_spare_id
-        
-       
         
         await fetchTypeItems(form.value.item_cate)
 
@@ -947,10 +953,10 @@
         form.value = {
             req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
             req_date: date.value,//วันที่ขอ
-            req_by_user_id: auth.username.length === 13 ? auth.username: '',
-            req_by_fullname: auth.username.length === 13 ? auth.user.currentUserInfo.fullName : '',
-            phone_req:auth.user.currentUserInfo.tel,
-            emal_req: auth.username.length === 13 ? auth.user.currentUserInfo.email : '',
+            req_by_user_id: '',
+            req_by_fullname: '',
+            phone_req: '',
+            emal_req: '',
             item_id: "",
             fix_by: "",
             item_type: "",

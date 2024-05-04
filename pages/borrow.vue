@@ -452,6 +452,8 @@
         middleware: ["auth"]
     })
 
+   
+
     const auth = useAuthStore();
     const noti = useNotifyStore()
         
@@ -581,10 +583,17 @@
 
             if(row.status == 'รออนุมัติหน่วยงาน' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติยืมพัสดุประจำหน่วยงาน' && g.isInGroup === true) || row.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true) || row.status == 'รอ ผอ.ทส.ตรวจสอบ' && auth.user.userInGroups.some(g => g.userGroupId === 'อนุมัติยืมโดย ผอ.ทส.' && g.isInGroup === true)) {
                 btn.push({
-                    label: 'อนุมัติ',
-                    icon: 'i-heroicons-archive-box-20-solid',
-                    click: () => fetchEditData(row.req_id, true)
-                },{
+                    label: 'ลบ',
+                    icon: 'i-heroicons-trash-20-solid',
+                    click: () => {
+                        modelDeleteConfirm.value = true; 
+                        itemDelete.value = row.req_id;
+                    }
+                })
+            }
+
+            if(row.status == 'รออนุมัติหน่วยงาน' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติยืมพัสดุประจำหน่วยงาน' && g.isInGroup === true) || row.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true) || row.status == 'รอ ผอ.ทส.ตรวจสอบ' && auth.user.userInGroups.some(g => g.userGroupId === 'อนุมัติยืมโดย ผอ.ทส.' && g.isInGroup === true)) {
+                btn.push({
                     label: 'ลบ',
                     icon: 'i-heroicons-trash-20-solid',
                     click: () => {
@@ -625,10 +634,10 @@
     const form = ref({
         req_id: '',
         req_date: moment(new Date()).format('YYYY-MM-DD'),
-        req_by_user_id: auth.username.length === 13 ? auth.username: '',
-        req_by_fullname: auth.username.length === 13 ? auth.user.currentUserInfo.fullName : '',
-        phone_req:auth.user.currentUserInfo.tel,
-        emal_req: auth.username.length === 13 ? auth.user.currentUserInfo.email : '',
+        req_by_user_id: '',
+        req_by_fullname: '',
+        phone_req: '',
+        emal_req: '',
         date_begin: startDate.value,
         date_end: endDate.value,
         purpose_id:"",//รหัสวัตถุประสงค์
@@ -639,7 +648,7 @@
         created_by:auth.username, //ผู้ทำรายการ
         modified_by: "",
         status: "",
-        department_id: auth.username.length === 13 ? auth.user.currentUserInfo.departmentID : '',
+        department_id: '',
         items: [{
             item_cate: '',
             qty: '',
@@ -697,6 +706,15 @@
 
     onMounted(() => {
         countStatus()
+        setInterval(() => {
+            refresh()
+            countStatus()
+        }, 1000 * 60 * 60)
+
+    })
+
+    onUnmounted(() => {
+        clearInterval()
     })
     const addItem = () => {
         form.value.items.push({ 
@@ -816,6 +834,8 @@
         }
     )
   
+    
+
     const modelDeleteConfirm = ref(false)
     const itemDelete = ref()
 
