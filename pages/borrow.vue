@@ -648,7 +648,7 @@
         created_by:auth.username, //ผู้ทำรายการ
         modified_by: "",
         status: "",
-        department_id: '',
+        department_id: !auth.isAdmin ? auth.user.currentUserInfo.departmentID : '',
         items: [{
             item_cate: '',
             qty: '',
@@ -742,7 +742,7 @@
             description:"",//รายละเอียด  
             created_by:auth.username, //ผู้ทำรายการ
             modified_by: "",
-            department_id: auth.username.length === 13 ? auth.user.currentUserInfo.departmentID : '',
+            department_id: !auth.isAdmin ? auth.user.currentUserInfo.departmentID : '',
             items: [{
                 item_id: '',
                 qty: '',
