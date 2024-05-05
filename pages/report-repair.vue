@@ -621,11 +621,11 @@
     const template =  {
         req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
         req_date: date.value,//วันที่ขอ
-        req_by_user_id: '',
-        req_by_fullname: '',
-        phone_req: '',
-        emal_req: '',
-        department_id: '',
+        req_by_user_id: !auth.isAdmin ? auth.username: '',
+        req_by_fullname: !auth.isAdmin ? auth.user.currentUserInfo.fullName : '',
+        phone_req:auth.user.currentUserInfo.tel,
+        emal_req: !auth.isAdmin ? auth.user.currentUserInfo.email : '',
+        department_id:  !auth.isAdmin ? auth.user.currentUserInfo.departmentID: '',
         department_desc: "",
         item_id: "",
         item_name: "",
@@ -654,11 +654,11 @@
           form.value = {
             req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
             req_date: date.value,//วันที่ขอ
-            req_by_user_id: auth.username.length === 13 ? auth.username: '',
-            req_by_fullname: auth.username.length === 13 ? auth.user.currentUserInfo.fullName : '',
+            req_by_user_id: !auth.isAdmin ? auth.username: '',
+            req_by_fullname: !auth.isAdmin ? auth.user.currentUserInfo.fullName : '',
             phone_req:auth.user.currentUserInfo.tel,
-            emal_req: auth.username.length === 13 ? auth.user.currentUserInfo.email : '',
-            department_id:  auth.username.length === 13 ? auth.user.currentUserInfo.departmentID: '',
+            emal_req: !auth.isAdmin ? auth.user.currentUserInfo.email : '',
+            department_id:  !auth.isAdmin ? auth.user.currentUserInfo.departmentID: '',
             department_desc: "",
             item_id: "",
             item_name: "",
