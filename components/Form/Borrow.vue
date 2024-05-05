@@ -23,7 +23,7 @@
 
     <div class="grid grid-cols-5 gap-8 mb-4">
         <UFormGroup label="ผู้ยืม" name="req_by_user_id" size="xl">
-            <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" required @input="searchUserId" :disabled="notDisable || form.req_by_user_id.length === 13"/>
+            <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" required @input="searchUserId" :disabled="notDisable || !auth.isAdmin"/>
 
             <div class="bg-white divide-y-2 rounded absolute z-10 border" v-if="users.length">
 
@@ -36,7 +36,7 @@
         </UFormGroup>
         
         <UFormGroup label="อีเมล" name="emal_req" size="xl">
-            <UInput v-model="form.emal_req" placeholder="" :disabled="notDisable || (form.req_by_user_id.length === 13 && form.emal_req !== '')" />
+            <UInput v-model="form.emal_req" placeholder="" :disabled="notDisable || (!auth.isAdmin && form.emal_req !== '')" />
         </UFormGroup>
         <UFormGroup label="เบอร์โทรศัพท์" name="phone_req" size="xl">
             <UInput v-model="form.phone_req" placeholder="" :disabled="notDisable" />

@@ -634,10 +634,10 @@
     const templateEmpty = {
         req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
         req_date: dateRequest.value,//วันที่ขอ
-        req_by_user_id: auth.username.length === 13 ? auth.username: '',
-        req_by_fullname: auth.username.length === 13 ? auth.user.currentUserInfo.fullName : '',
+        req_by_user_id: !auth.isAdmin ? auth.username: '',
+        req_by_fullname: !auth.isAdmin ? auth.user.currentUserInfo.fullName : '',
         phone_req:auth.user.currentUserInfo.tel,
-        emal_req: auth.username.length === 13 ? auth.user.currentUserInfo.email : '',
+        emal_req: !auth.isAdmin ? auth.user.currentUserInfo.email : '',
         howto_inform:"walkin",//วิธีการแจ้ง มี 2 ค่า (walkin , email)
         date_begin: dateTimeBegin.value,//วันที่เวลาที่ต้องดู (เริ่มต้น)
         date_end: dateTimeEnd.value,// ถึงวันที่ 
@@ -660,10 +660,10 @@
         form.value = {
             req_id:"",//กรณีเพิ่มใหม่ไม่ต้องส่งค่ามา แต่ถ้าเป็นการแก้ไขให้เลขเอกสารมา
             req_date: dateRequest.value,//วันที่ขอ
-            req_by_user_id: auth.username.length === 13 ? auth.username: '',
-            req_by_fullname: auth.username.length === 13 ? auth.user.currentUserInfo.fullName : '',
+            req_by_user_id: !auth.isAdmin ? auth.username: '',
+            req_by_fullname: !auth.isAdmin ? auth.user.currentUserInfo.fullName : '',
             phone_req:auth.user.currentUserInfo.tel,
-            emal_req: auth.username.length === 13 ? auth.user.currentUserInfo.email : '',
+            emal_req: !auth.isAdmin ? auth.user.currentUserInfo.email : '',
             howto_inform:"walkin",//วิธีการแจ้ง มี 2 ค่า (walkin , email)
             date_begin: dateTimeBegin.value,//วันที่เวลาที่ต้องดู (เริ่มต้น)
             date_end: dateTimeEnd.value,// ถึงวันที่ 

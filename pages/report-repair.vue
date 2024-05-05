@@ -145,7 +145,7 @@
                             </UPopover>
                         </UFormGroup>
                         <UFormGroup label="ผู้แจ้ง" name="req_by_user_id" size="md">
-                            <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" @input="searchUserId" required :disabled="(!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || form.req_by_user_id.length === 13)"/>
+                            <UInput v-model="form.req_by_fullname" placeholder="กรอกชื่อเพื่อค้นหา" @input="searchUserId" required :disabled="(!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)') || !auth.isAdmin)"/>
 
                             <div class="bg-white divide-y-2 rounded absolute z-10 border w-full" v-if="users.length">
                                 <div class="py-1 px-2 text-gray-500 text-sm text-center">กรุณาเลือกรายชื่อผู้แจ้ง</div>
