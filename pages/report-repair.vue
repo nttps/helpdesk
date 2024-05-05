@@ -277,10 +277,10 @@
                  
 
                     <UFormGroup label="ผู้ปรับปรุงข้อมูลล่าสุด" name="dCenter" size="md" class="mb-4">
-                        <UInput v-model="form.modified_by" disabled/>
+                        {{ form.modified_by }}
                     </UFormGroup>
                     <UFormGroup label="วันที่ปรับปรุงล่าสุด" name="dCenter" size="md">
-                        <UInput v-model="form.modified_date" disabled/>
+                        {{ moment(form.modified_date).format('DD/MM/YYYY HH:ii น.') }}
                     </UFormGroup>
                 </div>
 
