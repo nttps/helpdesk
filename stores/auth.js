@@ -8,8 +8,8 @@ export const useAuthStore = defineStore("auth-helpdesk", {
     getters: {
         isLoggedIn: (state) => !!state.user,
         isAdmin: (state) =>
-            !!state.user.userInGroups.some(
-                (p) => p.userGroupId.includes("ADMIN") && p.isInGroup == true
+            state.user.userInGroups.some(
+                (p) => p.userGroupId === "ADMIN-HELPDESK" && p.isInGroup == true
             ),
         isNotUser: (state) =>
             state.user.userInGroups.some(
