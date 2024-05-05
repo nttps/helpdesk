@@ -634,10 +634,10 @@
     const form = ref({
         req_id: '',
         req_date: moment(new Date()).format('YYYY-MM-DD'),
-        req_by_user_id: '',
-        req_by_fullname: '',
-        phone_req: '',
-        emal_req: '',
+        req_by_user_id: !auth.isAdmin ? auth.username: '',
+        req_by_fullname: !auth.isAdmin ? auth.user.currentUserInfo.fullName : '',
+        phone_req:auth.user.currentUserInfo.tel,
+        emal_req: !auth.isAdmin ? auth.user.currentUserInfo.email : '',
         date_begin: startDate.value,
         date_end: endDate.value,
         purpose_id:"",//รหัสวัตถุประสงค์
