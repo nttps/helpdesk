@@ -275,7 +275,7 @@
                         {{ form.modified_by || '-' }}
                     </UFormGroup>
                     <UFormGroup label="วันที่ปรับปรุงล่าสุด" name="dCenter" size="md">
-                        {{ moment(form.modified_date).format('DD/MM/YYYY HH:ii น.') }}
+                        {{ moment(form.modified_date).format('DD/MM/YYYY HH:mm น.') }}
                     </UFormGroup>
                 </div>
 
