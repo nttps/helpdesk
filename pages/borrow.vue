@@ -581,6 +581,14 @@
             }]
 
 
+            if(row.status == 'รออนุมัติหน่วยงาน' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติยืมพัสดุประจำหน่วยงาน' && g.isInGroup === true) || row.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true) || row.status == 'รอ ผอ.ทส.ตรวจสอบ' && auth.user.userInGroups.some(g => g.userGroupId === 'อนุมัติยืมโดย ผอ.ทส.' && g.isInGroup === true)) {
+                btn.push({
+                    label: 'อนุมัติ',
+                    icon: 'i-heroicons-archive-box-20-solid',
+                    click: () => fetchEditData(row.req_id, true)
+                })
+            }
+
             if(row.status == 'รออนุมัติหน่วยงาน' || (row.status == 'รอตรวจสอบ(ทส.)'&& auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true)) || (row.status == 'รอ ผอ.ทส.ตรวจสอบ' && auth.user.userInGroups.some(g => g.userGroupId === 'อนุมัติยืมโดย ผอ.ทส.' && g.isInGroup === true))) {
                 btn.push({
                     label: 'ลบ',
@@ -591,7 +599,7 @@
                     }
                 })
             }
-            
+
             if((row.status == 'ส่งมอบใช้งาน' || row.status == 'รายการคงค้าง') && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true || auth.user.userInGroups.some(g => g.userGroupId === 'อนุมัติยืมโดย ผอ.ทส.' && g.isInGroup === true))) {
                 btn.push( {
                     label: 'คืนพัสดุ',
