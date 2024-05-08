@@ -53,6 +53,24 @@ export const getListItems = async (search, status, type = '', cate = '') => {
     }
 };
 
+export const imageUpload = async (url, images) => {
+    var requestOptions = {
+        method: "POST",
+        body: images,
+    };
+
+    try {
+        const response = await fetch(
+            `${config.public.apiUrl}${url}`,
+            requestOptions
+        );
+        return await response.json();
+    } catch (error) {
+        return error;
+    }
+};
+
+
 export const getSpares = async (search, type = "", cate = "") => {
     var raw = JSON.stringify({
         SearchText: search, //ค้นหาใน cate_name ,description ,ค่าว่างค้นหาทั้งหมด

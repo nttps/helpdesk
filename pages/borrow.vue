@@ -654,6 +654,7 @@
             inventory: []
 
         }],
+        files: [],
         borrowItems: [],
         is_full_option: false
     })
@@ -749,6 +750,7 @@
                 inventory: []
 
             }],
+            files: [],
             borrowItems: [],
             status: "",
             is_full_option: false
@@ -868,6 +870,10 @@
             }),
         })
 
+        if(form.value.files.length > 0) {
+            await uploadFile(res.requestHead.req_id)
+        }
+
         
         if(res.outputAction.result === 'ok') {
             refresh()
@@ -885,6 +891,16 @@
             qty_return: item.qty_return,
         }
     }))
+
+    const uploadFile = async (id)  => {
+
+        var formdata = new FormData();
+        form.value.files.forEach(image => {
+            formdata.append("files", image.file);
+        })
+
+        const data = await imageUpload(`/hd/request/UploadDocRequest?reqid=${id}&created_by=${auth.username}` , formdata )
+    }
 
     const checkMaxReturn = (value, id) => {
         const item = form.value.borrowItems.find(item => item.item_id === id)
@@ -917,6 +933,8 @@
         form.value = data.requestHead
         form.value.items = data.requestItemType
         form.value.borrowItems = data.requestItem
+        form.value.files = data.files
+
 
 
         form.value.location_unit = data.requestHead.location_unit ||  data.requestHead.department_id 
@@ -942,6 +960,8 @@
         }else {
             modalAdd.value = true; 
         }
+
+        
 
     }
 

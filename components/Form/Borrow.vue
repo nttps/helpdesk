@@ -49,9 +49,7 @@
     </div>
 
     <div class="mb-4">
-        <UFormGroup label="แนบไฟล์" name="file" size="xl">
-            <UInput type="file" placeholder="" :disabled="!notDisable" />
-        </UFormGroup>
+       <FileUpload :files="form.files" />
     </div>
 
     <div class="text-lg font-bold mb-2"> ประเภทและหมวดหมู่ที่ต้องการยืม</div>

@@ -253,9 +253,9 @@
                         <UTextarea :rows="4" v-model="form.description" required :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')"/>
                     </UFormGroup>
 
-                    <UFormGroup label="แนบไฟล์" name="file" size="xl"  class="mb-4">
-                        <UInput type="file" placeholder="" :disabled="!(form.status === undefined || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)')" />
-                    </UFormGroup>
+                    <div class="mb-4">
+                        <FileUpload :files="form.files" />
+                    </div>
                     <div class="grid grid-cols-3 gap-8 mb-4" >
                         <UFormGroup v-if="form.result_report" label="ผลการแก้ไข" name="dCenter" size="md">
                             {{ form.result_report }}
@@ -631,7 +631,8 @@
         modified_by: auth.user.currentUserInfo?.fullName,//ผู้แก้ไขรายการ
         modified_date: moment().format('YYYY-MM-DDTHH:mm:ss'),
         services: [],
-        contact: ''
+        contact: '',
+        files: []
     }
     const form = ref(template)
 
@@ -663,7 +664,8 @@
             created_by:auth.username, //ผู้ทำรายการ
             modified_date: moment().format('YYYY-MM-DDTHH:mm:ss'), //ผู้แก้ไขรายการ
             services: servicesType.value,
-            contact: ''
+            contact: '',
+            files: []
 
         }
         modalAdd.value = true
@@ -858,6 +860,8 @@
       
         const data = await getApi(`/hd/request/GetDocSet?req_id=${id}`)
         form.value = data.requestHead
+        form.value.files = data.files
+
         dataFinish.value.SpareID = data.requestHead.fix_spare_id
         
         await fetchTypeItems(form.value.item_cate)
@@ -986,6 +990,10 @@
             })
         })
 
+        if(form.value.files.length > 0) {
+            await uploadFile(res.requestHead.req_id)
+        }
+
         if(res.outputAction.result === 'ok') {
             refreshDataAll()
             users.value = []
@@ -994,6 +1002,16 @@
         resetForm()
         modalAdd.value = false
        
+    }
+
+    const uploadFile = async (id)  => {
+
+        var formdata = new FormData();
+        form.value.files.forEach(image => {
+            formdata.append("files", image.file);
+        })
+
+        const data = await imageUpload(`/hd/request/UploadDocRequest?reqid=${id}&created_by=${auth.username}` , formdata )
     }
 
     const deleteItem = async () => {

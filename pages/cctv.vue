@@ -213,10 +213,8 @@
                                 <UInput v-model="form.case_desc_other" placeholder="กรอกกรณี" size="xl" required :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                             </UFormGroup>
 
-                            <div class="mb-4">
-                                <UFormGroup label="แนบไฟล์" name="file" size="xl">
-                                    <UInput type="file" placeholder="" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')" />
-                                </UFormGroup>
+                            <div class="mb-4 mt-4">
+                                <FileUpload :files="form.files" />
                             </div>
                             
                         </div>
@@ -652,7 +650,8 @@
         description:"",//รายละเอียด  
         created_by: auth.username, //ผู้ทำรายการ
         modified_by:"",//ผู้แก้ไขรายการ
-        purpose_other: ""
+        purpose_other: "",
+        files: []
     }
     const form = ref(templateEmpty)
 
@@ -678,7 +677,8 @@
             description:"",//รายละเอียด  
             created_by: auth.username, //ผู้ทำรายการ
             modified_by:"",//ผู้แก้ไขรายการ
-            purpose_other: ""
+            purpose_other: "",
+            files: []
         }
 
         modalAdd.value = true
@@ -809,6 +809,8 @@
         dataApprove.value.ReqID = id
         const data = await getApi(`/hd/request/GetDocSet?req_id=${id}`)
         form.value = data.requestHead
+        form.value.files = data.files
+
 
         await fetchFloor(form.value.building_id)
         if(approve || form.value.status == 'รออนุมัติ(ผอ.ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้อนุมัติการขอดู CCTV (ทส.)' && g.isInGroup === true)) {
@@ -864,6 +866,10 @@
             RequestHead: form.value
         })
 
+        if(form.value.files.length > 0) {
+            await uploadFile(res.requestHead.req_id)
+        }
+
         if(res.outputAction.result === 'ok') {
             refresh()
             countStatus()
@@ -871,6 +877,16 @@
         }
 
         modalAdd.value = false
+    }
+
+    const uploadFile = async (id)  => {
+
+        var formdata = new FormData();
+        form.value.files.forEach(image => {
+            formdata.append("files", image.file);
+        })
+
+        const data = await imageUpload(`/hd/request/UploadDocRequest?reqid=${id}&created_by=${auth.username}` , formdata )
     }
 
     const deleteItem = async () => {
