@@ -139,7 +139,7 @@
         </div>
     </div>
 
-    <div class="p-8 border rounded-lg text-center cursor-pointer" @click="emit('addItem')" v-if="form.status === '' || form.status === 'รออนุมัติหน่วยงาน' || form.status === 'รอตรวจสอบ(ทส.)'">
+    <div class="p-8 border rounded-lg text-center cursor-pointer" @click="emit('addItem')" v-if="form.status === '' || form.status === 'รออนุมัติหน่วยงาน'">
         <Icon name="material-symbols:add-rounded" size="60" />
     </div>
 
