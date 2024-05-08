@@ -967,10 +967,6 @@
 
     const submitApprove = async () => {
 
-        if(form.value.status === 'รอตรวจสอบ(ทส.)') {
-            await submitRequest()
-        }
-
         await postApi('/hd/request/ApproveDocument', dataApprove.value)
         await noti.fetchNotify()
         modalConfirmApprove.value = false
