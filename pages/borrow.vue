@@ -993,9 +993,8 @@
             return
         }
 
-        if(form.value.status === 'รออนุมัติหน่วยงาน' || form.value.status === 'รอตรวจสอบ(ทส.)') {
-            await submitRequest()
-        }
+        await submitRequest()
+        
 
         await postApi('/hd/request/ApproveDocument', dataApprove.value)
         await noti.fetchNotify()
