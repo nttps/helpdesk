@@ -218,6 +218,20 @@
                 </UCard>
             </UForm>
         </UModal>
+        <UModal v-model="modelAlertItems">
+            <UCard >
+
+                 <h3 class="text-xl text-red-600 text-center font-bold leading-6 dark:text-white">
+                            เกิดข้อผิดพลาด กรุณาเลือกอุปกรณ์ที่ให้ยืมก่อนอนุมัติ
+                        </h3>
+                <template #footer>
+                    <div class="flex justify-center">
+                         <button type="button" class="px-4 py-2 bg-green-600 text-base rounded-[5px] text-white" @click="modelAlertItems = false;">ตกลง</button>
+                    </div>
+                </template>
+            </UCard>
+                
+        </UModal>
     </UModal>
 
 
@@ -302,6 +316,8 @@
                     </template>
                 </UCard>
             </UForm>
+
+          
         </UModal>
         <UModal v-model="modalSetDate">
             <UForm :state="setDateReturn">
@@ -352,6 +368,9 @@
             </template>
             </UCard>
         </UModal>
+ 
+
+        
 
     </UModal>
 
@@ -965,9 +984,16 @@
 
     }
 
+    const modelAlertItems  = ref(false)
     const submitApprove = async () => {
 
-        if(form.value.status === 'รออนุมัติหน่วยงาน') {
+        if(form.value.borrowItems.length === 0) {
+            modalConfirmApprove.value = false
+            modelAlertItems.value = true
+            return
+        }
+
+        if(form.value.status === 'รออนุมัติหน่วยงาน' || form.value.status === 'รอตรวจสอบ(ทส.)') {
             await submitRequest()
         }
 
