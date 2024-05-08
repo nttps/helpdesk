@@ -967,6 +967,10 @@
 
     const submitApprove = async () => {
 
+        if(form.value.status === 'รออนุมัติหน่วยงาน') {
+            await submitRequest()
+        }
+
         await postApi('/hd/request/ApproveDocument', dataApprove.value)
         await noti.fetchNotify()
         modalConfirmApprove.value = false

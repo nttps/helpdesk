@@ -257,6 +257,8 @@
                         <FileUpload :files="form.files" />
                     </div>
                     <div class="grid grid-cols-3 gap-8 mb-4" >
+                        
+
                         <UFormGroup v-if="form.result_report" label="ผลการแก้ไข" name="dCenter" size="md">
                             {{ form.result_report }}
                         </UFormGroup>
@@ -265,7 +267,7 @@
                         </UFormGroup>
 
                         <UFormGroup v-if="form.fix_by" label="ผู้ซ่อม" name="dCenter" size="md">
-                            {{ form.result_report }}
+                            {{ form.fix_by }}
                         </UFormGroup>
                     </div>
 
@@ -351,6 +353,31 @@
                         {{ form.description }}
                     </UFormGroup>
 
+                    <div v-if="form.status === 'ส่งซ่อม'">
+                        <UFormGroup label="ซ่อมโดย" name="ActiondBy" size="xl" class="mb-4">
+                            <UInput v-model="form.fix_by" placeholder="" required/>
+                        </UFormGroup>
+                        <UFormGroup v-if="form.item_cate != '' && form.item_type != ''" label="ชิ้นส่วนที่เสีย" name="Result_report" size="xl" class="mb-4">
+                            <USelectMenu
+                                v-model="form.fix_spare_id"
+                                value-attribute="spare_id" 
+                                option-attribute="spare_name" 
+                                searchable
+                                searchable-placeholder="เลือกชื้นส่วนที่เสีย"
+                                
+                                :options="spares"  size="xl"
+                            >
+                            <template #empty>
+                                <div class="text-red-600 text-cemter">ยังไม่มีชิ้นส่วนในหมวดหมู่ และประเภทอุปกรณ์นี้ กรุณาเพิ่มเติมข้อมูล</div>
+                            </template>
+                            </USelectMenu>
+                        </UFormGroup>
+                        <UFormGroup label="ผลการแก้ไข" name="Result_report" size="xl">
+                            <UTextarea v-model="form.result_report" placeholder="" required/>
+                        </UFormGroup>
+                    </div>
+
+
                   
                     <div v-if="form.status === 'ปฏิเสธจากหน่วยงาน'" class="text-red-600">
                         <h3 class="font-bold leading-6 text-xl mb-2 ">เหตุผลการปฏิเสธ</h3>
@@ -362,6 +389,7 @@
                     <div class="flex items-center justify-end space-x-4">
                         <UButton v-if="form.status === 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId.includes('ผู้ตรวจสอบการแจ้งซ่อม(ทส.)') && g.isInGroup === true) || form.status === 'รออนุมัติหน่วยงาน' && auth.user.userInGroups.some(g => g.userGroupId.includes('ผู้อนุมัติแจ้งซ่อมประจำหน่วยงาน') && g.isInGroup === true)" color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
                         <UButton v-else color="green" label="แจ้งซ่อมเสร็จ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="modalFinish = true" />
+                        <UButton v-if="form.status === 'ส่งซ่อม'" label="บันทึกระหว่างซ่อม" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="submit" />
                         <UButton color="red" v-if="form.status !== 'ส่งซ่อม'"  label="ไม่อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(false)" />
                         <UButton color="gray" @click="modalApprove = false;" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
@@ -405,11 +433,11 @@
                     </template>
                     <div>
                         <UFormGroup label="ซ่อมโดย" name="ActiondBy" size="xl" class="mb-4">
-                            <UInput v-model="dataFinish.ActiondBy" placeholder="" required/>
+                            <UInput v-model="form.fix_by" placeholder="" required/>
                         </UFormGroup>
                         <UFormGroup v-if="form.item_cate != '' && form.item_type != ''" label="ชิ้นส่วนที่เสีย" name="Result_report" size="xl" class="mb-4">
                             <USelectMenu
-                                v-model="dataFinish.SpareID"
+                                v-model="form.fix_spare_id"
                                 value-attribute="spare_id" 
                                 option-attribute="spare_name" 
                                 searchable
@@ -422,8 +450,8 @@
                             </template>
                             </USelectMenu>
                         </UFormGroup>
-                        <UFormGroup label="ผลการแก้ไข" name="Result_report" size="xl">
-                            <UTextarea v-model="dataFinish.Result_report" placeholder="" required/>
+                        <UFormGroup label="สรุปผลการแก้ไข" name="Result_report" size="xl">
+                            <UTextarea v-model="form.result_report" placeholder="" required/>
                         </UFormGroup>
                     </div>
 
@@ -593,7 +621,7 @@
 
         if(row.status == 'ส่งซ่อม' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้แจ้งซ่อมเสร็จ' && g.isInGroup == true)) {
             btn.push({
-                label: 'แจ้งซ่อมเสร็จ',
+                label: 'บันทึกระหว่างซ่อม',
                 icon: 'i-heroicons-archive-box-20-solid',
                 click: () => fetchEditData(row.req_id, true)
             })
@@ -880,7 +908,7 @@
 
 
         if(approve || (form.value.status == 'รอตรวจสอบ(ทส.)' &&  auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบการแจ้งซ่อม(ทส.)'  && g.isInGroup === true))) {
-           modalApprove.value = true;
+            modalApprove.value = true;
         }else {
             modalAdd.value = true; 
             
@@ -999,8 +1027,10 @@
             users.value = []
         }
 
-        resetForm()
+        
         modalAdd.value = false
+        modalApprove.value = false
+
        
     }
 
@@ -1031,6 +1061,10 @@
     
 
     const submitFinish = async () => {
+        dataFinish.value.Result_report = form.value.result_report
+        dataFinish.value.ActiondBy = form.value.fix_by
+        dataFinish.value.SpareID = form.value.fix_spare_id
+
         const res = await postApi('/hd/request/FinishRepair', dataFinish.value)
         
         modalApprove.value = false
