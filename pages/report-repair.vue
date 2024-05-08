@@ -357,21 +357,6 @@
                         <UFormGroup label="ซ่อมโดย" name="ActiondBy" size="xl" class="mb-4">
                             <UInput v-model="form.fix_by" placeholder="" required/>
                         </UFormGroup>
-                        <UFormGroup v-if="form.item_cate != '' && form.item_type != ''" label="ชิ้นส่วนที่เสีย" name="Result_report" size="xl" class="mb-4">
-                            <USelectMenu
-                                v-model="form.fix_spare_id"
-                                value-attribute="spare_id" 
-                                option-attribute="spare_name" 
-                                searchable
-                                searchable-placeholder="เลือกชื้นส่วนที่เสีย"
-                                
-                                :options="spares"  size="xl"
-                            >
-                            <template #empty>
-                                <div class="text-red-600 text-cemter">ยังไม่มีชิ้นส่วนในหมวดหมู่ และประเภทอุปกรณ์นี้ กรุณาเพิ่มเติมข้อมูล</div>
-                            </template>
-                            </USelectMenu>
-                        </UFormGroup>
                         <UFormGroup label="ผลการแก้ไข" name="Result_report" size="xl">
                             <UTextarea v-model="form.result_report" placeholder="" required/>
                         </UFormGroup>
@@ -389,7 +374,7 @@
                     <div class="flex items-center justify-end space-x-4">
                         <UButton v-if="form.status === 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId.includes('ผู้ตรวจสอบการแจ้งซ่อม(ทส.)') && g.isInGroup === true) || form.status === 'รออนุมัติหน่วยงาน' && auth.user.userInGroups.some(g => g.userGroupId.includes('ผู้อนุมัติแจ้งซ่อมประจำหน่วยงาน') && g.isInGroup === true)" color="green" label="อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(true)" />
                         <UButton v-else color="green" label="แจ้งซ่อมเสร็จ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="modalFinish = true" />
-                        <UButton v-if="form.status === 'ส่งซ่อม'" label="บันทึกระหว่างซ่อม" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="submit" />
+                        <UButton v-if="form.status === 'ส่งซ่อม'" label="บันทึกผลการแก้ไข" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="submit" />
                         <UButton color="red" v-if="form.status !== 'ส่งซ่อม'"  label="ไม่อนุมัติ" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }" @click="approveRequest(false)" />
                         <UButton color="gray" @click="modalApprove = false;" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
@@ -621,7 +606,7 @@
 
         if(row.status == 'ส่งซ่อม' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้แจ้งซ่อมเสร็จ' && g.isInGroup == true)) {
             btn.push({
-                label: 'บันทึกระหว่างซ่อม',
+                label: 'บันทึกผลการแก้ไข',
                 icon: 'i-heroicons-archive-box-20-solid',
                 click: () => fetchEditData(row.req_id, true)
             })
