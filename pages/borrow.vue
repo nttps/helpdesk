@@ -987,7 +987,7 @@
     const modelAlertItems  = ref(false)
     const submitApprove = async () => {
 
-        if(form.value.borrowItems.length === 0) {
+        if(form.value.status === 'รอตรวจสอบ(ทส.)' && form.value.borrowItems.length === 0 ) {
             modalConfirmApprove.value = false
             modelAlertItems.value = true
             return
