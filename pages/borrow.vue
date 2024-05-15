@@ -262,9 +262,11 @@
                             <div  class="text-xl font-bold ">
                                 <div :class="{ 'text-red-600': item.qty_return === 0, 'text-green-500': item.qty_return}">{{ item.qty_return ? 'คืนแล้ว' : 'ยังไม่คืน' }}</div>
                                
-                                <div class="text-sm">เวลาคืน {{ moment(item.date_return_ext || item.date_end).format('DD/MM/YYYY') }}  </div>
-                                <div v-if="item.appv_status_ext === 'อนุมัติ'" class="text-sm text-green-500">{{ item.appv_status_ext }}ยื่นเวลาคืน</div>
-                                <div v-if="item.appv_status_ext === 'รออนุมัติ'" class="text-sm text-yellow-600"> {{ item.appv_status_ext }}ขยายเวลายืม-คืน</div>
+                                <div class="text-sm">เวลาคืน {{item.appv_status_ext === 'อนุมัติ' ? moment(item.date_return_ext).format('DD/MM/YYYY') : moment(item.date_end).format('DD/MM/YYYY') }}  <span v-if="item.appv_status_ext === 'อนุมัติ'" class="text-xs text-green-500">(ขยายเวลายืม - คืน)</span> </div>
+                               
+                                <div v-if="item.appv_status_ext === 'รออนุมัติ'" class="text-sm text-yellow-600"> <span>{{ item.appv_status_ext }}ขยายเวลายืม-คืน </span>
+                                    
+                                    <div>ไปวันที่ {{ moment(item.date_return_ext).format('DD/MM/YYYY')}}</div></div>
                                 <div v-if="item.appv_status_ext === 'ปฏิเสธ'" class="text-sm text-red-600 break-words">ปฏิเสธการยื่นเวลาเนื่องจาก {{ item.appv_status_ext_reason }} </div>
 
                                 <div v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true) || auth.user.userInGroups.some(g => g.userGroupId === 'อนุมัติยืมโดย ผอ.ทส.' && g.isInGroup === true)">
@@ -1155,6 +1157,7 @@
 
         modalAprroveSetDate.value = false
 
+        setApproveDate.value.ApproveReason = ''
         fetchEditData(setApproveDate.value.ReqID, false, true, true)
     }
 
