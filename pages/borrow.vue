@@ -262,7 +262,6 @@
                             <div  class="text-xl font-bold ">
                                 <div :class="{ 'text-red-600': item.qty_return === 0, 'text-green-500': item.qty_return}">{{ item.qty_return ? 'คืนแล้ว' : 'ยังไม่คืน' }}</div>
                                
-                               
                                 <div class="text-sm">เวลาคืน {{ moment(item.date_return_ext || item.date_end).format('DD/MM/YYYY') }}  </div>
                                 <div v-if="item.appv_status_ext === 'อนุมัติ'" class="text-sm text-green-500">{{ item.appv_status_ext }}ยื่นเวลาคืน</div>
                                 <div v-if="item.appv_status_ext === 'รออนุมัติ'" class="text-sm text-yellow-600"> {{ item.appv_status_ext }}ขยายเวลายืม-คืน</div>
@@ -278,10 +277,10 @@
                                
                             </div>
                             
-                            <UButton :color="item.qty_return ? 'red' : 'green'" :label="item.qty_return ? 'ยกเลิกคืนอุปกรณ์นี้' : 'คืนอุปกรณ์นี้'" size="sm" @click="checkMaxReturn((item.qty_return ? 0 : 1), item.item_id)" v-if="auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true) || auth.user.userInGroups.some(g => g.userGroupId === 'อนุมัติยืมโดย ผอ.ทส.' && g.isInGroup === true)"/>
+                            <UButton :color="item.qty_return ? 'red' : 'green'" :label="item.qty_return ? 'ยกเลิกคืนอุปกรณ์นี้' : 'คืนอุปกรณ์นี้'" size="sm" @click="checkMaxReturn((item.qty_return ? 0 : 1), item.item_id)" v-if="((auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true) || auth.user.userInGroups.some(g => g.userGroupId === 'อนุมัติยืมโดย ผอ.ทส.' && g.isInGroup === true))) && modalTitle == 'แจ้งคืนพัสดุ'"/>
 
                             <div class="self-center">
-                                <UButton :label="item.appv_status_ext === '' ? 'ยื่นเวลายืม' : 'เปลี่ยนเวลาคืน'" :color="item.appv_status_ext === '' ? 'primary' : 'white'" v-if="!item.qty_return" size="sm" @click="setDateBorrow(item)" />
+                                <UButton :label="item.appv_status_ext === '' ? 'ยื่นเวลายืม' : 'เปลี่ยนเวลาคืน'" :color="item.appv_status_ext === '' ? 'primary' : 'white'" v-if="!item.qty_return && modalTitle == 'ขยายเวลายืม-คืน'" size="sm" @click="setDateBorrow(item)" />
                                
                             </div>
                            
@@ -626,7 +625,7 @@
                     click: () => fetchEditData(row.req_id, false, true)
                 })
             }
-            if((row.status == 'ส่งมอบใช้งาน' || row.status == 'รายการคงค้าง') && !(auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบยืมพัสดุประจำ ทศ.' && g.isInGroup === true) || !(auth.user.userInGroups.some(g => g.userGroupId === 'อนุมัติยืมโดย ผอ.ทส.' && g.isInGroup === true)))) {
+            if((row.status == 'ส่งมอบใช้งาน' || row.status == 'รายการคงค้าง')) {
                 btn.push( {
                     label: 'ขยายเวลายืม-คืน',
                     icon: 'i-heroicons-archive-box-20-solid',
@@ -972,6 +971,8 @@
         }else if(isReturn) {
             dataReturn.value.ReqID = id
             modalReturn.value = true
+            modalTitle.value = 'แจ้งคืนพัสดุ'
+
         }else if(isSetDate) {
             dataReturn.value.ReqID = id
             modalReturn.value = true
