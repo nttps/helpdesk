@@ -1,6 +1,6 @@
 <template>
     <UFormGroup label="แนบไฟล์" class="mb-2" name="file" size="xl">
-        <UInput type="file" @change="pickFile" :disabled="!notDisabled" />
+        <UInput type="file" @change="pickFile" :disabled="notDisabled" />
     </UFormGroup>
 
     <div class="relative flex align-center space-y-2 justify-between" v-for="(file, index) in files">
