@@ -74,7 +74,7 @@
                     <div>{{ row.req_by_fullname ? row.req_by_fullname : row.req_by_user_id }}</div>
                 </template>
 
-                  <template #status-data="{ row }">
+                <template #status-data="{ row }">
                     <div class="font-bold text-black">{{ row.status }}</div>
                     <div class="text-red-600 font-bold" v-if="row.status == 'ปฏิเสธจากหน่วยงาน' || row.status == 'ปฏิเสธจาก(ทส.)'">
                         <div>เหตุผลการไม่อนุมัติ</div>  
@@ -392,8 +392,6 @@
         </UCard>
     </UModal>
 
-   
-
     
     <UModal v-model="modalPrint">
         <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
@@ -531,7 +529,7 @@
         Reason:""//เหตุผลการไม่อนุมัติ ถ้าอนุมัติไม่ต้องใส่
     })
 
-     const dataReturn = ref({
+    const dataReturn = ref({
         ReqID: "",
         ActiondBy:auth.username,
         returnAll: false,
