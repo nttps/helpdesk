@@ -1170,7 +1170,7 @@
 
         modalSetDate.value = false
 
-        fetchEditData(setDateReturn.value.ReqID, false, true, true)
+        fetchEditData(setDateReturn.value.ReqID, false, false, true)
     }
 </script>
 
