@@ -773,7 +773,7 @@
                 statusSearch = 'ส่งซ่อม'
                 break;
             case 'ซ่อมเสร็จ':
-                statusSearch = 'ซ่อมเสร็จ'
+                statusSearch = 'ดำเนินการแล้วเสร็จ'
                 break;
             default:
                 break;
