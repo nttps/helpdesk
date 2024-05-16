@@ -311,7 +311,7 @@
                     <div class="font-bold text-xl text-center">ต้องการทำรายการคืนใช่หรือไม่</div>
                     <template #footer>
                         <div class="flex justify-between">
-                            <button type="submit" class="px-4 py-2 bg-green-600 text-base rounded-[5px] text-white" @click="submitReturn">ตกลง</button>
+                            <button type="button" class="px-4 py-2 bg-green-600 text-base rounded-[5px] text-white" @click="submitReturn">ตกลง</button>
                             <button type="button" class="px-4 py-2 bg-gray-500 text-base rounded-[5px] text-white" @click="modalConfirmReturn = false">ยกเลิก</button>
                         </div>
                     </template>
