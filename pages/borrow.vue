@@ -1156,7 +1156,7 @@
         modalAprroveSetDate.value = false
 
         setApproveDate.value.ApproveReason = ''
-        fetchEditData(setApproveDate.value.ReqID, false, true, true)
+        fetchEditData(setApproveDate.value.ReqID, false, false, true)
     }
 
     const submitSetDateReturn = async () => {
