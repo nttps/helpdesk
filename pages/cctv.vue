@@ -256,9 +256,6 @@
                                 <UFormGroup label="วันที่ยื่นคำร้อง" name="type" size="xl">
                                     <div class="text-zinc-700">{{ labelDateRequest }}</div>
                                 </UFormGroup>
-                                <UFormGroup label="ความสำคัญ" name="type" size="xl">
-                                    <div class="text-zinc-700">{{ form.urgent_level  }}</div>
-                                </UFormGroup>
                             </div>
 
                             <div class="grid grid-cols-2 mb-2">
@@ -464,9 +461,6 @@
         key: 'department_id',
         label: 'หน่วยงาน'
     }, {
-        key: 'urgent_level',
-        label: 'ความสำคัญ'
-    }, {
         key: 'status',
         label: 'สถานะ'
     }, {
@@ -495,7 +489,7 @@
             })
         }
 
-        if(row.status == 'รออนุมัติ(ผอ.ทส.)' || (row.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบการขอดู CCTV (ทส.)' && g.isInGroup === true))) {
+        if(row.status == 'รอตรวจสอบ(ทส.)' || (row.status == 'รอตรวจสอบ(ทส.)' && auth.user.userInGroups.some(g => g.userGroupId === 'ผู้ตรวจสอบการขอดู CCTV (ทส.)' && g.isInGroup === true))) {
             btn.push({
                 label: 'ลบ',
                 icon: 'i-heroicons-trash-20-solid',

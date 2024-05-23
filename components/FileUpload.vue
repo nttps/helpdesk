@@ -1,5 +1,5 @@
 <template>
-    <UFormGroup label="แนบไฟล์" class="mb-2" name="file" size="xl">
+    <UFormGroup label="แนบไฟล์หนังสือ ( หากมี )" class="mb-2" name="file" size="xl">
         <UInput type="file" @change="pickFile" :disabled="notDisabled" />
     </UFormGroup>
 
