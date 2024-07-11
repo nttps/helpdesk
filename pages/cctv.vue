@@ -150,12 +150,15 @@
                                             <FormDatePicker v-model="form.date_begin" :date-time="true" @close="close" />
                                         </template>
                                     </UPopover>
+                                    <div v-if="!isValidDateRange" class="text-red-500">
+                                        วันที่เริ่มต้นต้องไม่เกินวันที่สิ้นสุด
+                                    </div>
                                 </UFormGroup>
                                 <UFormGroup label="ถึงวันที่" name="type" size="xl">
                                     <UPopover :popper="{ placement: 'bottom-start' }">
                                         <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelDateTimeEnd" :disabled="!(form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ')"/>
                                         <template #panel="{ close }">
-                                            <FormDatePicker v-model="form.date_end" :date-time="true" @close="close" />
+                                            <FormDatePicker v-model="form.date_end" :min-date="form.date_begin" :date-time="true" @close="close" />
                                         </template>
                                     </UPopover>
                                 </UFormGroup>
@@ -222,7 +225,7 @@
                 </div>
                 <template #footer v-if="form.status !== 'ปฏิเสธ' && form.status !== 'อนุมัติ'">
                     <div class="flex items-center justify-end">
-                        <UButton color="amber" label="บันทึก" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                        <UButton color="amber" :disabled="!isValidDateRange" label="บันทึก" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                         <UButton color="gray" @click="modalAdd = false;form = templateEmpty" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
@@ -677,6 +680,14 @@
 
         modalAdd.value = true
     }
+
+    const isValidDateRange = computed(() => {
+        if (form.value.date_begin && form.value.date_end) {
+            return moment(form.value.date_begin).isSameOrBefore(moment(form.value.date_end));
+        }
+        return true;
+    });
+
 
     const statusSearch = ref('')
     const statusList = ref([{

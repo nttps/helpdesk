@@ -149,7 +149,7 @@
 
                 <template #footer v-if="!form.status || form.status == 'รออนุมัติหน่วยงาน' || form.status == 'รอตรวจสอบ(ทส.)'">
                     <div class="flex items-center justify-end space-x-4">
-                        <UButton color="amber" label="บันทึก" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
+                        <UButton color="amber" :disabled="!isValidDateRange" label="บันทึก" type="submit" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                         <UButton color="gray" @click="modalAdd = false; resetForm()" label="ยกเลิก" type="button" size="xl" :ui="{ rounded: 'rounded-full', padding: { xl: 'px-4 py-1'} }"/>
                     </div>
                 </template>
@@ -470,6 +470,8 @@
         middleware: ["auth"]
     })
 
+    
+    
    
 
     const auth = useAuthStore();
@@ -676,6 +678,13 @@
         borrowItems: [],
         is_full_option: false
     })
+
+    const isValidDateRange = computed(() => {
+        if (form.value.date_begin && form.value.date_end) {
+            return moment(form.value.date_begin).isSameOrBefore(moment(form.value.date_end));
+        }
+        return true;
+    });
 
     const rejectHandle = () => {
         if(selectedRows.value.length === 0) {

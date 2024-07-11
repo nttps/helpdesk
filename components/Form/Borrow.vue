@@ -4,15 +4,18 @@
             <UPopover :popper="{ placement: 'bottom-start' }">
                 <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelStartDate" :disabled="!notDisable" />
                 <template #panel="{ close }">
-                    <FormDatePicker v-model="form.date_begin" @close="close" />
+                    <FormDatePicker v-model="form.date_begin"  @close="close" />
                 </template>
             </UPopover>
+            <div v-if="!isValidDateRange" class="text-red-500">
+                วันที่ยืมต้องไม่เกินวันที่คืน
+            </div>
         </UFormGroup>
         <UFormGroup label="วันที่คืน" name="end_date" size="xl" class="w-1/3">
             <UPopover :popper="{ placement: 'bottom-start' }">
                 <UButton icon="i-heroicons-calendar-days-20-solid" :trailing="true" color="gray" variant="outline" class="md:w-4/5" size="md" :label="labelEndDate" :disabled="!notDisable" />
                 <template #panel="{ close }">
-                    <FormDatePicker v-model="form.date_end" @close="close" />
+                    <FormDatePicker v-model="form.date_end" :min-date="form.date_begin" @close="close" />
                 </template>
             </UPopover>
         </UFormGroup>
@@ -265,6 +268,13 @@
     const users = ref([])
     const categories = ref([])
     const types = ref([])
+
+    const isValidDateRange = computed(() => {
+        if (props.form.date_begin && props.form.date_end) {
+            return moment(props.form.date_begin).isSameOrBefore(moment(props.form.date_end));
+        }
+        return true;
+    });
 
     const selectUserName = (user) => {
 

@@ -3,7 +3,7 @@ import moment from 'moment'
 import { DatePicker as VCalendarDatePicker } from 'v-calendar'
 import 'v-calendar/dist/style.css'
 
-const props = defineProps(['modelValue', 'dateTime'])
+const props = defineProps(['modelValue', 'dateTime', 'minDate'])
 
 const emit = defineEmits(['update:model-value', 'close'])
 const date = computed({
@@ -22,6 +22,8 @@ const attrs = [{
     },
     dates: new Date()
 }]
+
+
 </script>
 <template>
   <VCalendarDatePicker
@@ -36,5 +38,6 @@ const attrs = [{
     :mode="props.dateTime ? `dateTime` : `date`" is24hr
     hide-time-header
     locale="th"
+    :min-date="props.minDate ? props.minDate: new Date()"
   />
 </template>
